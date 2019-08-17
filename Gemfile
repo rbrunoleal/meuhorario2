@@ -37,6 +37,11 @@ gem 'wicked_pdf'
 gem 'wkhtmltopdf-binary'
 gem 'newrelic_rpm'
 
+#UFBA Authentication
+gem 'devise'
+gem 'devise-i18n'
+gem 'devise_cas_authenticatable','~> 1.10.0'
+
 group :development, :test do
   # Call 'byebug' anywhere in the code to stop execution and get a debugger console
   gem 'byebug', platform: :mri
