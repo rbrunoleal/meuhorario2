@@ -1,0 +1,31 @@
+<p id="notice"><%= notice %></p>
+
+<h1>Coordenadores</h1>
+
+<table>
+  <thead>
+    <tr>
+      <th>Nome</th>
+      <th>Username</th>
+      <th>Curso</th>
+      <th colspan="3"></th>
+    </tr>
+  </thead>
+
+  <tbody>
+    <% @coordinators.each do |coordinator| %>
+      <tr>
+        <td><%= coordinator.name %></td>
+        <td><%= coordinator.username %></td>
+        <td><%= coordinator.course.name %></td>
+        <td><%= link_to 'Abrir', coordinator %></td>
+        <td><%= link_to 'Editar', edit_coordinator_path(coordinator) %></td>
+        <td><%= link_to 'Apagar', coordinator, method: :delete, data: { confirm: 'Are you sure?' } %></td>
+      </tr>
+    <% end %>
+  </tbody>
+</table>
+
+<br>
+
+<%= link_to 'Novo Coordenador', new_coordinator_path %>
