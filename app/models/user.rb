@@ -1,6 +1,8 @@
 class User < ApplicationRecord
   devise :cas_authenticatable, :trackable, :lockable
          
+  has_one :student, dependent: :destroy
+  has_one :coordinator, dependent: :destroy
          
   enum rule: {
     student: 0,
