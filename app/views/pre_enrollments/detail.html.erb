@@ -1,0 +1,33 @@
+<h3>Obrigatórias</h3>
+  
+  <div class = "field">
+    <% @disciplines_ob.each do |discipline| -%>
+        <% if discipline.record_enrollments.any? %>
+          <%= discipline.identifier %>
+          </br>
+          <% discipline.record_enrollments.each do |discipline| -%>
+              <%= discipline.student.matricula %>
+              </br>
+          <% end -%>
+          </br>
+        <% end %> 
+    <% end -%>
+  </div>
+  
+<h3>Optativas</h3>
+  
+  <div class = "field">
+    <% @disciplines_op.each do |discipline| -%>
+      <% if discipline.record_enrollments.any? %>
+        <%= discipline.identifier %>
+        </br>
+        <% discipline.record_enrollments.each do |discipline| -%>
+            <%= discipline.student.matricula %>
+            </br>
+        <% end -%>
+        </br>
+     <% end %>  
+    <% end -%>
+  </div>
+
+<%= link_to 'Voltar', pre_enrollments_path %>

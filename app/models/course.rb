@@ -4,4 +4,17 @@ class Course < ApplicationRecord
   has_many :disciplines, through: :course_disciplines
   has_many :discipline_class_offers, through: :course_class_offers
   belongs_to :area, optional: true
+  
+  
+  has_many :pre_enrollments
+  def pre_enrollments_available
+    @now = Time.current
+    return self.pre_enrollments.where('date_start <= ? and date_end >= ?', @now, @now)
+  end
+  def disciplines_required
+    return self.course_disciplines.where(nature: 'OB').sort_by { |e| e.discipline.code }
+  end
+  def disciplines_optional
+    return self.course_disciplines.where(nature: 'OP').sort_by { |e| e.discipline.code }
+  end
 end

@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20190818150710) do
+ActiveRecord::Schema.define(version: 20190818162130) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -18,6 +18,15 @@ ActiveRecord::Schema.define(version: 20190818150710) do
   create_table "areas", force: :cascade do |t|
     t.string "name"
     t.string "description"
+  end
+
+  create_table "association_enrollments", force: :cascade do |t|
+    t.integer  "record_enrollment_id"
+    t.integer  "disciplines_enrollment_id"
+    t.datetime "created_at",                null: false
+    t.datetime "updated_at",                null: false
+    t.index ["disciplines_enrollment_id"], name: "index_association_enrollments_on_disciplines_enrollment_id", using: :btree
+    t.index ["record_enrollment_id"], name: "index_association_enrollments_on_record_enrollment_id", using: :btree
   end
 
   create_table "coordinators", force: :cascade do |t|
@@ -82,6 +91,27 @@ ActiveRecord::Schema.define(version: 20190818150710) do
     t.index ["code"], name: "index_disciplines_on_code", using: :btree
   end
 
+  create_table "disciplines_enrollments", force: :cascade do |t|
+    t.integer  "pre_enrollment_id"
+    t.integer  "course_discipline_id"
+    t.datetime "created_at",           null: false
+    t.datetime "updated_at",           null: false
+    t.index ["course_discipline_id"], name: "index_disciplines_enrollments_on_course_discipline_id", using: :btree
+    t.index ["pre_enrollment_id"], name: "index_disciplines_enrollments_on_pre_enrollment_id", using: :btree
+  end
+
+  create_table "pre_enrollments", force: :cascade do |t|
+    t.string   "semester"
+    t.datetime "date_start"
+    t.datetime "date_end"
+    t.integer  "course_id"
+    t.integer  "coordinator_id"
+    t.datetime "created_at",     null: false
+    t.datetime "updated_at",     null: false
+    t.index ["coordinator_id"], name: "index_pre_enrollments_on_coordinator_id", using: :btree
+    t.index ["course_id"], name: "index_pre_enrollments_on_course_id", using: :btree
+  end
+
   create_table "pre_requisites", force: :cascade do |t|
     t.integer  "pre_discipline_id"
     t.integer  "post_discipline_id"
@@ -101,6 +131,15 @@ ActiveRecord::Schema.define(version: 20190818150710) do
   create_table "professors", force: :cascade do |t|
     t.string "name"
     t.index ["name"], name: "index_professors_on_name", using: :btree
+  end
+
+  create_table "record_enrollments", force: :cascade do |t|
+    t.integer  "pre_enrollment_id"
+    t.integer  "student_id"
+    t.datetime "created_at",        null: false
+    t.datetime "updated_at",        null: false
+    t.index ["pre_enrollment_id"], name: "index_record_enrollments_on_pre_enrollment_id", using: :btree
+    t.index ["student_id"], name: "index_record_enrollments_on_student_id", using: :btree
   end
 
   create_table "schedules", force: :cascade do |t|
@@ -143,6 +182,8 @@ ActiveRecord::Schema.define(version: 20190818150710) do
     t.index ["username"], name: "index_users_on_username", unique: true, using: :btree
   end
 
+  add_foreign_key "association_enrollments", "disciplines_enrollments"
+  add_foreign_key "association_enrollments", "record_enrollments"
   add_foreign_key "coordinators", "courses"
   add_foreign_key "coordinators", "users"
   add_foreign_key "course_class_offers", "courses"
@@ -151,10 +192,16 @@ ActiveRecord::Schema.define(version: 20190818150710) do
   add_foreign_key "course_disciplines", "disciplines"
   add_foreign_key "discipline_class_offers", "discipline_classes"
   add_foreign_key "discipline_classes", "disciplines"
+  add_foreign_key "disciplines_enrollments", "course_disciplines"
+  add_foreign_key "disciplines_enrollments", "pre_enrollments"
+  add_foreign_key "pre_enrollments", "coordinators"
+  add_foreign_key "pre_enrollments", "courses"
   add_foreign_key "pre_requisites", "course_disciplines", column: "post_discipline_id"
   add_foreign_key "pre_requisites", "course_disciplines", column: "pre_discipline_id"
   add_foreign_key "professor_schedules", "professors"
   add_foreign_key "professor_schedules", "schedules"
+  add_foreign_key "record_enrollments", "pre_enrollments"
+  add_foreign_key "record_enrollments", "students"
   add_foreign_key "schedules", "discipline_classes"
   add_foreign_key "students", "courses"
   add_foreign_key "students", "users"

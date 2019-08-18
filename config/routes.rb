@@ -1,8 +1,17 @@
 Rails.application.routes.draw do
   devise_for :users
+  
   resources :coordinators
+  
   get 'painel' => 'painel#index'
+  
   resources :students, only: [:edit, :update]
+  
+  resources :pre_enrollments
+  get '/pre_enrollments/:id/result' => 'pre_enrollments#result', as: :pre_enrollments_result
+  get '/pre_enrollments/:id/detail' => 'pre_enrollments#detail', as: :pre_enrollments_detail
+  
+  resources :record_enrollments, path_names: {new: 'new/:pre_enrollment_id' }
   
   # For details on the DSL available within this file, see http://guides.rubyonrails.org/routing.html
 

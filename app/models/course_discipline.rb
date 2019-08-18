@@ -3,4 +3,7 @@ class CourseDiscipline < ApplicationRecord
   belongs_to :discipline
   has_many :pre_requisites, foreign_key: :post_discipline_id, class_name: "PreRequisite", dependent: :destroy
   has_many :post_requisites, foreign_key: :pre_discipline_id, class_name: "PreRequisite", dependent: :destroy
+  
+  has_many :disciplines_enrollments
+  has_many :pre_enrollments, :through => :disciplines_enrollments
 end

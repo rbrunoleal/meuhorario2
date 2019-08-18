@@ -9,6 +9,8 @@ class Student < ApplicationRecord
   validates :matricula, length: { is: 9, message: "Matrícula são necessários 9 digitos." }
   validates :matricula, uniqueness: { message: "Matrícula já cadastrada." }
     
+  has_many :record_enrollments, dependent: :destroy  
+    
   after_validation :enable_student
   
   private

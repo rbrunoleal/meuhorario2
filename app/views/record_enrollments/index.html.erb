@@ -1,0 +1,52 @@
+<p id="notice"><%= notice %></p>
+
+<% if @pre_enrollments.any? %>
+  <h1>Pré-Matrículas Disponíveis</h1>
+  <table>
+    <thead>
+    <tr>
+      <th>Semestre</th>
+      <th>Aberto até </th>
+      <th colspan="3"></th>
+    </tr>
+    </thead>
+
+    <tbody>
+    <% @pre_enrollments.each do |pre_enrollment| %>
+      <tr>
+        <td><%= pre_enrollment.semester %></td>
+        <td><%= pre_enrollment.date_end_format %></td>
+        <td><%= link_to 'Preencher Pré-Matricula', new_record_enrollment_path(pre_enrollment.id) %></td>
+      </tr>
+    <% end %>
+    </tbody>
+  </table>
+<% end %>
+
+<h1>Registros de Pré-Matrículas</h1>
+
+<table>
+  <thead>
+    <tr>
+      <th>Semestre</th>
+      <th colspan="3"></th>
+    </tr>
+  </thead>
+
+  <tbody>
+    <% @record_enrollments.each do |record_enrollment| %>
+      <tr>
+        <td><%= record_enrollment.pre_enrollment.semester %></td>
+        <td><%= link_to 'Abrir', record_enrollment %></td>
+        <% if record_enrollment.pre_enrollment.available %>
+          <td><%= link_to 'Editar', edit_record_enrollment_path(record_enrollment) %></td>
+          <td><%= link_to 'Apagar', record_enrollment, method: :delete, data: { confirm: 'Você tem certeza?' } %></td>
+        <% end %>
+      </tr>
+    <% end %>
+  </tbody>
+</table>
+<%= link_to 'Voltar', painel_path %>
+<br>
+
+

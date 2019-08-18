@@ -1,0 +1,35 @@
+<p id="notice"><%= notice %></p>
+
+<h1>Pré-Matrículas</h1>
+
+<table>
+  <thead>
+    <tr>
+      <th>Semestre</th>
+      <th>Data inicial Pré-Matrícula</th>
+      <th>Data final Pré-Matrícula</th>
+      <th colspan="3"></th>
+    </tr>
+  </thead>
+
+  <tbody>
+    <% @pre_enrollments.each do |pre_enrollment| %>
+      <tr>
+        <td><%= pre_enrollment.semester %></td>
+        <td><%= pre_enrollment.date_start_format %></td>
+        <td><%= pre_enrollment.date_end_format %></td>
+        <td><%= link_to 'Abrir', pre_enrollment %></td>
+        <td><%= link_to 'Editar', edit_pre_enrollment_path(pre_enrollment) %></td>
+        <td><%= link_to 'Apagar', pre_enrollment, method: :delete, data: { confirm: 'Você tem certeza?' } %></td>
+        <td><%= link_to 'Resultado', pre_enrollments_result_path(pre_enrollment.id) %></td>
+        <td><%= link_to 'Detalhe', pre_enrollments_detail_path(pre_enrollment.id) %></td>
+      </tr>
+    <% end %>
+  </tbody>
+</table>
+
+<br>
+
+<%= link_to 'Nova Pré-Matrícula', new_pre_enrollment_path %>
+</br>
+<%= link_to 'Voltar', painel_path %>
