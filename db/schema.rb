@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20190818162130) do
+ActiveRecord::Schema.define(version: 20190823115839) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -31,13 +31,13 @@ ActiveRecord::Schema.define(version: 20190818162130) do
 
   create_table "coordinators", force: :cascade do |t|
     t.string   "name"
-    t.text     "username"
+    t.string   "username"
     t.integer  "course_id"
     t.integer  "user_id"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
-    t.index ["course_id"], name: "index_coordinators_on_course_id", using: :btree
-    t.index ["user_id"], name: "index_coordinators_on_user_id", using: :btree
+    t.index ["course_id"], name: "index_coordinators_on_course_id", unique: true, using: :btree
+    t.index ["user_id"], name: "index_coordinators_on_user_id", unique: true, using: :btree
   end
 
   create_table "course_class_offers", force: :cascade do |t|
@@ -67,6 +67,21 @@ ActiveRecord::Schema.define(version: 20190818162130) do
     t.integer  "area_id"
     t.index ["area_id"], name: "index_courses_on_area_id", using: :btree
     t.index ["code"], name: "index_courses_on_code", using: :btree
+  end
+
+  create_table "department_courses", force: :cascade do |t|
+    t.integer  "department_id"
+    t.integer  "course_id"
+    t.datetime "created_at",    null: false
+    t.datetime "updated_at",    null: false
+    t.index ["course_id"], name: "index_department_courses_on_course_id", using: :btree
+    t.index ["department_id"], name: "index_department_courses_on_department_id", using: :btree
+  end
+
+  create_table "departments", force: :cascade do |t|
+    t.string   "name"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
   end
 
   create_table "discipline_class_offers", force: :cascade do |t|
@@ -128,6 +143,18 @@ ActiveRecord::Schema.define(version: 20190818162130) do
     t.index ["schedule_id"], name: "index_professor_schedules_on_schedule_id", using: :btree
   end
 
+  create_table "professor_users", force: :cascade do |t|
+    t.string   "name"
+    t.integer  "department_id"
+    t.boolean  "approved",      default: false
+    t.string   "username"
+    t.integer  "user_id"
+    t.datetime "created_at",                    null: false
+    t.datetime "updated_at",                    null: false
+    t.index ["department_id"], name: "index_professor_users_on_department_id", using: :btree
+    t.index ["user_id"], name: "index_professor_users_on_user_id", unique: true, using: :btree
+  end
+
   create_table "professors", force: :cascade do |t|
     t.string "name"
     t.index ["name"], name: "index_professors_on_name", using: :btree
@@ -157,28 +184,29 @@ ActiveRecord::Schema.define(version: 20190818162130) do
   create_table "students", force: :cascade do |t|
     t.string   "name"
     t.string   "matricula"
-    t.boolean  "enable"
+    t.string   "email"
     t.integer  "course_id"
     t.integer  "user_id"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.index ["course_id"], name: "index_students_on_course_id", using: :btree
-    t.index ["user_id"], name: "index_students_on_user_id", using: :btree
+    t.index ["user_id"], name: "index_students_on_user_id", unique: true, using: :btree
   end
 
   create_table "users", force: :cascade do |t|
-    t.string   "username",           default: "", null: false
+    t.string   "username",           default: "",    null: false
     t.integer  "rule",               default: 0
-    t.integer  "sign_in_count",      default: 0,  null: false
+    t.boolean  "enable",             default: false
+    t.integer  "sign_in_count",      default: 0,     null: false
     t.datetime "current_sign_in_at"
     t.datetime "last_sign_in_at"
     t.string   "current_sign_in_ip"
     t.string   "last_sign_in_ip"
-    t.integer  "failed_attempts",    default: 0,  null: false
+    t.integer  "failed_attempts",    default: 0,     null: false
     t.string   "unlock_token"
     t.datetime "locked_at"
-    t.datetime "created_at",                      null: false
-    t.datetime "updated_at",                      null: false
+    t.datetime "created_at",                         null: false
+    t.datetime "updated_at",                         null: false
     t.index ["username"], name: "index_users_on_username", unique: true, using: :btree
   end
 
@@ -190,6 +218,8 @@ ActiveRecord::Schema.define(version: 20190818162130) do
   add_foreign_key "course_class_offers", "discipline_class_offers"
   add_foreign_key "course_disciplines", "courses"
   add_foreign_key "course_disciplines", "disciplines"
+  add_foreign_key "department_courses", "courses"
+  add_foreign_key "department_courses", "departments"
   add_foreign_key "discipline_class_offers", "discipline_classes"
   add_foreign_key "discipline_classes", "disciplines"
   add_foreign_key "disciplines_enrollments", "course_disciplines"
@@ -200,6 +230,8 @@ ActiveRecord::Schema.define(version: 20190818162130) do
   add_foreign_key "pre_requisites", "course_disciplines", column: "pre_discipline_id"
   add_foreign_key "professor_schedules", "professors"
   add_foreign_key "professor_schedules", "schedules"
+  add_foreign_key "professor_users", "departments"
+  add_foreign_key "professor_users", "users"
   add_foreign_key "record_enrollments", "pre_enrollments"
   add_foreign_key "record_enrollments", "students"
   add_foreign_key "schedules", "discipline_classes"

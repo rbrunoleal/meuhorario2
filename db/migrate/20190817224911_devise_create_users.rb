@@ -5,6 +5,7 @@ class DeviseCreateUsers < ActiveRecord::Migration[5.0]
     create_table :users do |t|
       t.string :username,  null: false, default: ""
       t.integer :rule, default: 0
+      t.boolean :enable, default: false
 
       ## Trackable
       t.integer  :sign_in_count, default: 0, null: false

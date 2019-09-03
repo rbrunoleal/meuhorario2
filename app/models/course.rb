@@ -5,6 +5,7 @@ class Course < ApplicationRecord
   has_many :discipline_class_offers, through: :course_class_offers
   belongs_to :area, optional: true
   
+  has_one :department_course, dependent: :destroy
   
   has_many :pre_enrollments
   def pre_enrollments_available

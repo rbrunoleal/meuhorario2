@@ -1,22 +1,12 @@
 class ApplicationController < ActionController::Base
   protect_from_forgery with: :exception
 
-   def after_sign_in_path_for(resource)
-      if resource.sign_in_count == 1
-        @user = current_user
-        @coordinator = Coordinator.find_by(username: @user.username)
-        if @coordinator.present?
-            @user.rule = "coordinator"
-            @user.save
-            @coordinator.user = @user
-            @coordinator.save
-        else
-          @student = Student.new
-          @student.user = @user
-          @student.save!(:validate => false)
-        end
-      end
+  def after_sign_in_path_for(resource)
+    if current_user.enable == false
+      registration_path
+    else
       root_path
+    end
   end
 
   def contact

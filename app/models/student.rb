@@ -10,12 +10,6 @@ class Student < ApplicationRecord
   validates :matricula, uniqueness: { message: "Matrícula já cadastrada." }
     
   has_many :record_enrollments, dependent: :destroy  
-    
-  after_validation :enable_student
   
-  private
-    def enable_student
-      self.enable = true
-    end
 end
 

@@ -3,6 +3,7 @@ class User < ApplicationRecord
          
   has_one :student, dependent: :destroy
   has_one :coordinator, dependent: :destroy
+  has_one :professor_user, dependent: :destroy
          
   enum rule: {
     student: 0,
@@ -10,14 +11,14 @@ class User < ApplicationRecord
     coordinator: 2
   }
   
-  def rule_name
+  def name
     return case self.rule
-    when 1
-      "Aluno"
-    when 2
-      "Professor"
+    when "student"
+      return self.student.name
+    when "professor"
+      return self.professor_user.name
     else
-      "Coordenador"
+      return self.coordinator.name
     end
   end
   

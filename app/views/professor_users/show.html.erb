@@ -1,0 +1,21 @@
+<p id="notice"><%= notice %></p>
+
+<p>
+  <strong>Nome:</strong>
+  <%= @professor_user.name %>
+</p>
+
+<p>
+  <strong>Username:</strong>
+  <%= @professor_user.username %>
+</p>
+
+<p>
+  <strong>Departamento:</strong>
+  <%= @professor_user.department.name %>
+</p>
+
+<% end -%>
+
+<%= link_to 'Editar', edit_pre_enrollment_path(@pre_enrollment) %> |
+<%= link_to 'Voltar', pre_enrollments_path %>

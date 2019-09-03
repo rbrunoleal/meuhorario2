@@ -2,7 +2,11 @@
   <li>
   <%= link_to('Logout', destroy_user_session_path, method: :delete) %> 
   </br>
-  <%= link_to('Painel', painel_path) %>  
+  <% if current_user.enable? %>
+    <%= link_to('Painel', painel_path) %>  
+  <% else %>
+    <%= link_to('Acesso', registration_path) %>  
+  <% end %>  
   </li>
 <% else %>
   <li>

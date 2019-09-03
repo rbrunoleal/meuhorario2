@@ -1,0 +1,36 @@
+<p id="notice"><%= notice %></p>
+
+<h1>Professores</h1>
+
+<table>
+  <thead>
+    <tr>
+      <th>Nome</th>
+      <th>Username</th>
+      <th colspan="3"></th>
+    </tr>
+  </thead>
+
+  <tbody>
+    <% @professor_users.each do |professor_user| %>
+      <tr>
+        <td><%= professor_user.name %></td>
+        <td><%= professor_user.username %></td>
+        <td><%= link_to 'Abrir', professor_user %></td>
+        <td><%= link_to 'Editar', edit_professor_user_path(professor_user) %></td>
+        <td><%= link_to 'Apagar', professor_user, method: :delete, data: { confirm: 'Você tem certeza?' } %></td>
+        <% if professor_user.approved? %>
+          <td><%= link_to 'Desprovar Acesso', professor_user, method: :disapproved %></td>
+        <% else %>
+          <td><%= link_to 'Aprovar Acesso', professor_user, method: :approved %></td>
+        <% end %>
+      </tr>
+    <% end %>
+  </tbody>
+</table>
+
+<br>
+
+<%= link_to 'Novo Professor', new_professor_user_path %>
+</br>
+<%= link_to 'Voltar', painel_path %>

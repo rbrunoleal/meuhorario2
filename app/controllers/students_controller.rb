@@ -4,6 +4,28 @@ class StudentsController < ApplicationController
 
   def edit
   end
+  
+  def new
+    @student = Student.new
+  end
+  
+  def create
+    @user = current_user
+    @student = Student.new(student_params)
+    @student.user = @user
+    respond_to do |format|
+      if @student.save
+        @user.enable = true
+        if @user.save
+          format.html { redirect_to painel_path }
+        else
+          format.html { render :new }
+        end      
+      else
+        format.html { render :new }
+      end
+    end
+  end
 
   def update
     respond_to do |format|

@@ -3,7 +3,7 @@ class CreateStudents < ActiveRecord::Migration[5.0]
     create_table :students do |t|
       t.string :name
       t.string :matricula
-      t.boolean :enable
+      t.string :email
       t.references :course, foreign_key: true
       t.references :user, index: { unique: true }, foreign_key: true
 

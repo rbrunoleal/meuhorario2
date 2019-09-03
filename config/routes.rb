@@ -1,11 +1,21 @@
 Rails.application.routes.draw do
+  get 'registration', to: 'registration#record'
+  post 'registration/coordinator_record'
+  post 'registration/professor_record'
+  post 'registration/student_record'
+  
   devise_for :users
   
   resources :coordinators
   
   get 'painel' => 'painel#index'
   
-  resources :students, only: [:edit, :update]
+  resource :students, only: [:new, :edit, :create, :update]
+  resources :professor_users
+  get 'professor_users/new/access', to: 'professor_users#new_access'
+  post 'professor_users/create_access'
+  post '/professor_users/:id' => 'professor_users#approved'
+  post '/professor_users/:id' => 'professor_users#disapproved'
   
   resources :pre_enrollments
   get '/pre_enrollments/:id/result' => 'pre_enrollments#result', as: :pre_enrollments_result

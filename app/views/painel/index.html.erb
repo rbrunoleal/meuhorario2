@@ -1,11 +1,19 @@
 <p id="notice"><%= notice %></p>
 
-<h3> Olá, <%= @name_user %> </h3>
+<h3> Olá, <%= @user.name %> </h3>
 
 <% if @user.rule == "student" %>
     <%= link_to 'Pré-Matricula', record_enrollments_path %>
-<% else %>
+<% elsif @user.rule == "coordinator" %>
+    <%= link_to 'Professores', professor_users_path %>
+    <br>
     <%= link_to 'Pré-Matricula', pre_enrollments_path %>
+<% elsif @user.rule == "professor" %>
+    <% if @user.professor_user.approved %>
+        <h3> Ativo </h3>
+    <% else %>
+        <h3> Não Ativo </h3>
+    <% end %>
 <% end %>
 <br>
 <%= link_to 'Voltar', root_path %>
