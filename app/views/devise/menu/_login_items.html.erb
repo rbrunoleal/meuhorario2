@@ -1,15 +1,27 @@
 <% if user_signed_in? %>
-  <li>
-  <%= link_to('Logout', destroy_user_session_path, method: :delete) %> 
-  </br>
-  <% if current_user.enable? %>
-    <%= link_to('Painel', painel_path) %>  
-  <% else %>
-    <%= link_to('Acesso', registration_path) %>  
-  <% end %>  
-  </li>
+  <ul class="menu">
+    <ul class="vertical medium-horizontal menu" data-responsive-menu="drilldown medium-dropdown">
+      <li>
+        <a>Menu</a>
+        <ul class="vertical menu">
+          <li>
+            <% if current_user.enable? %>
+            <%= link_to('Painel', painel_path) %>  
+          <% else %>
+            <%= link_to('Acesso', registration_path) %>  
+          <% end %>  
+          </li>
+          <li>
+            <%= link_to('Logout', destroy_user_session_path, method: :delete) %> 
+          </li>
+        </ul>
+      </li>
+    </ul>
+  </ul>
 <% else %>
-  <li>
-  <%= link_to('Login', new_user_session_path) %>  
-  </li>
+  <ul class="dropdown menu" data-dropdown-menu>
+    <li>
+      <%= link_to('Login', new_user_session_path) %>  
+    </li>
+  </ul>
 <% end %>

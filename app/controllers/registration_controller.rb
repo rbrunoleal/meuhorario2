@@ -1,7 +1,5 @@
 class RegistrationController < ApplicationController
   
-  #TRABALHAR COM TRANSACTION, ROOLBACK COM ERRO!
-  
   def record
   end
   
@@ -12,45 +10,57 @@ class RegistrationController < ApplicationController
   def professor_record
     @user = current_user
     @professor = ProfessorUser.find_by(username: @user.username)
-    respond_to do |format|
-      if @professor.present?
-        if @professor.aproved
-          @user.rule = "professor" 
-          @user.enable = true
-          if @user.save
+    if @professor.present?
+      if @professor.approved
+          ActiveRecord::Base.transaction do
+          begin 
+            @user.rule = "professor" 
+            @user.enable = true
+            @user.save!
             @professor.user = @user
-              if @professor.save
-                format.html { redirect_to painel_path, notice: 'Acesso Concluído.' }
-              else
-                format.html { redirect_to registration_path, notice: 'Erro no Cadastro, Tente novamente.'}
-              end
+            @professor.save!
+            respond_to do |format|
+              format.html { redirect_to painel_path, notice: 'Acesso Concluído.' }
+            end
+          rescue ActiveRecord::RecordInvalid => exception
+            respond_to do |format|
+             format.html { redirect_to registration_path, notice: 'Erro no Cadastro, '+ exception.message + ' Tente novamente.'}
+            end
           end
         end
-      else
-        format.html { redirect_to professor_users_new_access_path }
       end
-    end
-  end
-  
-  def coordinator_record
-    @user = current_user
-    @coordinator = Coordinator.find_by(username: @user.username)
-    respond_to do |format|
-      if @coordinator.present?
-        @user.rule = "coordinator"
-        @user.enable = true
-        if @user.save
-          @coordinator.user = @user
-          if @coordinator.save
-             format.html { redirect_to painel_path, notice: 'Acesso Concluído.' }
-          else 
-             format.html { redirect_to registration_path, notice: 'Erro no Cadastro, Tente novamente.'}
-          end
-        end
-      else
+    else
+      respond_to do |format|
         format.html { redirect_to registration_path, notice: 'Usuario não Cadastrado com Permissão de Coordenador.' }
       end
     end
   end
   
+  
+  def coordinator_record
+    @user = current_user
+    @coordinator = Coordinator.find_by(username: @user.username)
+    if @coordinator.present?
+      ActiveRecord::Base.transaction do
+        begin 
+          @user.rule = "coordinator"
+          @user.enable = true
+          @user.save!
+          @coordinator.user = @user
+          @coordinator.save!
+          respond_to do |format|
+            format.html { redirect_to painel_path, notice: 'Acesso Concluído.' }
+          end
+        rescue ActiveRecord::RecordInvalid => exception
+          respond_to do |format|
+           format.html { redirect_to registration_path, notice: 'Erro no Cadastro, '+ exception.message + ' Tente novamente.'}
+          end
+        end
+      end
+    else
+      respond_to do |format|
+        format.html { redirect_to registration_path, notice: 'Usuario não Cadastrado com Permissão de Coordenador.' }
+      end
+    end
+  end
 end

@@ -1,8 +1,15 @@
 <!DOCTYPE html>
 <html>
-  <ul class="hmenu">
-    <%= render 'devise/menu/login_items' %>
-  </ul>
+  <div class="top-bar">
+    <div class="top-bar-left">
+      <ul class="dropdown menu" data-dropdown-menu>
+        <li><a href="<%= root_path %>">Meu Horário</a></li>
+      </ul>
+    </div>
+    <div class="top-bar-right">
+      <%= render 'devise/menu/login_items' %>
+    </div>
+  </div>
   
   <!-- start Mixpanel -->
   <script type="text/javascript">

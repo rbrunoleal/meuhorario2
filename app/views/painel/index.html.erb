@@ -1,19 +1,43 @@
-<p id="notice"><%= notice %></p>
+<div class="wrapper">
+    <%= render 'shared/header' %>
 
-<h3> Olá, <%= @user.name %> </h3>
+    <div class="row">
+        <div class="small-12 columns text-center info-text">
+            Olá, <%= @user.name %>
+        </div>
+    </div>
+    
+    <div class="row area-grid text-center">
+        <div class="small-offset-1 small-10 medium-offset-0 medium-4 large-3 columns">
+            <% if @user.rule == "student" %>
+                <a class="area-card text-center" href="<%= record_enrollments_path %>">
+                  <div class="area-card-content">
+                    <span class="title">Pré-Matricula</span>
+                    <span class="text">Cadastro de Pré-matrícula</span>
+                  </div>
+                </a>
+            <% elsif @user.rule == "coordinator" %>
+                <a class="area-card text-center" href="<%= pre_enrollments_path %>">
+                  <div class="area-card-content">
+                    <span class="title">Pré-Matricula</span>
+                    <span class="text">Cadastro de Pré-matrícula</span>
+                  </div>
+                </a>
+                <a class="area-card text-center" href="<%= professor_users_path %>">
+                  <div class="area-card-content">
+                    <span class="title">Professores</span>
+                    <span class="text">Cadastro de Professores</span>
+                  </div>
+                </a>
+            <% elsif @user.rule == "professor" %>
+                <% if @user.professor_user.approved %>
+                    <h3> Ativo </h3>
+                <% else %>
+                    <h3> Não Ativo </h3>
+                <% end %>
+            <% end %>
+        </div>
+    </div>
+</div>
 
-<% if @user.rule == "student" %>
-    <%= link_to 'Pré-Matricula', record_enrollments_path %>
-<% elsif @user.rule == "coordinator" %>
-    <%= link_to 'Professores', professor_users_path %>
-    <br>
-    <%= link_to 'Pré-Matricula', pre_enrollments_path %>
-<% elsif @user.rule == "professor" %>
-    <% if @user.professor_user.approved %>
-        <h3> Ativo </h3>
-    <% else %>
-        <h3> Não Ativo </h3>
-    <% end %>
-<% end %>
-<br>
-<%= link_to 'Voltar', root_path %>
+<%= render 'shared/footer' %>
