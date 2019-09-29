@@ -4,6 +4,7 @@ class DisciplinesEnrollment < ApplicationRecord
   
   has_many :association_enrollments
   has_many :record_enrollments, :through => :association_enrollments
+  
   def identifier
     return self.course_discipline.discipline.code + ' - ' + self.course_discipline.discipline.name
   end

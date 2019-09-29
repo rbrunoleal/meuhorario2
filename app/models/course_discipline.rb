@@ -6,4 +6,5 @@ class CourseDiscipline < ApplicationRecord
   
   has_many :disciplines_enrollments
   has_many :pre_enrollments, :through => :disciplines_enrollments
+  
 end

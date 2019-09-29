@@ -1,4 +1,7 @@
 Rails.application.routes.draw do
+  get 'planning', to: 'planning#record'
+  post 'planning', to: 'planning#complete'
+
   get 'registration', to: 'registration#record'
   post 'registration/coordinator_record'
   post 'registration/professor_record'
@@ -22,6 +25,8 @@ Rails.application.routes.draw do
   get '/pre_enrollments/:id/detail' => 'pre_enrollments#detail', as: :pre_enrollments_detail
   
   resources :record_enrollments, path_names: {new: 'new/:pre_enrollment_id' }
+  
+  resources :semesters, only: [:index, :edit, :update]
   
   # For details on the DSL available within this file, see http://guides.rubyonrails.org/routing.html
 

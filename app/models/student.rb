@@ -11,5 +11,8 @@ class Student < ApplicationRecord
     
   has_many :record_enrollments, dependent: :destroy  
   
+  has_many :plannings, dependent: :destroy
+  has_many :disciplines_plannings, :through => :plannings
+  
 end
 

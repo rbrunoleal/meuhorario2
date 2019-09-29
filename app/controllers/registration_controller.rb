@@ -31,11 +31,10 @@ class RegistrationController < ApplicationController
       end
     else
       respond_to do |format|
-        format.html { redirect_to registration_path, notice: 'Usuario não Cadastrado com Permissão de Coordenador.' }
+        format.html { redirect_to professor_users_new_access_path }
       end
     end
   end
-  
   
   def coordinator_record
     @user = current_user
