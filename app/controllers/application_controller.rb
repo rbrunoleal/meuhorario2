@@ -1,5 +1,6 @@
 class ApplicationController < ActionController::Base
   protect_from_forgery with: :exception
+  add_flash_types :success, :danger, :info
 
   def after_sign_in_path_for(resource)
     if current_user.enable == false

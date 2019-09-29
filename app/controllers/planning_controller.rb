@@ -58,32 +58,34 @@ class PlanningController < ApplicationController
   
   def complete
     @student = current_user.student
-    plannings_student = []
     @result = JSON.parse(params[:data_semesters])
     
     ActiveRecord::Base.transaction do
       begin
-        @result.each do |r|
-          @planning = Planning.find_by(student: @student, year: r['semester']['year'], period: r['semester']['period'])
-          if(!@planning)
-            @planning = Planning.new(student: @student, year: r['semester']['year'], period: r['semester']['period'])
-          end
-          discipline_planning_student =[]
-          r['disciplines'].each do |d|
-            discipline = @planning.disciplines_plannings.find { |x| x.course_discipline.discipline.code == d }
-            if(discipline)
-              discipline_planning_student << discipline
-            else
-              @discipline = Discipline.find_by(code: d)
-              @course_discipline = CourseDiscipline.find_by(course: @student.course.id, discipline: @discipline.id)
-              discipline_planning_student << DisciplinesPlanning.new(course_discipline: @course_discipline)
+        if(@result)
+          plannings_student = []
+          @result.each do |r|
+            @planning = Planning.find_by(student: @student, year: r['semester']['year'], period: r['semester']['period'])
+            if(!@planning)
+              @planning = Planning.new(student: @student, year: r['semester']['year'], period: r['semester']['period'])
             end
+            discipline_planning_student =[]
+            r['disciplines'].each do |d|
+              discipline = @planning.disciplines_plannings.find { |x| x.course_discipline.discipline.code == d }
+              if(discipline)
+                discipline_planning_student << discipline
+              else
+                @discipline = Discipline.find_by(code: d)
+                @course_discipline = CourseDiscipline.find_by(course: @student.course.id, discipline: @discipline.id)
+                discipline_planning_student << DisciplinesPlanning.new(course_discipline: @course_discipline)
+              end
+            end
+            @planning.disciplines_plannings = discipline_planning_student
+            plannings_student << @planning
           end
-          @planning.disciplines_plannings = discipline_planning_student
-          plannings_student << @planning
+          @student.plannings = plannings_student
+          @student.save!
         end
-        @student.plannings = plannings_student
-        @student.save!
       rescue ActiveRecord::RecordInvalid => exception
         respond_to do |format|
          format.html { redirect_to painel_path, notice: 'Erro ao atualizar planejamento, '+ exception.message + ' Tente novamente.'}

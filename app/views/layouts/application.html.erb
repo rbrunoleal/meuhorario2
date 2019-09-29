@@ -33,6 +33,7 @@
   </head>
 
   <body>
+    <%= render :partial => 'flash_messages', :flash => flash %>
     <%= yield %>
     <script>
       $(document).foundation();

@@ -4,7 +4,7 @@ class RegistrationController < ApplicationController
   end
   
   def student_record
-    redirect_to(new_students_path)
+    redirect_to(new_students_path, info: 'Complete o Cadastro.' )
   end
   
   def professor_record
@@ -20,18 +20,18 @@ class RegistrationController < ApplicationController
             @professor.user = @user
             @professor.save!
             respond_to do |format|
-              format.html { redirect_to painel_path, notice: 'Acesso Concluído.' }
+              format.html { redirect_to painel_path, success: 'Acesso Concluído.' }
             end
           rescue ActiveRecord::RecordInvalid => exception
             respond_to do |format|
-             format.html { redirect_to registration_path, notice: 'Erro no Cadastro, '+ exception.message + ' Tente novamente.'}
+             format.html { redirect_to registration_path, danger: 'Erro no Cadastro, Tente novamente.'}
             end
           end
         end
       end
     else
       respond_to do |format|
-        format.html { redirect_to professor_users_new_access_path }
+        format.html { redirect_to professor_users_new_access_path, info: 'Complete o Cadastro.' }
       end
     end
   end
@@ -48,17 +48,17 @@ class RegistrationController < ApplicationController
           @coordinator.user = @user
           @coordinator.save!
           respond_to do |format|
-            format.html { redirect_to painel_path, notice: 'Acesso Concluído.' }
+            format.html { redirect_to painel_path, success: 'Acesso Concluído.' }
           end
         rescue ActiveRecord::RecordInvalid => exception
           respond_to do |format|
-           format.html { redirect_to registration_path, notice: 'Erro no Cadastro, '+ exception.message + ' Tente novamente.'}
+           format.html { redirect_to registration_path, danger: 'Erro no Cadastro, Tente novamente.'}
           end
         end
       end
     else
       respond_to do |format|
-        format.html { redirect_to registration_path, notice: 'Usuario não Cadastrado com Permissão de Coordenador.' }
+        format.html { redirect_to registration_path, danger: 'Usuário não cadastrado com permissão de coordenador.' }
       end
     end
   end
