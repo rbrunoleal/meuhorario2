@@ -1,5 +1,14 @@
-<h1>Editing Semester</h1>
-
-<%= render 'form', semester: @semester %>
-
-<%= link_to 'Back', semesters_path %>
+<div class="wrapper">
+  <%= render 'shared/header' %>
+  <div class="row area-grid">
+    <div class="row">
+        <div class="small-12 columns text-center info-text">
+            Semestre
+        </div>
+    </div>
+    
+    <%= render 'form', semester: @semester %>
+    
+  </div>
+</div>
+<%= render 'shared/footer' %>

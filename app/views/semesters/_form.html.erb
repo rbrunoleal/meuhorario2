@@ -1,27 +1,20 @@
 <%= form_for(semester) do |f| %>
-  <% if semester.errors.any? %>
-    <div id="error_explanation">
-      <h2><%= pluralize(semester.errors.count, "error") %> prohibited this semester from being saved:</h2>
-
-      <ul>
-      <% semester.errors.full_messages.each do |message| %>
-        <li><%= message %></li>
-      <% end %>
-      </ul>
+  <div class="row">
+    <div class='large-4 columns'>
+      <%= f.label :year, 'Ano:' %>
+      <%= f.number_field :year %> 
     </div>
-  <% end %>
-
-  <div class="field">
-    <%= f.label :year %>
-    <%= f.number_field :year %>
   </div>
-
-  <div class="field">
-    <%= f.label :period %>
-    <%= f.select :period, ['1', '2'] %>
+  <div class="row">
+    <div class='large-4 columns'>
+      <%= f.label :period, 'Período:' %>
+      <%= f.select :period, ['1', '2'] %>       
+    </div>
   </div>
-
-  <div class="actions">
-    <%= f.submit %>
+  <div class="row">
+    <div class="small-12 columns">
+      <%= f.submit 'Salvar', class: 'button export-button float-right' %> 
+      <%= link_to "Voltar", semesters_path, :class=>"button export-button float-left" %>
+    </div>  
   </div>
 <% end %>

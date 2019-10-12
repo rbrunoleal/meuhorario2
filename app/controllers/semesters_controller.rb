@@ -12,9 +12,9 @@ class SemestersController < ApplicationController
   def update
     respond_to do |format|
       if @semester.update(semester_params)
-        format.html { redirect_to semesters_path, notice: 'Semester was successfully updated.' }
+        format.html { redirect_to semesters_path, sucess: 'Semestre salvo'}
       else
-        format.html { render :edit }
+        format.html { render :edit, danger: 'Erro ao salvar semestre, tente novamente.' }
       end
     end
   end

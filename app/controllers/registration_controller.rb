@@ -4,7 +4,7 @@ class RegistrationController < ApplicationController
   end
   
   def student_record
-    redirect_to(new_students_path, info: 'Complete o Cadastro.' )
+    redirect_to(new_students_path, info: 'Complete o cadastro.' )
   end
   
   def professor_record
@@ -20,18 +20,18 @@ class RegistrationController < ApplicationController
             @professor.user = @user
             @professor.save!
             respond_to do |format|
-              format.html { redirect_to painel_path, success: 'Acesso Concluído.' }
+              format.html { redirect_to painel_path, success: 'Acesso concluído.' }
             end
           rescue ActiveRecord::RecordInvalid => exception
             respond_to do |format|
-             format.html { redirect_to registration_path, danger: 'Erro no Cadastro, Tente novamente.'}
+             format.html { redirect_to registration_path, danger: 'Erro no cadastro, tente novamente.'}
             end
           end
         end
       end
     else
       respond_to do |format|
-        format.html { redirect_to professor_users_new_access_path, info: 'Complete o Cadastro.' }
+        format.html { redirect_to professor_users_new_access_path, info: 'Complete o cadastro.' }
       end
     end
   end
@@ -48,11 +48,11 @@ class RegistrationController < ApplicationController
           @coordinator.user = @user
           @coordinator.save!
           respond_to do |format|
-            format.html { redirect_to painel_path, success: 'Acesso Concluído.' }
+            format.html { redirect_to painel_path, success: 'Acesso concluído.' }
           end
         rescue ActiveRecord::RecordInvalid => exception
           respond_to do |format|
-           format.html { redirect_to registration_path, danger: 'Erro no Cadastro, Tente novamente.'}
+           format.html { redirect_to registration_path, danger: 'Erro no cadastro, tente novamente.'}
           end
         end
       end

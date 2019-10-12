@@ -88,12 +88,12 @@ class PlanningController < ApplicationController
         end
       rescue ActiveRecord::RecordInvalid => exception
         respond_to do |format|
-         format.html { redirect_to painel_path, notice: 'Erro ao atualizar planejamento, '+ exception.message + ' Tente novamente.'}
+         format.html { redirect_to planning_path, danger: 'Erro ao salvar planejamento, tente novamente.'}
         end
       end
     end
     respond_to do |format|
-      format.html { redirect_to painel_path}
+      format.html { redirect_to painel_path, success: 'Planejamento salvo'}
     end
   end
 
