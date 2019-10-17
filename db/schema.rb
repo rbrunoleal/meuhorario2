@@ -127,7 +127,7 @@ ActiveRecord::Schema.define(version: 20190914203927) do
   create_table "plannings", force: :cascade do |t|
     t.integer  "student_id"
     t.integer  "year"
-    t.integer  "perior"
+    t.integer  "period"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.index ["student_id"], name: "index_plannings_on_student_id", using: :btree

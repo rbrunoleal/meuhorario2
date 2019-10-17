@@ -44,7 +44,7 @@ class PlanningController < ApplicationController
 
       @pre  = pre.to_json
       @post = post.to_json
-      @all_disciplines = cds.map {|d| [d.discipline.code, d.discipline.name, d.nature] }
+      @all_disciplines = cds.map {|d| [d.discipline.code, d.discipline.name, d.nature, d.semester.blank? ? 0 : d.semester] }
       @params = (@user.student.plannings.map do |p|
         {
           :semester => { year: p.year, period: p.period },

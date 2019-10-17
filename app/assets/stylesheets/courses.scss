@@ -166,6 +166,15 @@
   }
 }
 
+table.unstriped tbody {
+    background-color: #ffffff;
+}
+table.unstriped tbody tr {
+    border-bottom: 0;
+    border-bottom: 1px solid #f1f1f1; 
+    background-color: #ffffff;
+}
+
 .schedule-table {
   table-layout: fixed;
 
