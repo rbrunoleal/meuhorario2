@@ -10,6 +10,13 @@
     <div class="row area-grid text-center">
         <div class="small-offset-1 small-10 medium-offset-0 medium-4 large-3 columns">
             <% if @user.rule == "student" %>
+                <a class="area-card text-center" href="<%= historic_path %>">
+                  <div class="area-card-content">
+                    <span class="title">Histórico</span>
+                    <span class="text">Cadastro de Histórico</span>
+                  </div>
+                </a>
+                </br>
                 <a class="area-card text-center" href="<%= planning_path	%>">
                   <div class="area-card-content">
                     <span class="title">Planejamento</span>

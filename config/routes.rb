@@ -1,6 +1,13 @@
 Rails.application.routes.draw do
+  get 'historic/record'
+
+  get 'historic/complete'
+
   get 'planning', to: 'planning#record'
   post 'planning', to: 'planning#complete'
+  
+  get 'historic', to: 'historic#record'
+  post 'historic', to: 'historic#complete'
 
   get 'registration', to: 'registration#record'
   post 'registration/coordinator_record'

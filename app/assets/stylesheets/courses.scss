@@ -175,6 +175,30 @@ table.unstriped tbody tr {
     background-color: #ffffff;
 }
 
+.historic-table{
+  thead {
+    background-color: white
+  }
+  
+  th {
+    text-align: center;
+  }
+}
+
+.planning-table{
+  table-layout: fixed;
+
+  td, th {
+    padding: 0.4rem 0.1rem;
+    text-align: center;
+  }
+
+  .table-discipline-large, .table-discipline-modal {
+    box-shadow: -2px 2px 1px 0px rgba(0, 0, 0, 0.3);
+    cursor: pointer;
+  }
+}
+
 .schedule-table {
   table-layout: fixed;
 

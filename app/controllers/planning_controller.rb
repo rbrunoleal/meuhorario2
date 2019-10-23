@@ -58,7 +58,7 @@ class PlanningController < ApplicationController
   
   def complete
     @student = current_user.student
-    @result = JSON.parse(params[:data_semesters])
+    @result = JSON.parse(params[:data_planning])
     
     ActiveRecord::Base.transaction do
       begin

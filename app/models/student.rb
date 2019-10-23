@@ -14,5 +14,6 @@ class Student < ApplicationRecord
   has_many :plannings, dependent: :destroy
   has_many :disciplines_plannings, :through => :plannings
   
+  has_many :historics, dependent: :destroy
 end
 

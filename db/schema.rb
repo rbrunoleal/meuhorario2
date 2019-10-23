@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20190914203927) do
+ActiveRecord::Schema.define(version: 20191017234753) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -115,6 +115,18 @@ ActiveRecord::Schema.define(version: 20190914203927) do
     t.index ["pre_enrollment_id"], name: "index_disciplines_enrollments_on_pre_enrollment_id", using: :btree
   end
 
+  create_table "disciplines_historics", force: :cascade do |t|
+    t.string   "code"
+    t.integer  "workload"
+    t.integer  "credits"
+    t.decimal  "note"
+    t.string   "result"
+    t.integer  "historic_id"
+    t.datetime "created_at",  null: false
+    t.datetime "updated_at",  null: false
+    t.index ["historic_id"], name: "index_disciplines_historics_on_historic_id", using: :btree
+  end
+
   create_table "disciplines_plannings", force: :cascade do |t|
     t.integer  "planning_id"
     t.integer  "course_discipline_id"
@@ -122,6 +134,15 @@ ActiveRecord::Schema.define(version: 20190914203927) do
     t.datetime "updated_at",           null: false
     t.index ["course_discipline_id"], name: "index_disciplines_plannings_on_course_discipline_id", using: :btree
     t.index ["planning_id"], name: "index_disciplines_plannings_on_planning_id", using: :btree
+  end
+
+  create_table "historics", force: :cascade do |t|
+    t.integer  "semester_year"
+    t.integer  "semester_period"
+    t.integer  "student_id"
+    t.datetime "created_at",      null: false
+    t.datetime "updated_at",      null: false
+    t.index ["student_id"], name: "index_historics_on_student_id", using: :btree
   end
 
   create_table "plannings", force: :cascade do |t|
@@ -249,8 +270,10 @@ ActiveRecord::Schema.define(version: 20190914203927) do
   add_foreign_key "discipline_classes", "disciplines"
   add_foreign_key "disciplines_enrollments", "course_disciplines"
   add_foreign_key "disciplines_enrollments", "pre_enrollments"
+  add_foreign_key "disciplines_historics", "historics"
   add_foreign_key "disciplines_plannings", "course_disciplines"
   add_foreign_key "disciplines_plannings", "plannings"
+  add_foreign_key "historics", "students"
   add_foreign_key "plannings", "students"
   add_foreign_key "pre_enrollments", "coordinators"
   add_foreign_key "pre_enrollments", "courses"

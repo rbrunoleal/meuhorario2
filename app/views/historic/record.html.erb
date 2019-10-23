@@ -1,0 +1,240 @@
+<%= javascript_include_tag "https://cdn.jsdelivr.net/npm/handsontable/dist/handsontable.full.min.js" %>
+<%= stylesheet_link_tag "https://cdn.jsdelivr.net/npm/handsontable/dist/handsontable.full.min.css" %>
+
+<div class="wrapper">
+    <%= render 'shared/header' %>
+
+        <div id=courseInfo class="row">
+            <div class="small-12 columns text-center info-text">
+                Histórico
+            </div>
+        </div>
+
+        <div class="row">
+            <ul id="blockTabs" class="tabs" data-tabs>
+                <li id="historic" class="tabs-title is-active" aria-selected="true"><a href="#historic">Histórico</a></li>
+            </ul>
+        </div>
+
+        <div class="row block tabs-content" data-tabs-content="blockTabs">
+            <div id="historic" class="tabs-panel no-padding is-active">
+
+                <div id="historic_show">
+                    <div class="row">
+                        <div class="small-12 columns">
+                            <%= render partial: 'historic_table', locals: { table_id: 'large_table_historic', table_class: 'historic-table unstriped large-table'} %>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="small-12 columns">
+                            <%= link_to "Voltar", painel_path, :class=>"button export-button float-left" %>
+                            <div id="historic_record" class="button export-button float-right">Atualizar Histórico</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="historic_insert" style="display:none">
+                    
+                    <div class="row" style="margin-bottom: 20px;">
+                        <div id="handsontable" class="hot handsontable htRowHeaders htColumnHeaders"></div>
+                    </div>
+                    
+                    <div class="row">
+                        <div class="small-12 columns">
+                            <div id="return_insert" class="button export-button float-left">Voltar</div>
+                            <div id="historic_next" class="button export-button float-right">Próximo</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="historic_result" style="display:none">
+                    <div class="row">
+                        <div class="small-12 columns">
+                            <%= render partial: 'historic_table', locals: { table_id: 'large_table_historic_result', table_class: 'historic-table unstriped large-table'} %>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="small-12 columns">
+                            <div id="return_result" class="button export-button float-left">Voltar</div>
+                            <div id="complete_record" class="button export-button float-right">Concluir</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+</div>
+<%= render 'shared/footer' %>
+
+<% content_for :script do %>
+<script>
+    var historic_student = <%= raw @historic  %>;
+    var step = 1;
+    var inserted_historic = [];
+    
+    var $container = $("#handsontable");
+    var handsontable = $container.data('handsontable');
+    
+    $("#historic_record").click(function() {
+        step++;
+        load_step();
+    });
+    
+    var groupBy = function(xs, key) {
+        return xs.reduce(function(rv, x) {
+          (rv[x[key]] = rv[x[key]] || []).push(x);
+          return rv;
+        }, {});
+    };
+    
+    $("#historic_next").click(function() {
+        var historic_trated = [];
+        var historic_semesters = [];
+        
+        var get_table_historic = $container.data('handsontable').getData();
+        
+        var last_semester = "";
+        get_table_historic.forEach(function(x){
+            if(x[0] != " "){
+                last_semester= x[0];
+                historic_semesters.push(x[0]);
+            }
+            if(x[1] != null){
+                var obj_hystoric = {
+                    semester_period: last_semester,
+                    curricular_component: x[1] + " - " + x[2],
+                    code: x[1],
+                    name: x[2],
+                    ch: x[3],
+                    cr: x[4],
+                    nt: x[5],
+                    note: x[6],
+                    res: x[7]
+                };
+                historic_trated.push(obj_hystoric);
+            }
+        });
+        historic_trated = groupBy(historic_trated, 'semester_period');
+        
+        historic_semesters.forEach(function(semester){
+            var obj_inserted = {
+              semester: semester,
+              disciplines_historic: historic_trated[semester]
+            };
+            if(obj_inserted.semester != null && obj_inserted.disciplines_historic.length > 0){
+                inserted_historic.push(obj_inserted);
+            }
+        });
+        
+        if(inserted_historic.length > 0){
+            $("#large_table_historic_result tbody").empty();
+            $("#large_table_historic_result tbody").append(get_result_table_history(inserted_historic));
+        }
+        
+        step++;
+        load_step();
+    });
+    
+    function load_historic() {
+        if(historic_student.length > 0){
+            $("#large_table_historic tbody").empty();
+            $("#large_table_historic tbody").append(get_result_table_history(historic_student));    
+        }
+    }
+    
+    function get_result_table_history(list) {
+        var trs = "";
+        list.forEach(function(x){
+          if(list.indexOf(x) > 0){
+            trs += "<tr style=\"background-color:#f8f8f8\"><td colspan=\"5\"></td></tr>";    
+          }
+          var trRow = "<tr><td rowspan=" + (x.disciplines_historic.length + 1) + ">" + x.semester + "</td></tr>";
+            trs += trRow;
+            x.disciplines_historic.forEach(function(d){
+                var td =
+                  "<td>" + d.curricular_component + "</td>" +
+                  "<td>" + (d.ch == 0 ? '--' : d.ch) + "</td>" +
+                  "<td>" + (d.cr == 0 ? '--' : d.cr) + "</td>" +
+                  "<td>" + d.nt + "</td>" +
+                  "<td>" + (['TR', 'RF'].includes(d.res) ? '--' : d.note) + "</td>" +
+                  "<td>" + d.res + "</td>";
+                var tr = "<tr>" + td + "</tr>";
+                trs += tr;
+            });
+        });
+        return trs;
+    }
+    
+    function load_handsontable() {
+        $container = $("#handsontable");
+        handsontable = $container.data('handsontable');
+        
+        //HANDSONTABLE
+        var config = {
+            preventOverflow: 'horizontal',
+            startCols: 8,
+            startRows: 10,
+            className: "htCenter",
+            rowHeaders: true,
+            colHeaders: ['Período', 'Código', 'Disciplina', 'CH', 'CR', 'NT', 'Nota', 'RES'],
+            licenseKey: "non-commercial-and-evaluation",
+            colWidths: [80, 80, 645, 50, 50, 50, 50, 50],
+            headerTooltips: {
+                rows: false,
+                columns: true,
+                onlyTrimmed: true
+            }
+        };
+    
+        $("#handsontable").handsontable(config);
+    }
+
+    $("#complete_record").click(function() {
+        historic_student = inserted_historic;
+        $.ajax({
+          url: "/historic",
+          type: "post",
+          data: {
+              data_historic: JSON.stringify(historic_student)
+          }
+        });
+    });
+    
+    $("#return_insert").click(function() {
+        step--;
+        load_step();
+    });
+    
+    $("#return_result").click(function() {
+        step--;
+        load_step();
+    });
+    
+    load_step = function() {
+        if(step == 1){
+            load_historic();
+            $("#historic_result").hide();
+            $("#historic_insert").hide();
+            $("#historic_show").show();
+        }
+        else if (step == 2){
+            load_handsontable();
+            $("#historic_result").hide();
+            $("#historic_show").hide();
+            $("#historic_insert").show();
+        }
+        else if (step == 3){
+            $("#historic_show").hide();
+            $("#historic_insert").hide();
+            $("#historic_result").show();
+        }
+    }
+    
+    $(document).ready(function() {
+        load_step();
+    });
+    
+   
+</script>
+<% end %>

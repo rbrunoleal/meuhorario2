@@ -1,29 +1,39 @@
 <div class="wrapper">
   <%= render 'shared/header' %>
   
-   <div id=courseInfo class="row">
+  <div id=courseInfo class="row">
     <div class="small-12 columns text-center info-text">
       Monte a sua grade 
       <div class="subtext"><%= @course.name %></div>
     </div>
   </div>
   
-  <div id=changeSemester class="row">
-    <div class="small-4 columns">
-      <div id="previousSemester" class="button export-button float-left" >
-          <
+  <div class="row">
+    <div class="columns small-6 large-2">
+      <%= link_to "Voltar", painel_path, :class=>"button export-button float-left" %>
+    </div>
+    <div class="columns small-6 large-8">
+      <div id=changeSemester class="row">
+        <div class="small-4 columns">
+          <div id="previousSemester" class="button export-button float-left" >
+            <
+          </div>
+        </div>
+        <div class="small-4 columns">
+            <div id="infoSemester" class="columns text-center info-text"></div>
+        </div>
+        <div class="small-4 columns">
+          <div id="nextSemester" class="button export-button float-right">
+            >
+          </div>
+        </div>
       </div>
     </div>
-    <div class="small-4 columns">
-        <div id="infoSemester" class="columns text-center info-text"></div>
-    </div>
-    <div class="small-4 columns">
-        <div id="nextSemester" class="button export-button float-right">
-          >
-        </div>
+    <div class="columns small-12 large-2">
+      <div id="completeRecord" class="button export-button float-right">Concluir</div>
     </div>
   </div>
-
+  
   <div class="row">
     <ul id="blockTabs" class="tabs" data-tabs>
       <li id="discipline_ob" class="tabs-title is-active" aria-selected="true"><a href="#mandatory">Obrigatórias</a></li>
@@ -86,7 +96,7 @@
     <div id="planning" class="tabs-panel no-padding">
       <div class="row">
         <div class="small-12 columns">
-          <%= render partial: 'planning_table', locals: { table_id: 'largeTablePlanning', table_class: 'large-table unstriped', table_style: 'background-color: white' } %>
+          <%= render partial: 'planning_table', locals: { table_id: 'largeTablePlanning', table_class: 'planning-table unstriped large-table', table_style: 'background-color: white' } %>
         </div>
       </div>
     </div>
@@ -95,9 +105,9 @@
       <div class="columns">
         <ul class="accordion" data-accordion data-allow-all-closed="true">
           <li id="resultDisciplinesDetail" class="accordion-item" data-accordion-item>
-            <a href="#" class="accordion-title info-text" style="font-size: 15px; color: black;"><div id="infoDisciplinesSelected">Nenhuma disciplina selecionada</div></a>
+            <a href="#" class="accordion-title" style="font-size: 15px; color: black; font-weight: bold;"><div id="infoDisciplinesSelected">Nenhuma disciplina selecionada</div></a>
             <div class="accordion-content" data-tab-content>
-              <%= render partial: 'disciplines_table', locals: { table_id: 'largeTableSemester', table_class: 'schedule-table unstriped large-table' } %>
+              <%= render partial: 'disciplines_table', locals: { table_id: 'largeTableSemester', table_class: 'planning-table unstriped large-table' } %>
             </div>
           </li>
         </ul>
@@ -109,15 +119,8 @@
         <span id="goToTop" class="go-to-top">▲ Topo</span>
       </div>
     </div>
-    
-     <div class="row">
-      <div class="small-12 columns">
-        <%= link_to "Voltar", painel_path, :class=>"button export-button float-left" %>
-        <div id="completeRecord" class="button export-button float-right">Concluir</div>
-      </div>
-    </div>
-    
   </div>
+  
 </div>
 
 <%= render 'shared/footer' %>
@@ -369,7 +372,7 @@
     return -1;
   }
   
-  function findWithAttr(array, value) {
+  function findWithAttrValue(array, value) {
     for(var i = 0; i < array.length; i += 1) {
         if(array[i] === value) {
             return i;
@@ -536,12 +539,11 @@
       var result = paramSemesters.filter(function(x) {
           return x.disciplines.length > 0;
       });
-      console.log(result);
       $.ajax({
           url: "/planning",
           type: "post",
           data: {
-              data_semesters: JSON.stringify(result)
+              data_planning: JSON.stringify(result)
           }
       });
   });
@@ -603,7 +605,7 @@
     }
     if(action === "planning"){
       paramSemesters.forEach(function(param){
-        var indexDiscipline = findWithAttr(param.disciplines, code);
+        var indexDiscipline = findWithAttrValue(param.disciplines, code);
         if (indexDiscipline > -1) {  
           param.disciplines.splice(indexDiscipline, 1);
         }
