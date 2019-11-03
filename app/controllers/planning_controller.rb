@@ -45,11 +45,11 @@ class PlanningController < ApplicationController
       @pre  = pre.to_json
       @post = post.to_json
       @all_disciplines = cds.map {|d| [d.discipline.code, d.discipline.name, d.nature, d.semester.blank? ? 0 : d.semester] }
-      @params = (@user.student.plannings.map do |p|
-        {
-          :semester => { year: p.year, period: p.period },
-          :disciplines => p.disciplines_plannings.map{ |x| x.course_discipline.discipline.code }
-        }
+      @planning = (@user.student.plannings.map do |p|
+      {
+        :semester => { year: p.year, period: p.period },
+        :disciplines => p.disciplines_plannings.map{ |x| x.code }
+      }
       end).to_json
     end
 
@@ -59,7 +59,6 @@ class PlanningController < ApplicationController
   def complete
     @student = current_user.student
     @result = JSON.parse(params[:data_planning])
-    
     ActiveRecord::Base.transaction do
       begin
         if(@result)
@@ -71,13 +70,11 @@ class PlanningController < ApplicationController
             end
             discipline_planning_student =[]
             r['disciplines'].each do |d|
-              discipline = @planning.disciplines_plannings.find { |x| x.course_discipline.discipline.code == d }
+              discipline = @planning.disciplines_plannings.find { |x| x.code == d }
               if(discipline)
                 discipline_planning_student << discipline
               else
-                @discipline = Discipline.find_by(code: d)
-                @course_discipline = CourseDiscipline.find_by(course: @student.course.id, discipline: @discipline.id)
-                discipline_planning_student << DisciplinesPlanning.new(course_discipline: @course_discipline)
+                discipline_planning_student << DisciplinesPlanning.new(code: d)
               end
             end
             @planning.disciplines_plannings = discipline_planning_student
@@ -93,8 +90,36 @@ class PlanningController < ApplicationController
       end
     end
     respond_to do |format|
-      format.html { redirect_to painel_path, success: 'Planejamento salvo'}
+      format.html { redirect_to planning_show_path, success: 'Planejamento salvo'}
     end
+  end
+  
+  def show
+    @user = current_user
+    @student = @user.student
+    planning_student=[]
+    @student.plannings.each do |p|
+      current_planning_disciplines = []
+      p.disciplines_plannings.each do |d|
+        discipline = @student.course.disciplines.find { |x| x.code == d.code }
+        course_discipline = CourseDiscipline.find_by(course: @student.course.id, discipline: discipline.id)
+        current_discipline = {
+          code: discipline.code,
+          name: discipline.name,
+          nature: course_discipline.nature
+        }
+        current_planning_disciplines << current_discipline
+      end
+      current_planning = {
+        semester: {
+          year: p.year,
+          period: p.period
+        },
+        disciplines: current_planning_disciplines
+      }
+      planning_student << current_planning
+    end
+    @planning = planning_student
   end
 
 end

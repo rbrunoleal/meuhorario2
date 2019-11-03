@@ -166,15 +166,6 @@
   }
 }
 
-table.unstriped tbody {
-    background-color: #ffffff;
-}
-table.unstriped tbody tr {
-    border-bottom: 0;
-    border-bottom: 1px solid #f1f1f1; 
-    background-color: #ffffff;
-}
-
 .historic-table{
   thead {
     background-color: white
@@ -182,20 +173,6 @@ table.unstriped tbody tr {
   
   th {
     text-align: center;
-  }
-}
-
-.planning-table{
-  table-layout: fixed;
-
-  td, th {
-    padding: 0.4rem 0.1rem;
-    text-align: center;
-  }
-
-  .table-discipline-large, .table-discipline-modal {
-    box-shadow: -2px 2px 1px 0px rgba(0, 0, 0, 0.3);
-    cursor: pointer;
   }
 }
 

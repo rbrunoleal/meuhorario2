@@ -1,0 +1,55 @@
+<div class="wrapper">
+    <div class="row" id="header">
+        <%= render 'shared/header' %>
+    </div>
+
+    <div class="row">
+        <ul id="blockTabs" class="tabs" data-tabs>
+            <li id="historic" class="tabs-title is-active" aria-selected="true"><a href="#historic">Histórico</a></li>
+        </ul>
+    </div>
+
+    <div class="row block tabs-content" data-tabs-content="blockTabs">
+        <div id="historic" class="tabs-panel no-padding is-active">
+            <div id="historic_show">
+                <div class="row">
+                    <div class="small-12 columns">
+                        <%= render partial: 'historic_table', locals: { table_id: 'large_table_historic', table_class: 'historic-table unstriped large-table'} %>
+                    </div>
+                </div>
+            </div>
+           
+            <div class="row">
+              <div class="small-12 columns">
+                <span id="goToTop" class="go-to-top">▲ Topo</span>
+              </div>
+            </div>
+        </div>
+    </div>
+    
+</div>
+<%= render 'shared/footer' %>
+
+<% content_for :script do %>
+<script>
+    var historic_student = <%= raw @historic  %>;
+    
+    $("#goToTop").click(function() {
+      $('html,body').animate({
+          scrollTop: $("#header").offset().top
+      }, 500);
+    });
+    
+    function load_historic() {
+        if(historic_student.length > 0){
+            $("#large_table_historic tbody").empty();
+            $("#large_table_historic tbody").append(get_result_table_history(historic_student));    
+        }
+    }
+    
+    $(document).ready(function() {
+        load_historic();
+    });
+    
+</script>
+<% end %>

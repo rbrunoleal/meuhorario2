@@ -1,0 +1,61 @@
+<div class="wrapper">
+    
+    <div class="row" id="header">
+        <%= render 'shared/header' %>
+    </div>
+
+    <div class="row">
+        <ul id="blockTabs" class="tabs" data-tabs>
+          <li id="planning_show" class="tabs-title is-active" aria-selected="true"><a href="#planning">Planejamento</a></li>
+        </ul>
+    </div>
+    
+    <div class="row block tabs-content" data-tabs-content="blockTabs">
+        <% if @planning.any? %>
+        <div id="planning" class="tabs-panel no-padding is-active">
+            <div class="row">
+                <div class="small-12 columns">
+                  <%= render partial: 'planning_table', locals: { table_id: 'table_planning', table_class: 'planning_table unstriped large-table'} %>
+                </div>
+             </div>
+        </div>
+        <% else %>
+        <div class="small-12 columns text-center info-text">
+            <div class="subtext">Nenhuma disciplina cadastrada.</div>
+        </div>
+        <% end %>
+        
+        <div class="row">
+          <div class="small-12 columns">
+            <span id="goToTop" class="go-to-top float-left">▲ Topo</span>
+          </div>
+        </div>
+    </div>
+</div>
+
+<%= render 'shared/footer' %>
+
+<% content_for :script do %>
+<script>
+    var planning = <%= raw @planning.to_json %>;
+    
+    $("#goToTop").click(function() {
+      $('html,body').animate({
+          scrollTop: $("#header").offset().top
+      }, 500);
+    });
+    
+    function table_planning_record() {
+        if(planning.length > 0) {
+            $("#table_planning tbody").empty();
+            listItens = planning
+            var result = listItens.sort((a, b) => (a.semester.year  > b.semester.year) ? 1 : (a.semester.year === b.semester.year) ? ((a.semester.period > b.semester.period) ? 1 : -1) : -1 )
+            $("#table_planning tbody").append(result_table_planning(result, false));
+        }
+    }
+    
+    $(document).ready(function() {
+        table_planning_record();
+    });
+</script>
+<% end %>

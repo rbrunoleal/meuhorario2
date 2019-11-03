@@ -1,0 +1,60 @@
+@import 'sass-base';
+
+.fixed {
+  background-color: white;
+}
+
+.button_back {
+  margin-left: 5px;
+}
+
+.button_complete{
+    margin-right: 5px;
+}
+
+table.unstriped tbody {
+    background-color: #ffffff;
+}
+table.unstriped tbody tr {
+    border-bottom: 0;
+    border-bottom: 1px solid #f1f1f1; 
+    background-color: #ffffff;
+}
+
+.planning_table {
+  background-color: white;
+  table-layout: fixed;
+  
+  td, th {
+    padding: 0.4rem 0.1rem;
+    text-align: center;
+  }
+
+  .table-discipline-large, .table-discipline-modal {
+    box-shadow: -2px 2px 1px 0px rgba(0, 0, 0, 0.3);
+    
+  }
+}
+
+.reveal_custom {
+  height: 20px !important;
+}
+
+.sticky_custom {
+  background-color: white;
+  width: 100%;
+}
+
+.highlight_discipline_ob {
+  border: 2px solid black;
+  font-weight: bold;
+  color: black;
+  background-color: Orange;
+}
+
+.highlight_discipline_op {
+  border: 2px solid black;
+  font-weight: bold;
+  color: black !important;
+  background-color: Orange !important;  
+}

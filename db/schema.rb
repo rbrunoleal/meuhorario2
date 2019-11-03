@@ -129,19 +129,18 @@ ActiveRecord::Schema.define(version: 20191017234753) do
 
   create_table "disciplines_plannings", force: :cascade do |t|
     t.integer  "planning_id"
-    t.integer  "course_discipline_id"
-    t.datetime "created_at",           null: false
-    t.datetime "updated_at",           null: false
-    t.index ["course_discipline_id"], name: "index_disciplines_plannings_on_course_discipline_id", using: :btree
+    t.string   "code"
+    t.datetime "created_at",  null: false
+    t.datetime "updated_at",  null: false
     t.index ["planning_id"], name: "index_disciplines_plannings_on_planning_id", using: :btree
   end
 
   create_table "historics", force: :cascade do |t|
-    t.integer  "semester_year"
-    t.integer  "semester_period"
+    t.integer  "year"
+    t.integer  "period"
     t.integer  "student_id"
-    t.datetime "created_at",      null: false
-    t.datetime "updated_at",      null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
     t.index ["student_id"], name: "index_historics_on_student_id", using: :btree
   end
 
@@ -271,7 +270,6 @@ ActiveRecord::Schema.define(version: 20191017234753) do
   add_foreign_key "disciplines_enrollments", "course_disciplines"
   add_foreign_key "disciplines_enrollments", "pre_enrollments"
   add_foreign_key "disciplines_historics", "historics"
-  add_foreign_key "disciplines_plannings", "course_disciplines"
   add_foreign_key "disciplines_plannings", "plannings"
   add_foreign_key "historics", "students"
   add_foreign_key "plannings", "students"

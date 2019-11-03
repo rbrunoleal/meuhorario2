@@ -1,44 +1,51 @@
 <div class="wrapper">
-  <%= render 'shared/header' %>
-  
-  <div id=courseInfo class="row">
-    <div class="small-12 columns text-center info-text">
-      Monte a sua grade 
-      <div class="subtext"><%= @course.name %></div>
-    </div>
+  <div class="row" id="header">
+     <%= render 'shared/header' %>
   </div>
   
-  <div class="row">
-    <div class="columns small-6 large-2">
-      <%= link_to "Voltar", painel_path, :class=>"button export-button float-left" %>
-    </div>
-    <div class="columns small-6 large-8">
-      <div id=changeSemester class="row">
-        <div class="small-4 columns">
-          <div id="previousSemester" class="button export-button float-left" >
-            <
+  <div data-sticky-container>
+    <div id="header_sticky" data-sticky data-margin-top='0' data-top-anchor="header:bottom" class="sticky_custom">
+      <div class="row">
+        <div id=course_info class="row">
+          <div class="small-12 columns text-center info-text">
+            Monte a sua grade 
+            <div class="subtext"><%= @course.name %></div>
           </div>
         </div>
-        <div class="small-4 columns">
-            <div id="infoSemester" class="columns text-center info-text"></div>
-        </div>
-        <div class="small-4 columns">
-          <div id="nextSemester" class="button export-button float-right">
-            >
+        <div class="row">
+          <div class="columns small-6 large-3">
+            <div id="button_planning" class="button export-button float-left button_complete">Planejamento</div>
+          </div>
+          <div class="columns small-6 large-6">
+            <div id=change_semester class="row">
+              <div class="small-4 columns">
+                <div id="button_previous_semester" class="button export-button float-left" >
+                  <
+                </div>
+              </div>
+              <div class="small-4 columns">
+                  <div id="info_semester" class="columns text-center info-text"></div>
+              </div>
+              <div class="small-4 columns">
+                <div id="button_next_semester" class="button export-button float-right">
+                  >
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="columns small-12 large-3">
+            <div id="button_complete_record" class="button export-button float-right">Concluir</div>
           </div>
         </div>
       </div>
     </div>
-    <div class="columns small-12 large-2">
-      <div id="completeRecord" class="button export-button float-right">Concluir</div>
-    </div>
   </div>
   
-  <div class="row">
+  
+  <div id="row_tabs" class="row staticsss">
     <ul id="blockTabs" class="tabs" data-tabs>
       <li id="discipline_ob" class="tabs-title is-active" aria-selected="true"><a href="#mandatory">Obrigatórias</a></li>
       <li id="discipline_op" class="tabs-title"><a href="#elective">Optativas</a></li>
-      <li id="planning_result" class="tabs-title"><a href="#planning">Planejamento</a></li>
     </ul>
   </div>
 
@@ -57,7 +64,7 @@
         <% width = 100.0 / @semesters.max_by{ |s| s ? s.size : 0 }.size %>
         <% @semesters[1..-1].each_with_index do |semester, i| %>
           <% if semester %>
-            <div id="semesterRowNumber<%=i + 1%>" class="row semester-row">
+            <div id="semester_row_number<%=i + 1%>" class="row semester-row">
               <div class="small-12 large-1 columns text-center no-padding semester">
                 <span class="number"><%= i + 1 %><span class="hide-for-large">º Semestre</span></span>
               </div>
@@ -93,21 +100,13 @@
       </div>
     </div>
     
-    <div id="planning" class="tabs-panel no-padding">
-      <div class="row">
-        <div class="small-12 columns">
-          <%= render partial: 'planning_table', locals: { table_id: 'largeTablePlanning', table_class: 'planning-table unstriped large-table', table_style: 'background-color: white' } %>
-        </div>
-      </div>
-    </div>
-    
-    <div id="elementDisciplinesDetails" class="row">
+    <div id="element_disciplines_details" class="row">
       <div class="columns">
         <ul class="accordion" data-accordion data-allow-all-closed="true">
-          <li id="resultDisciplinesDetail" class="accordion-item" data-accordion-item>
-            <a href="#" class="accordion-title" style="font-size: 15px; color: black; font-weight: bold;"><div id="infoDisciplinesSelected">Nenhuma disciplina selecionada</div></a>
+          <li id="result_disciplines_detail" class="accordion-item" data-accordion-item>
+            <a href="#" class="accordion-title" style="font-size: 15px; color: black; font-weight: bold;"><div id="info_disciplines_selected">Nenhuma disciplina selecionada</div></a>
             <div class="accordion-content" data-tab-content>
-              <%= render partial: 'disciplines_table', locals: { table_id: 'largeTableSemester', table_class: 'planning-table unstriped large-table' } %>
+              <%= render partial: 'disciplines_table', locals: { table_id: 'table_semester', table_class: 'planning-table unstriped large-table' } %>
             </div>
           </li>
         </ul>
@@ -120,31 +119,37 @@
       </div>
     </div>
   </div>
-  
 </div>
+
+ <div id="planning_modal" class="large reveal reveal_custom" data-reveal>
+  <div class="row">
+    <div class="small-12 large-12 columns ">
+      <div class="title">Planejamento</div>
+        <div id="table_planning_student" class="row">
+          <%= render partial: 'planning_table', locals: { table_id: 'table_planning', table_class: 'planning_table unstriped large-table'} %>
+        </div>
+    </div>
+  </div>
+  <button class="close-button" data-close aria-label="Close reveal" type="button">
+    <span aria-hidden="true">&times;</span>
+  </button>
+  </div>
 
 <%= render 'shared/footer' %>
 
 <% content_for :script do %>
 <script>
-
-  var preRequisites       = <%= raw @pre  %>;
-  var postRequisites      = <%= raw @post %>;
-  var allDisciplines      = <%= raw @all_disciplines %>;
-  var studentPlannings    = <%= raw @params %>
+  var pre_requisites       = <%= raw @pre  %>;
+  var post_requisites      = <%= raw @post %>;
+  var all_disciplines      = <%= raw @all_disciplines %>;
+  var student_plannings    = <%= raw @planning %>
   
-  var selectedDisciplines = [];
+  var selected_disciplines = [];
+  var paramSemesters = [];
   
-  var groupBy = function(xs, key) {
-    return xs.reduce(function(rv, x) {
-      (rv[x[key]] = rv[x[key]] || []).push(x);
-      return rv;
-    }, {});
-  };
-  
-  var allDisciplinesOfSemester = 
+  var disciplines_per_semester = 
   groupBy(
-  allDisciplines.filter(function(d) {
+  all_disciplines.filter(function(d) {
       if(d[3] != 0){
         return d;
       }
@@ -156,8 +161,6 @@
     return obj;
   }),'semester');
   
-  var paramSemesters = [];
-  
   var semester_start = {
       year: <%= Semester.first.year %>,
       period: <%= Semester.first.period %>
@@ -168,374 +171,37 @@
       period: semester_start.period
   };
   
-  $('#infoSemester').text(semester_current.year + "." + semester_current.period);
+  $('#info_semester').text(semester_current.year + "." + semester_current.period);
   
-  semesterContainsDiscipline  = function(code) {
-    var semester_dis = paramSemesters.find(function(x) {
-      if (x.disciplines.includes(code)) {
-        return x;
-      }
-    });
-    return semester_dis;
-  }
-  
-  disciplinesPlanning = function(semester) {
-      var result = paramSemesters.map(function(param) {
-          if (param.semester.year > semester.year) {
-              return param.disciplines;
-          } else if (param.semester.year == semester.year && param.semester.period > semester.period) {
-              return param.disciplines;
-          }
-      }).reduce((list, sub) => list.concat(sub), []);
-      return result;
-  }
-  
-  disciplinesDone = function(semester) {
-      var result = paramSemesters.map(function(param) {
-          if (param.semester.year < semester.year) {
-              return param.disciplines;
-          } 
-          else if (param.semester.year == semester.year && param.semester.period < semester.period) {
-              return param.disciplines;
-          }
-      }).reduce((list, sub) => list.concat(sub), []);
-      return result;
-  }
-  
-  deleteDisciplineAlreadySelected  = function(code) {
-    var indexDiscipline = selectedDisciplines.indexOf(code);
-    if (indexDiscipline > -1) {
-      selectedDisciplines.splice(indexDiscipline, 1);
-    }
-  }
-  
-  getInfoAdditionalDiscipline = function(discipline){
-    var disciplineSemester = allDisciplines.find(function(element) {
-        return element[0] === discipline;
-    });
-    var objDiscipline = {
-      code: disciplineSemester[0],
-      name: disciplineSemester[1],
-      nature: disciplineSemester[2]
-    }
-    return objDiscipline;
-  }
-  
-  updateTableDisciplineResult = function() {
-    $("#largeTableSemester tbody").empty();
-    var list_trs = "";
-    selectedDisciplines.sort().forEach(function(selected) {
-      var disciplineSelect = getInfoAdditionalDiscipline(selected);
-      var deleteRecord = "<a class=\"delete-record\"data-id=" + disciplineSelect.code + ">Excluir</a></td>"
-      var td =
-        "<td>" + disciplineSelect.nature + "</td>" +
-        "<td>" + disciplineSelect.code + "</td>" +
-        "<td>" + disciplineSelect.name + "</td>" +
-        "<td>" + deleteRecord + "</td>";
-      var tr = "<tr id= rec-" + disciplineSelect.code + ">" + td + "</tr>";
-      list_trs += tr;
-    });
-    var tbody = "<tbody>" + list_trs + "</tbody>";
-    $("#largeTableSemester").append(tbody);
-  }
-  
-  fillInfoDisciplinesSelected = function() {
-    $('#infoDisciplinesSelected').text(selectedDisciplines.length > 0  ? "Selecionadas: " + selectedDisciplines.sort().join() : "Nenhuma disciplina selecionada");  
-    updateTableDisciplineResult();
-  }
-  
-  fillSelected = function(code) {
-    var $discipline = $("#" + code);
-    if (!selectedDisciplines.includes(code)) {
-      if ($discipline) {
-        if ($discipline.is("li")) {
-          $discipline.css({ 'color': 'black'});
-        }
-        else {
-          $discipline.css("border-color","#F8F8F8");
-          $discipline.css({ 'color': 'black'});
-        }
-      }
-    } 
-    else {
-      if ($discipline) {
-        if ($discipline.is("li")) {
-          $discipline.css({ 'color': '#98FB98'});
-        }
-        else{
-          $discipline.css("border-color","#98FB98");
-          $discipline.css({ 'color': '#c5f5c5'});
-        }
-      }
-    }
-    fillInfoDisciplinesSelected();
-  }
-  
-  var selectDiscipline = function(class_name) {
-      $("." + class_name).off('click').click(function(event) {
-          var code = $(this).attr('code');
-          var preRequisitesStudent = [];
-          if (selectedDisciplines.includes(code)) {
-              deleteDisciplineAlreadySelected(code);
-          } 
-          else {
-              var message = '';
-              var $toastContent;
-              var disciplines_planning = disciplinesPlanning(semester_current);
-              if (disciplines_planning.includes(code)) {
-                  var semesterDiscipline = semesterContainsDiscipline(code)
-                  message = 'Disciplina ' + code + " já selecionada para o semestre: " + semesterDiscipline.semester.year + "." + semesterDiscipline.semester.period;
-                  $toastContent = $('<span>' + message + '</span>');
-                  toastr.error($toastContent)
-              } 
-              else {
-                  if (preRequisites[code]) {
-                      var disciplinesUsed = disciplinesDone(semester_current);
-                      preRequisites[code].forEach(function(discipline) {
-                          if (!disciplinesUsed.includes(discipline) && !selectedDisciplines.includes(discipline)) {
-                              preRequisitesStudent.push(discipline);
-                          }
-                      });
-                  }
-                  if (preRequisitesStudent.length > 0) {
-                      message = 'Pré-requisito necessário ' + preRequisitesStudent.join();
-                      $toastContent = $('<span>' + message + '</span>');
-                      toastr.error($toastContent)
-                  }
-                  else{
-                    selectedDisciplines.push(code);
-                  }
-              }
-          }
-          fillSelected(code);
-          event.stopPropagation();
-          event.preventDefault();
-      });
-  }
-  
-  $('#largeTableSemester').on('click', 'a.delete-record', function(e) {
+  $('#table_semester').on('click', 'a.delete-record', function(e) {
       var code = jQuery(this).attr('data-id');
-      deleteRecord(code, "result");
+      delete_record(code, "result");
   });
-  
-  var changeBgColor = function(code, color_pre, color_post) {
-      return function() {
-          if (preRequisites[code]) {
-              preRequisites[code].forEach(function(preReq) {
-                  var $preReq = $("#" + preReq);
-                  if ($preReq)
-                    $preReq.css("background-color", color_pre);
-              });
-          }
-          if (postRequisites[code]) {
-              postRequisites[code].forEach(function(postReq) {
-                  if (!selectedDisciplines.includes(postReq)) {
-                      var $postReq = $("#" + postReq);
-                      if ($postReq)
-                          $postReq.css("background-color", color_post);
-                  }
-              });
-          }
-      };
-  }
-  
-  var nextPeriod = function() {
-      var semester = semester_current;
-      if (semester.period == 1) {
-          semester.period++;
-          return semester;
-      } else {
-          semester.year++;
-          semester.period = 1;
-          return semester;
-      }
-  }
-  
-  var previousPeriod = function() {
-      var semester = semester_current;
-      if (semester.period == 1) {
-          semester.year--;
-          semester.period++;
-          return semester;
-      } else {
-          semester.period = 1;
-          return semester;
-      }
-  }
-  
-  function findWithAttr(array, attr, value) {
-    for(var i = 0; i < array.length; i += 1) {
-        if(array[i][attr] === value) {
-            return i;
-        }
-    }
-    return -1;
-  }
-  
-  function findWithAttrValue(array, value) {
-    for(var i = 0; i < array.length; i += 1) {
-        if(array[i] === value) {
-            return i;
-        }
-    }
-    return -1;
-  }
-  
-  checkAvailableSemester = function(semester) {
-    var $semesterRow = $("#semesterRowNumber" + semester);
-    if ($semesterRow) {
-      if(allDisciplinesOfSemester[semester].length > 0){
-        $semesterRow.show();
-      }
-      else{
-        $semesterRow.hide();
-      }
-    }
-  }
-  
-  reviewsDisciplineAvailableSemester = function(code, semester, action) {
-    if(action === 'hide'){
-      var indexDiscipline = findWithAttr(allDisciplinesOfSemester[semester], 'code', code);
-      if (indexDiscipline > -1) {
-        allDisciplinesOfSemester[semester].splice(indexDiscipline, 1);
-      }
-    }
-    else{
-      if (allDisciplinesOfSemester[semester].filter(x => x.code === code).length == 0) {
-        var obj = {
-          code: code,
-          semester: semester
-        };
-        allDisciplinesOfSemester[semester].push(obj);
-      }
-    }
-    checkAvailableSemester(semester);
-  }
-  
-  fillInfoSemester = function(semester) { 
-      var disciplinesAvailable = allDisciplinesOfSemester;
-      var disciplinesUsed = disciplinesDone(semester);
-      allDisciplines.forEach(function(disc) {
-          var $discipline = $("#" + disc[0]);
-          if ($discipline) {
-            if (disciplinesUsed.includes(disc[0])) {
-              $discipline.hide();
-              if(disc[3] != 0){
-                reviewsDisciplineAvailableSemester(disc[0], disc[3], 'hide');
-              }
-            }
-            else{
-              $discipline.show();
-              if(disc[3] != 0){
-                reviewsDisciplineAvailableSemester(disc[0], disc[3], 'show');
-              }
-            }
-          }
-          fillSelected(disc[0]);
-      });
-  }
-   
-  function validPrevious(semester) {
-      if (semester.year == semester_start.year && semester.period == semester_start.period) {
-        $("#previousSemester").css( {'visibility': 'hidden'});
-      } 
-      else {
-        $("#previousSemester").css( {'visibility': 'visible'});
-      }
-  }
-  
-  function loadDisciplines(semester) {
-      validPrevious(semester);
-      var semester_selected = paramSemesters.find(function(element) {
-          return element.semester.year == semester_current.year && element.semester.period == semester_current.period;
-      });
-      if (semester_selected) {
-          selectedDisciplines = semester_selected.disciplines;
-          $('#infoSemester').text(semester_current.year + "." + semester_current.period);
-      } 
-      else {
-          selectedDisciplines = [];
-          $('#infoSemester').text(semester_current.year + "." + semester_current.period);
-      }
-      fillInfoSemester(semester);
-  }
   
   $("#goToTop").click(function() {
       $('html,body').animate({
-          scrollTop: $("#courseInfo").offset().top
+          scrollTop: $("#course_info").offset().top
       }, 500);
   });
   
-   $("#electiveFilterInput").on("input", function() {
+  $("#electiveFilterInput").on("input", function() {
       filterList("elective-discipline", $(this).val());
   });
   
-  $("#searchForm").submit(function() {
-      var pattern = $("#allinput").val();
-      if (pattern.length == 0)
-          $("#allinput").addClass("error");
-      else {
-          $("#allinput").removeClass("error");
-          $("#allBlockList").empty();
-          var query = $("#allinput").val();
-  
-          $.ajax({
-                  type: 'GET',
-                  url: '<%= discipline_ajax_search_path %>',
-                  data: {
-                      pattern: query
-                  },
-                  dataType: 'html'
-              })
-              .done(function(html) {
-                  $("#allBlockList").html(html);
-                  updateDisciplineEvents("search-discipline", true);
-              });
-      }
-      return false;
+  $("#button_planning").click(function() {
+    table_planning_record(true);
   });
   
-  function updateDisciplinesResult(action) {
-    var semester_selected = paramSemesters.find(function(element) {
-        return element.semester.year == semester_current.year && element.semester.period == semester_current.period;
-    });
-    if (semester_selected) {
-      paramSemesters.forEach(function(param) {
-        if (param.semester.year == semester_current.year && param.semester.period == semester_current.period) {
-          param.disciplines = selectedDisciplines;
-        }
-      });
-    } 
-    else {
-      if(selectedDisciplines.length > 0){
-        paramSemesters.push({
-          semester: {
-            year: semester_current.year,
-            period: semester_current.period
-          },
-          disciplines: selectedDisciplines
-        });
-      }
-    }
-    paramSemesters = paramSemesters.filter(function(x) {
-      return x.disciplines.length > 0;
-    });
-    if(action != "complete"){
-      semester_current = action === "previous" ? previousPeriod() : nextPeriod();
-      loadDisciplines(semester_current);
-    }
-  }
-  
-  $("#nextSemester").click(function() {
-      updateDisciplinesResult("next");
+  $("#button_next_semester").click(function() {
+      update_disciplines_result("next");
   });
   
-  $("#previousSemester").click(function() {
-      updateDisciplinesResult("previous");
+  $("#button_previous_semester").click(function() {
+      update_disciplines_result("previous");
   });
   
-  $("#completeRecord").click(function() {
-      updateDisciplinesResult("complete");
+  $("#button_complete_record").click(function() {
+      update_disciplines_result("complete");
       var result = paramSemesters.filter(function(x) {
           return x.disciplines.length > 0;
       });
@@ -548,64 +214,366 @@
       });
   });
   
-  $("#discipline_ob").click(function() {
-    $("#elementDisciplinesDetails").show();
+  $("#searchForm").submit(function() {
+    var pattern = $("#allinput").val();
+    if (pattern.length == 0)
+        $("#allinput").addClass("error");
+    else {
+        $("#allinput").removeClass("error");
+        $("#allBlockList").empty();
+        var query = $("#allinput").val();
+
+        $.ajax({
+                type: 'GET',
+                url: '<%= discipline_ajax_search_path %>',
+                data: {
+                    pattern: query
+                },
+                dataType: 'html'
+            })
+            .done(function(html) {
+                $("#allBlockList").html(html);
+                updateDisciplineEvents("search-discipline", true);
+            });
+    }
+    return false;
   });
   
-  $("#discipline_op").click(function() {
-    $("#elementDisciplinesDetails").show();
-  });
-  
-  function getResultTablePlanning(list) {
-    var trs = "";
-    list.forEach(function(x){
-      if(list.indexOf(x) > 0){
-        trs += "<tr style=\"background-color:#f8f8f8\"><td colspan=\"5\"></td></tr>";    
+  contains_discipline  = function(code) {
+    var semester_discipline = paramSemesters.find(function(x) {
+      if (x.disciplines.includes(code)) {
+        return x;
       }
-      var trRow = "<tr><td rowspan=" + (x.disciplines.length + 1) + ">" + x.semester.year +"."+x.semester.period  + "</td></tr>";
-      trs += trRow;
-        x.disciplines.forEach(function(d){
-          var deleteRecord = "<a class=\"delete-record-planning\"data-id=" + d.code + ">Excluir</a></td>"
-          var td =
-              "<td>" + d.nature + "</td>" +
-              "<td>" + d.code + "</td>" +
-              "<td>" + d.name + "</td>" +
-              "<td>" + deleteRecord + "</td>";
-                var tr = "<tr id= recPlanning-" + d.code + ">" + td + "</tr>";
-                trs += tr;
-        });
-      });
-    return trs;
+    });
+    return semester_discipline;
   }
   
-  function updateTablePlanningRecord() {
-    $("#elementDisciplinesDetails").hide();
-    $("#largeTablePlanning tbody").empty();
+  disciplines_planning_semester = function(semester) {
+      var result = paramSemesters.map(function(param) {
+          if (param.semester.year > semester.year) {
+              return param.disciplines;
+          } else if (param.semester.year == semester.year && param.semester.period > semester.period) {
+              return param.disciplines;
+          }
+      }).reduce((list, sub) => list.concat(sub), []);
+      return result;
+  }
+  
+  disciplines_done = function(semester) {
+      var result = paramSemesters.map(function(param) {
+          if (param.semester.year < semester.year) {
+              return param.disciplines;
+          } 
+          else if (param.semester.year == semester.year && param.semester.period < semester.period) {
+              return param.disciplines;
+          }
+      }).reduce((list, sub) => list.concat(sub), []);
+      return result;
+  }
+  
+  delete_discipline_selected  = function(code) {
+    var indexDiscipline = selected_disciplines.indexOf(code);
+    if (indexDiscipline > -1) {
+      selected_disciplines.splice(indexDiscipline, 1);
+    }
+  }
+  
+  info_additional_discipline = function(discipline){
+    var disciplineSemester = all_disciplines.find(function(element) {
+        return element[0] === discipline;
+    });
+    var objDiscipline = {
+      code: disciplineSemester[0],
+      name: disciplineSemester[1],
+      nature: disciplineSemester[2]
+    }
+    return objDiscipline;
+  }
+  
+  table_disciplines = function() {
+    $("#table_semester tbody").empty();
+    var list_trs = "";
+    selected_disciplines.sort().forEach(function(selected) {
+      var disciplineSelect = info_additional_discipline(selected);
+      var delete_record = "<a class=\"delete-record\"data-id=" + disciplineSelect.code + ">Excluir</a></td>"
+      var td =
+        "<td>" + disciplineSelect.nature + "</td>" +
+        "<td>" + disciplineSelect.code + "</td>" +
+        "<td>" + disciplineSelect.name + "</td>" +
+        "<td>" + delete_record + "</td>";
+      var tr = "<tr id= rec-" + disciplineSelect.code + ">" + td + "</tr>";
+      list_trs += tr;
+    });
+    var tbody = "<tbody>" + list_trs + "</tbody>";
+    $("#table_semester").append(tbody);
+  }
+  
+  fill_info_disciplines_selected = function() {
+    $('#info_disciplines_selected').text(selected_disciplines.length > 0  ? "Selecionadas: " + selected_disciplines.sort().join() : "Nenhuma disciplina selecionada");  
+    table_disciplines();
+  }
+  
+  fill_selected = function(code) {
+    var $discipline = $("#" + code);
+    if ($discipline) {
+      if($discipline.is("li")) {
+        !selected_disciplines.includes(code) ? $discipline.removeClass("highlight_discipline_op") : $discipline.addClass("highlight_discipline_op");  
+      }
+      else {
+        !selected_disciplines.includes(code) ? $discipline.removeClass("highlight_discipline_ob") : $discipline.addClass("highlight_discipline_ob");
+      }
+    }
+    fill_info_disciplines_selected();
+  }
+  
+  var delete_record_planning = function(class_name) {
+      $("." + class_name).off('click').click(function(event) {
+        var code = jQuery(this).attr('data-id');
+        delete_record(code, "planning");
+        table_planning_record(false);
+        event.stopPropagation();
+        event.preventDefault();
+      });
+  }
+  
+  var select_discipline = function(class_name) {
+      $("." + class_name).off('click').click(function(event) {
+        console.log("T");
+          var code = $(this).attr('code');
+          var pre_requisitesStudent = [];
+          if (selected_disciplines.includes(code)) {
+              delete_discipline_selected(code);
+          } 
+          else {
+              var message = '';
+              var $toastContent;
+              var disciplines_planning = disciplines_planning_semester(semester_current);
+              if (disciplines_planning.includes(code)) {
+                  var semesterDiscipline = contains_discipline(code)
+                  message = 'Disciplina ' + code + " já selecionada para o semestre: " + semesterDiscipline.semester.year + "." + semesterDiscipline.semester.period;
+                  $toastContent = $('<span>' + message + '</span>');
+                  toastr.error($toastContent)
+              } 
+              else {
+                  if (pre_requisites[code]) {
+                      var disciplinesUsed = disciplines_done(semester_current);
+                      pre_requisites[code].forEach(function(discipline) {
+                          if (!disciplinesUsed.includes(discipline) && !selected_disciplines.includes(discipline)) {
+                              pre_requisitesStudent.push(discipline);
+                          }
+                      });
+                  }
+                  if (pre_requisitesStudent.length > 0) {
+                      message = 'Pré-requisito necessário ' + pre_requisitesStudent.join();
+                      $toastContent = $('<span>' + message + '</span>');
+                      toastr.error($toastContent)
+                  }
+                  else{
+                    selected_disciplines.push(code);
+                  }
+              }
+          }
+          fill_selected(code);
+          event.stopPropagation();
+          event.preventDefault();
+      });
+  }
+  
+  var changeBgColor = function(code, color_pre, color_post) {
+      return function() {
+          if (pre_requisites[code]) {
+              pre_requisites[code].forEach(function(preReq) {
+                  var $preReq = $("#" + preReq);
+                  if ($preReq)
+                    $preReq.css("background-color", color_pre);
+              });
+          }
+          if (post_requisites[code]) {
+              post_requisites[code].forEach(function(postReq) {
+                  if (!selected_disciplines.includes(postReq)) {
+                      var $postReq = $("#" + postReq);
+                      if ($postReq)
+                          $postReq.css("background-color", color_post);
+                  }
+              });
+          }
+      };
+  }
+  
+  var next_period = function() {
+      var semester = semester_current;
+      if (semester.period == 1) {
+          semester.period++;
+          return semester;
+      } else {
+          semester.year++;
+          semester.period = 1;
+          return semester;
+      }
+  }
+  
+  var previous_period = function() {
+      var semester = semester_current;
+      if (semester.period == 1) {
+          semester.year--;
+          semester.period++;
+          return semester;
+      } else {
+          semester.period = 1;
+          return semester;
+      }
+  }
+  
+  check_available_semester = function(semester) {
+    var $semesterRow = $("#semester_row_number" + semester);
+    if ($semesterRow) {
+      if(disciplines_per_semester[semester].length > 0){
+        $semesterRow.show();
+      }
+      else{
+        $semesterRow.hide();
+      }
+    }
+  }
+  
+  reviews_discipline_available_semester = function(code, semester, action) {
+    if(action === 'hide'){
+      var indexDiscipline = find_with_attr(disciplines_per_semester[semester], 'code', code);
+      if (indexDiscipline > -1) {
+        disciplines_per_semester[semester].splice(indexDiscipline, 1);
+      }
+    }
+    else{
+      if (disciplines_per_semester[semester].filter(x => x.code === code).length == 0) {
+        var obj = {
+          code: code,
+          semester: semester
+        };
+        disciplines_per_semester[semester].push(obj);
+      }
+    }
+    check_available_semester(semester);
+  }
+  
+  fill_info_semester = function(semester) { 
+      var disciplinesAvailable = disciplines_per_semester;
+      var disciplinesUsed = disciplines_done(semester);
+      all_disciplines.forEach(function(disc) {
+          var $discipline = $("#" + disc[0]);
+          if ($discipline) {
+            if (disciplinesUsed.includes(disc[0])) {
+              $discipline.hide();
+              if(disc[3] != 0){
+                reviews_discipline_available_semester(disc[0], disc[3], 'hide');
+              }
+            }
+            else{
+              $discipline.show();
+              if(disc[3] != 0){
+                reviews_discipline_available_semester(disc[0], disc[3], 'show');
+              }
+            }
+          }
+          fill_selected(disc[0]);
+      });
+  }
+   
+  function valid_Previous(semester) {
+      if (semester.year == semester_start.year && semester.period == semester_start.period) {
+        $("#button_previous_semester").css( {'visibility': 'hidden'});
+      } 
+      else {
+        $("#button_previous_semester").css( {'visibility': 'visible'});
+      }
+  }
+  
+  function load_disciplines(semester) {
+      valid_Previous(semester);
+      var semester_selected = paramSemesters.find(function(element) {
+          return element.semester.year == semester_current.year && element.semester.period == semester_current.period;
+      });
+      if (semester_selected) {
+          selected_disciplines = semester_selected.disciplines;
+          $('#info_semester').text(semester_current.year + "." + semester_current.period);
+      } 
+      else {
+          selected_disciplines = [];
+          $('#info_semester').text(semester_current.year + "." + semester_current.period);
+      }
+      fill_info_semester(semester);
+  }
+ 
+  
+  function update_disciplines_result(action) {
+    var semester_selected = paramSemesters.find(function(element) {
+        return element.semester.year == semester_current.year && element.semester.period == semester_current.period;
+    });
+    if (semester_selected) {
+      paramSemesters.forEach(function(param) {
+        if (param.semester.year == semester_current.year && param.semester.period == semester_current.period) {
+          param.disciplines = selected_disciplines;
+        }
+      });
+    } 
+    else {
+      if(selected_disciplines.length > 0){
+        paramSemesters.push({
+          semester: {
+            year: semester_current.year,
+            period: semester_current.period
+          },
+          disciplines: selected_disciplines
+        });
+      }
+    }
+    paramSemesters = paramSemesters.filter(function(x) {
+      return x.disciplines.length > 0;
+    });
+    if(action != "complete"){
+      semester_current = action === "previous" ? previous_period() : next_period();
+      load_disciplines(semester_current);
+    }
+  }
+  
+  function table_planning_record(open_modal) {
     listItens = [];
-    updateDisciplinesResult("complete");
+    update_disciplines_result("complete");
     paramSemesters.forEach(function(param){
       var objParam = {
         semester: param.semester,
-        disciplines: param.disciplines.map(x => new getInfoAdditionalDiscipline(x))
+        disciplines: param.disciplines.map(x => new info_additional_discipline(x))
       }
       listItens.push(objParam);
     });
     var result = listItens.sort((a, b) => (a.semester.year  > b.semester.year) ? 1 : (a.semester.year === b.semester.year) ? ((a.semester.period > b.semester.period) ? 1 : -1) : -1 )
-    $("#largeTablePlanning tbody").append(getResultTablePlanning(result));
+    if(result.length > 0){
+      $("#table_planning tbody").empty();
+      $("#table_planning tbody").append(result_table_planning(result, true));
+      delete_record_planning("delete-record-planning");
+      if(open_modal){
+        $("#planning_modal").foundation('open');
+      }
+    }
+    else{
+      if(!open_modal){
+        $("#planning_modal").foundation('close');
+      }
+      else{
+        var message = 'Selecione pelo menos uma disciplina.';
+        var  $toastContent = $('<span>' + message + '</span>');
+        toastr.info($toastContent)  
+      }
+    }
   }
   
-  $("#planning_result").click(function() {
-    updateTablePlanningRecord();
-  });
-  
-  function deleteRecord(code, action) {
-    if(selectedDisciplines.includes(code)) {
-      deleteDisciplineAlreadySelected(code);
-      fillSelected(code);
+  function delete_record(code, action) {
+    if(selected_disciplines.includes(code)) {
+      delete_discipline_selected(code);
+      fill_selected(code);
     }
     if(action === "planning"){
       paramSemesters.forEach(function(param){
-        var indexDiscipline = findWithAttrValue(param.disciplines, code);
+        var indexDiscipline = find_with_value(param.disciplines, code);
         if (indexDiscipline > -1) {  
           param.disciplines.splice(indexDiscipline, 1);
         }
@@ -615,12 +583,6 @@
       });
     }
   }
-  
-   $('#largeTablePlanning').on('click', 'a.delete-record-planning', function(e) {
-      var code = jQuery(this).attr('data-id');
-      deleteRecord(code,"planning");
-      updateTablePlanningRecord();
-  });
   
   $(document).ready(function() {
       // Start loading spinner
@@ -633,12 +595,15 @@
           $(this).mouseleave(changeBgColor(code, "", ""));
       });
   
-      if (studentPlannings.length > 0) {
-          paramSemesters = studentPlannings;
-          loadDisciplines(semester_current)
+      if (student_plannings.length > 0) {
+          paramSemesters = student_plannings;
+          load_disciplines(semester_current)
       }
-      validPrevious(semester_current);
-      selectDiscipline("discipline");
+      
+      valid_Previous(semester_current);
+      
+      select_discipline("discipline");
   });
+  
 </script>
 <% end %>
