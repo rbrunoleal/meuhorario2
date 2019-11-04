@@ -15,5 +15,12 @@ class Student < ApplicationRecord
   has_many :disciplines_plannings, :through => :plannings
   
   has_many :historics, dependent: :destroy
+  has_many :disciplines_historics, :through => :historics
+  
+  def approved_disciplines
+    approved = self.disciplines_historics.select {|x| x.result == 'AP'} 
+    return approved.map { |x| x.code }
+  end
+  
 end
 

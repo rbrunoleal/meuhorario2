@@ -21,7 +21,8 @@ class PlanningController < ApplicationController
       }
     ).find_by_code @user.student.course.code
 
-    cds = @course.course_disciplines
+    @disciplines_historic = @user.student.approved_disciplines
+    cds = @course.course_disciplines.select { |x| !@disciplines_historic.include?(x.discipline.code) }
 
     unless @course.nil?
       @semesters = []
