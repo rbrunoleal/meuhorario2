@@ -9,7 +9,7 @@ class Student < ApplicationRecord
   validates :matricula, length: { is: 9, message: "Matrícula são necessários 9 digitos." }
   validates :matricula, uniqueness: { message: "Matrícula já cadastrada." }
   
-  #validates :email, format: { with: /(\A([a-z]*\s*)*\<*([^@\s]+)@((?:[-a-z0-9]+\.)+[a-z]{2,})\>*\Z)/i , message: "E-mail inválido."}
+  validates :email, format: { with: /(\A([a-z]*\s*)*\<*([^@\s]+)@((?:[-a-z0-9]+\.)+[a-z]{2,})\>*\Z)/i , message: "E-mail inválido."}
     
   has_many :record_enrollments, dependent: :destroy  
   
@@ -20,8 +20,19 @@ class Student < ApplicationRecord
   has_many :disciplines_historics, :through => :historics
   
   def approved_disciplines
+    result = []
     approved = self.disciplines_historics.select {|x| x.result == 'AP'} 
-    return approved.map { |x| x.code }
+    approved.each do |n|
+      obj = {
+        code: n.code,
+        semester: {
+          year: n.historic.year,
+          period: n.historic.period
+        }
+      }
+      result << obj
+    end
+    return result
   end
   
 end

@@ -28,8 +28,8 @@ class PlanningController < ApplicationController
     cds_all = @course.course_disciplines
     @all_disciplines = cds_all.map {|d| [d.discipline.code, d.discipline.name, d.nature, d.semester.blank? ? 0 : d.semester] }
     
-    @disciplines_historic = @user.student.approved_disciplines
-    cds = @course.course_disciplines.select { |x| !@disciplines_historic.include?(x.discipline.code) }
+    @disciplines_historic = @user.student.approved_disciplines.to_json
+    cds = @course.course_disciplines 
 
     unless @course.nil?
       @semesters = []

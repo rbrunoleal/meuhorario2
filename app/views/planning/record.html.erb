@@ -167,10 +167,19 @@
     return obj;
   }),'semester');
   
-  var semester_start = {
+  var semester_start;
+  if (student_plannings.length > 0) {
+    semester_start = {
+      year: student_plannings[0].semester.year,
+      period: student_plannings[0].semester.period
+    };
+  }
+  else{
+    semester_start = {
       year: <%= Semester.first.year %>,
       period: <%= Semester.first.period %>
-  };
+    };
+  }
   
   var semester_current = {
       year: semester_start.year,
@@ -266,15 +275,23 @@
   }
   
   disciplines_done = function(semester) {
-      var result = paramSemesters.map(function(param) {
+      var result_historic = student_historic.map(function(h) {
+          if (h.semester.year < semester.year) {
+              return h.code;
+          } 
+          else if (h.semester.year == semester.year && h.semester.period < semester.period) {
+              return h.code;
+          }
+      });
+      var result_planning = paramSemesters.map(function(param) {
           if (param.semester.year < semester.year) {
               return param.disciplines;
           } 
           else if (param.semester.year == semester.year && param.semester.period < semester.period) {
               return param.disciplines;
           }
-      }).reduce((list, sub) => list.concat(sub), []).concat(student_historic);
-      return result;
+      }).reduce((list, sub) => list.concat(sub), []).concat(result_historic);
+      return result_planning;
   }
   
   delete_discipline_selected  = function(code) {
@@ -612,8 +629,9 @@
   
       if (student_plannings.length > 0) {
           paramSemesters = student_plannings;
-          load_disciplines(semester_current)
       }
+      
+      load_disciplines(semester_current)
       
       valid_Previous(semester_current);
       
