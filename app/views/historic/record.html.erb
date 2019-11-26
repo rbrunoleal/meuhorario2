@@ -1,10 +1,12 @@
+<%= save_heatmap %>
+<% if request.query_parameters.include?("see_heatmap") %>
+    <%= show_heatmap %>
+<% end %>
+
 <div class="wrapper">
     <div class="row" id="header">
         <%= render 'shared/header' %>
     </div>
-
-
-<div id="example"></div>
     
     <div class="row">
       <div class="columns small-6 large-2">
@@ -38,6 +40,12 @@
             </div>
 
             <div id="historic_insert" style="display:none">
+                <div class="row" style="margin-bottom: 10px;">
+                    <div class="small-12 columns text-center text">
+                        Cadastre o seu histórico, copie e cole na planilha abaixo as informações do <a href="https://siac.ufba.br" target="_blank">SIAC</a>
+                        obtidas no menu consulta, componentes curriculares cursados.
+                    </div>
+                </div>
                 <div class="row" style="margin-bottom: 20px;">
                     <div id="handsontable" class="hot handsontable htRowHeaders htColumnHeaders"></div>
                 </div>

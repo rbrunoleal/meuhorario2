@@ -2,6 +2,10 @@ class HistoricController < ApplicationController
   before_action :authenticate_user!
   
   def record
+    @student = current_user.student
+    if !@student.historics.any?
+      flash.now[:info] = "Atualize seu histórico."
+    end
     @historic = load_historic
   end
 

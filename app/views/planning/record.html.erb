@@ -1,8 +1,13 @@
+<%= save_heatmap %>
+<% if request.query_parameters.include?("see_heatmap") %>
+    <%= show_heatmap %>
+<% end %>
+
 <div class="wrapper">
   <div class="row" id="header">
      <%= render 'shared/header' %>
   </div>
-  
+
   <div data-sticky-container>
     <div id="header_sticky" data-sticky data-margin-top='0' data-top-anchor="header:bottom" class="sticky_custom">
       <div class="row">
@@ -13,7 +18,7 @@
           </div>
         </div>
         <div class="row">
-          <div class="columns small-6 large-3">
+          <div class="columns small-3 large-3">
             <div id="button_planning" class="button export-button float-left button_complete">Planejamento</div>
           </div>
           <div class="columns small-6 large-6">
@@ -33,7 +38,7 @@
               </div>
             </div>
           </div>
-          <div class="columns small-12 large-3">
+          <div class="columns small-3 large-3">
             <div id="button_complete_record" class="button export-button float-right">Concluir</div>
           </div>
         </div>
