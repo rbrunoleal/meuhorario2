@@ -8,44 +8,41 @@ class HistoricController < ApplicationController
   def complete
     @student = current_user.student
     @result = JSON.parse(params[:data_historic])
-    
-    ActiveRecord::Base.transaction do
-      begin
-        if(@result)
-          historic_student = []
-          @result.each do |r|
-            @historic = Historic.find_by(student: @student, year: r['semester'][0,4], period: r['semester'][5,1]) #mudar
-            if(!@historic)
-              @historic = Historic.new(student: @student, year: r['semester'][0,4], period: r['semester'][5,1]) #mudar
-            end
-            discipline_historic_student =[]
-            r['disciplines_historic'].each do |d|
-              discipline = @historic.disciplines_historics.find { |x| x.code == d['code'] }
-              if(discipline)
-                discipline_historic_student << discipline
-              else
-                discipline_historic_student << DisciplinesHistoric.new(
+    respond_to do |format|
+      ActiveRecord::Base.transaction do
+        begin
+          if(@result)
+            historic_student = []
+            @result.each do |r|
+              @historic = Historic.find_by(student: @student, year: r['semester'][0,4], period: r['semester'][5,1])
+              if(!@historic)
+                @historic = Historic.new(student: @student, year: r['semester'][0,4], period: r['semester'][5,1]) 
+              end
+              discipline_historic_student =[]
+              r['disciplines_historic'].each do |d|
+                discipline = @historic.disciplines_historics.find { |x| x.code == d['code'] }
+                if(discipline)
+                  discipline_historic_student << discipline
+                else
+                  discipline_historic_student << DisciplinesHistoric.new(
                   code: d['code'],
                   workload: d['ch'] == '--' ? 0 : d['ch'],
                   credits: d['cr'] == '--' ? 0 : d['cr'],
                   note: d['note'] == '--' ? 0 : d['note'],
-                  result: d['res']
-                )
+                  result: d['res'])
+                end
               end
+              @historic.disciplines_historics = discipline_historic_student
+              historic_student << @historic
             end
-            @historic.disciplines_historics = discipline_historic_student
-            historic_student << @historic
+            @student.historics = historic_student
+            @student.save!
           end
-          @student.historics = historic_student
-          @student.save!
-        end
-      rescue ActiveRecord::RecordInvalid
-        respond_to do |format|
-         format.html { redirect_to planning_path, danger: 'Erro ao salvar histórico, tente novamente.'}
+        rescue ActiveRecord::RecordInvalid => exception
+            flash.now[:danger] = 'Erro ao salvar histórico, tente novamente.'
+            format.html { render :action => 'record' }
         end
       end
-    end
-    respond_to do |format|
       format.html { redirect_to historic_show_path, success: 'Histórico salvo'}
     end
   end

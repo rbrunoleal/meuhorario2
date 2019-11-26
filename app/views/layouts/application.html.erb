@@ -1,15 +1,6 @@
 <!DOCTYPE html>
 <html>
-  <div class="top-bar">
-    <div class="top-bar-left">
-      <ul class="dropdown menu" data-dropdown-menu>
-        <li><a href="<%= root_path %>">Meu Horário</a></li>
-      </ul>
-    </div>
-    <div class="top-bar-right">
-      <%= render 'devise/menu/login_items' %>
-    </div>
-  </div>
+  <%= render 'shared/navbar' %>
   
   <!-- start Mixpanel -->
   <script type="text/javascript">
@@ -35,6 +26,17 @@
   <body>
     <%= render :partial => 'flash_messages', :flash => flash %>
     <%= yield %>
+    <script type="text/javascript">
+    window._mfq = window._mfq || [];
+    (function() {
+        var mf = document.createElement("script");
+        mf.type = "text/javascript"; mf.async = true;
+        mf.src = "//cdn.mouseflow.com/projects/61971954-cb9b-41ae-ace4-795036dc9160.js";
+        document.getElementsByTagName("head")[0].appendChild(mf);
+    })();
+  </script>
+    
+    
     <script>
       $(document).foundation();
     </script>

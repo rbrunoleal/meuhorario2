@@ -45,6 +45,9 @@ gem 'devise_cas_authenticatable','~> 1.10.0'
 #Toastr
 gem "toastr-rails"
 
+#Heatmap-Rails
+gem 'heatmap-rails'
+
 group :development, :test do
   # Call 'byebug' anywhere in the code to stop execution and get a debugger console
   gem 'byebug', platform: :mri

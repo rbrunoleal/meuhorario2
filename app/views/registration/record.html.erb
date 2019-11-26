@@ -8,29 +8,34 @@
     </div>
     
     <div class="row area-grid text-center">
-        <div class="small-offset-1 small-10 medium-offset-0 medium-4 large-3 columns">
-            <a class="area-card text-center" data-method="post" href="<%= registration_student_record_path %>">
-                <div class="area-card-content">
-                    <span class="title">Aluno</span>
-                    <span class="text">Cadastro de Aluno</span>
-                </div>
-            </a>
-            </br>
-            <a class="area-card text-center" data-method="post" href="<%= registration_professor_record_path %>">
-                <div class="area-card-content">
-                    <span class="title">Professor</span>
-                    <span class="text">Cadastro de Professor</span>
-                </div>
-            </a>
-            </br>
-            <a class="area-card text-center" data-method="post" href="<%= registration_coordinator_record_path %>">
-                <div class="area-card-content">
-                    <span class="title">Coordenador</span>
-                    <span class="text">Cadastro de Coordenador</span>
-                </div>
-            </a>
+        <div class="row medium-uncollapse large-collapse">
+            <div class="small-4 columns">
+              <!--  <div class="large-offset-1 small-10 medium-offset-0 medium-4 large-3 columns">-->
+                     <a class="area-card text-center" data-method="post" href="<%= registration_student_record_path %>">
+                        <div class="area-card-content">
+                            <span class="title">Aluno</span>
+                            <span class="text">Cadastro de Aluno</span>
+                        </div>
+                    </a>
+                <!-- </div>-->
+            </div>
+            <div class="small-4 columns">
+                <a class="area-card text-center" data-method="post" href="<%= registration_professor_record_path %>">
+                    <div class="area-card-content">
+                        <span class="title">Professor</span>
+                        <span class="text">Cadastro de Professor</span>
+                    </div>
+                </a>
+            </div>
+            <div class="small-4 columns">
+                <a class="area-card text-center" data-method="post" href="<%= registration_coordinator_record_path %>">
+                    <div class="area-card-content">
+                        <span class="title">Coordenador</span>
+                        <span class="text">Cadastro de Coordenador</span>
+                    </div>
+                </a>
+            </div>
         </div>
     </div>
-    
 </div>
 <%= render 'shared/footer' %>

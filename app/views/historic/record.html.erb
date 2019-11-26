@@ -1,10 +1,10 @@
-<%= javascript_include_tag "https://cdn.jsdelivr.net/npm/handsontable/dist/handsontable.full.min.js" %>
-<%= stylesheet_link_tag "https://cdn.jsdelivr.net/npm/handsontable/dist/handsontable.full.min.css" %>
-
 <div class="wrapper">
     <div class="row" id="header">
         <%= render 'shared/header' %>
     </div>
+
+
+<div id="example"></div>
     
     <div class="row">
       <div class="columns small-6 large-2">
@@ -41,6 +41,12 @@
                 <div class="row" style="margin-bottom: 20px;">
                     <div id="handsontable" class="hot handsontable htRowHeaders htColumnHeaders"></div>
                 </div>
+                <div class="row">
+                    <div class="small-12 columns">
+                        <a id="moreLine" class="float-right">Adicionar +10 Linhas</a>
+                    </div>
+                </div>
+
             </div>
             
             <div class="row">
@@ -59,7 +65,7 @@
     var historic_student = <%= raw @historic  %>;
     var step = 1;
     var inserted_historic = [];
-    
+
     var $container = $("#handsontable");
     var handsontable = $container.data('handsontable');
     
@@ -68,6 +74,15 @@
           scrollTop: $("#header").offset().top
       }, 500);
     });
+    
+     $("#moreLine").click(function() {
+        $container = $("#handsontable");
+        handsontable = $container.data('handsontable');
+        var col = handsontable.countRows();
+        for (var i = 0; i < 10; i++) {
+            handsontable.alter('insert_row', col, 1);
+        }
+    })
     
     function load_historic_inserted() {
         var historic_trated = [];
@@ -87,10 +102,10 @@
                     curricular_component: x[1] + " - " + x[2],
                     code: x[1],
                     name: x[2],
-                    ch: x[3],
-                    cr: x[4],
+                    ch: (!x[3] || x[3] == null || x[3] == undefined || x[3] == "" || x[3].length == 0) ? '--' : x[3],
+                    cr: (!x[4] || x[4] == null || x[4] == undefined || x[4] == "" || x[4].length == 0) ? '--' : x[4],
                     nt: x[5],
-                    note: x[6],
+                    note: x[6].replace(",","."),
                     res: x[7]
                 };
                 historic_trated.push(obj_hystoric);
@@ -110,10 +125,16 @@
                 }
             });
         }
-        
-        if(inserted_historic.length > 0){
-            $("#large_table_historic tbody").empty();
-            $("#large_table_historic tbody").append(get_result_table_history(inserted_historic));
+    }
+    
+    function historic_inserted_result_table() {
+        $("#large_table_historic tbody").empty();
+        $("#large_table_historic tbody").append(get_result_table_history(inserted_historic));
+        if(inserted_historic.length == 0){
+            var message = 'Histórico sem nenhum semestre.';
+            var $toastContent;
+            $toastContent = $('<span>' + message + '</span>');
+            toastr.info($toastContent)
         }
     }
     
@@ -122,6 +143,7 @@
             $("#large_table_historic tbody").empty();
             $("#large_table_historic tbody").append(get_result_table_history(historic_student));    
         }
+        inserted_historic = historic_student;
     }
     
     function load_handsontable() {
@@ -130,8 +152,16 @@
         $container = $("#handsontable");
         handsontable = $container.data('handsontable');
         
-        if(historic_student.length > 0){
-            historic_student.forEach(function(x){
+        /*if(inserted_historic.length > 0){
+            inserted_historic.forEach(function(x){
+                if(!historic_student.map(y=>y.semester).includes(x.semester)){
+                    historic_student.push(x);
+                }
+            });
+        }*/
+        
+        if(inserted_historic.length > 0){
+            inserted_historic.forEach(function(x){
                 var data_semester = [];
                 var item_semester = x.semester;
                 x.disciplines_historic.forEach(function(d){
@@ -161,7 +191,6 @@
                     onlyTrimmed: true
                 }
             };
-    
         }
         else {
             //HANDSONTABLE
@@ -184,6 +213,72 @@
     
         $("#handsontable").handsontable(config);
     }
+    
+    function show_message_validade_item(item_historic, ex){
+        var message = '';
+        var $toastContent;
+        message = 'Semeste: ' + item_historic.semester_period + ', Disciplina: ' + item_historic.curricular_component + '. ' + ex;
+        $toastContent = $('<span>' + message + '</span>');
+        toastr.error($toastContent)
+    }
+    
+    function validate_historic_value(){
+        var validate = true;
+        inserted_historic.forEach(function(x){
+            x.disciplines_historic.forEach(function(y){
+                if(['RR', 'TR', 'RF'].includes(y.res) && y.ch != '--'){
+                    validate = false;
+                    show_message_validade_item(y, "Carga Horária(CH) inválida, para o Resultado(RES).");
+                }
+                if(['RR', 'TR'].includes(y.res) && y.cr != '--'){
+                    validate = false;
+                    show_message_validade_item(y, "Crédito(CR) inválido, para o Resultado(RES).");
+                }
+                if(['AP'].includes(y.res) && parseFloat(y.note) < 5){
+                    validate = false;
+                    show_message_validade_item(y, "Nota inválida, para o Resultado(RES): Aprovado(AP).");
+                }
+                if(['TR', 'RF'].includes(y.res) && y.note != '--'){
+                    validate = false;
+                    show_message_validade_item(y, "Nota inválida, para o Resultado(RES): Trancamento(TR).");
+                }
+                if(['RR'].includes(y.res) && parseFloat(y.note) > 5){
+                    validate = false;
+                    show_message_validade_item(y, "Nota inválida, para o Resultado(RES): Reprovado(RR).");
+                }
+            });
+        });
+        return validate;
+    }
+    
+    function validate_historic_field(){
+        var validate = true;
+        inserted_historic.forEach(function(x){
+            x.disciplines_historic.forEach(function(y){
+                if(!['OB', 'OP'].includes(y.nt)){
+                    validate = false;
+                    show_message_validade_item(y, "Natureza(NT) inválida, Legenda NT: OB-Obrigatoria, OP-Optativa.");
+                }
+                if(!['AP', 'RF', 'RR', 'TR'].includes(y.res)){
+                    validate = false;
+                    show_message_validade_item(y, "Resultado(RES) inválido, Legenda RES: AP-Aprovado, RF-Reprovado Frequencia, RR-Reprovado, TR-Trancamento.");
+                }
+                if(!(parseFloat(y.note) >= 0.0 && parseFloat(y.note) <= 10)){
+                    validate = false;
+                    show_message_validade_item(y, "Nota inválida.");
+                }
+                if(!(/([0-9]{1,3})|([\x2D]{2})$/.test(y.ch))){
+                    validate = false;
+                    show_message_validade_item(y, "Carga Horária(CH) inválida.");
+                }
+                if(!(/([0-9]{1,3})|([\x2D]{2})$/.test(y.cr))){
+                    validate = false;
+                    show_message_validade_item(y, "Crédito(CR) inválido.");
+                }
+            });
+        });
+        return validate;
+    }
 
     function complete_record() {
         historic_student = inserted_historic;
@@ -196,19 +291,28 @@
         });
     }
     
-    $("#return").click(function() {
-        step--;
-        load_step();
-    });
-    
     $("#historic_record").click(function() {
         if($("#historic_record").text() === 'Concluir' && step == 3){
             complete_record();
         }
         else{
-            step++;
-            load_step();   
+            if(step == 2){
+                load_historic_inserted();
+                if(validate_historic_field() && validate_historic_value()){
+                    step++;
+                    load_step(); 
+                }
+            }
+            else{
+                step++;
+                load_step();   
+            }
         }
+    });
+    
+    $("#return").click(function() {
+        step--;
+        load_step();
     });
     
     load_step = function() {
@@ -225,7 +329,7 @@
             $("#historic_insert").show();
         }
         else if (step == 3){
-            load_historic_inserted();
+            historic_inserted_result_table();
             $("#historic_record").text('Concluir');
             $("#historic_show").show();
             $("#historic_insert").hide();

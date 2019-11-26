@@ -18,7 +18,10 @@
 //= require diacritics
 //= require spin
 //= require toastr
+//= require handsontable
+//= require heatmap.js
 //= require_tree .
+
 
 toastr.options = {
       "closeButton": true,

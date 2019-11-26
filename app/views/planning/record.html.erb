@@ -143,6 +143,7 @@
   var post_requisites      = <%= raw @post %>;
   var all_disciplines      = <%= raw @all_disciplines %>;
   var student_plannings    = <%= raw @planning %>
+  var student_historic     = <%= raw @disciplines_historic %>
   
   var selected_disciplines = [];
   var paramSemesters = [];
@@ -180,7 +181,7 @@
   
   $("#goToTop").click(function() {
       $('html,body').animate({
-          scrollTop: $("#course_info").offset().top
+          scrollTop: $("#header").offset().top
       }, 500);
   });
   
@@ -267,7 +268,7 @@
           else if (param.semester.year == semester.year && param.semester.period < semester.period) {
               return param.disciplines;
           }
-      }).reduce((list, sub) => list.concat(sub), []);
+      }).reduce((list, sub) => list.concat(sub), []).concat(student_historic);
       return result;
   }
   
@@ -338,11 +339,20 @@
   
   var select_discipline = function(class_name) {
       $("." + class_name).off('click').click(function(event) {
-        console.log("T");
           var code = $(this).attr('code');
           var pre_requisitesStudent = [];
           if (selected_disciplines.includes(code)) {
               delete_discipline_selected(code);
+              selected_disciplines.forEach(function(discipline) {
+                if(pre_requisites[discipline]){
+                  pre_requisites[discipline].forEach(function(x) {
+                    if(!selected_disciplines.includes(x)){
+                      delete_discipline_selected(discipline);    
+                      fill_selected(discipline);
+                    }
+                  });
+                }
+              });
           } 
           else {
               var message = '';

@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20191017234753) do
+ActiveRecord::Schema.define(version: 20191124141622) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -133,6 +133,16 @@ ActiveRecord::Schema.define(version: 20191017234753) do
     t.datetime "created_at",  null: false
     t.datetime "updated_at",  null: false
     t.index ["planning_id"], name: "index_disciplines_plannings_on_planning_id", using: :btree
+  end
+
+  create_table "heat_maps", force: :cascade do |t|
+    t.string   "path"
+    t.string   "click_type"
+    t.float    "offset_x"
+    t.float    "offset_y"
+    t.text     "xpath"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
   end
 
   create_table "historics", force: :cascade do |t|

@@ -3,6 +3,10 @@ class PlanningController < ApplicationController
   
   def record
     @user = current_user
+    if !@user.student.historics.any?
+      flash.now[:warning] = "Cadastre seu histórico para uma melhor utilização do planejamento."
+    end
+    
     @course = Course.includes(
       course_disciplines: [
         { pre_requisites: [
@@ -21,6 +25,9 @@ class PlanningController < ApplicationController
       }
     ).find_by_code @user.student.course.code
 
+    cds_all = @course.course_disciplines
+    @all_disciplines = cds_all.map {|d| [d.discipline.code, d.discipline.name, d.nature, d.semester.blank? ? 0 : d.semester] }
+    
     @disciplines_historic = @user.student.approved_disciplines
     cds = @course.course_disciplines.select { |x| !@disciplines_historic.include?(x.discipline.code) }
 
@@ -45,7 +52,6 @@ class PlanningController < ApplicationController
 
       @pre  = pre.to_json
       @post = post.to_json
-      @all_disciplines = cds.map {|d| [d.discipline.code, d.discipline.name, d.nature, d.semester.blank? ? 0 : d.semester] }
       @planning = (@user.student.plannings.map do |p|
       {
         :semester => { year: p.year, period: p.period },

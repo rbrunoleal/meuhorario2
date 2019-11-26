@@ -12,18 +12,23 @@ class StudentsController < ApplicationController
   def create
     @user = current_user
     @student = Student.new(student_params)
-    @student.user = @user
     respond_to do |format|
-      if @student.save
-        @user.enable = true
-        if @user.save
-          format.html { redirect_to painel_path }
-        else
-          format.html { render :new }
-        end      
-      else
-        format.html { render :new }
+      ActiveRecord::Base.transaction do
+        begin
+          @student.user = @user
+          @student.save!
+          @user.enable = true
+          @user.save!
+        rescue ActiveRecord::RecordInvalid => exception
+          exception.record.errors.values.each do |ex|
+            ex.each do |text|
+              flash.now[:danger] = text
+            end
+          end
+          format.html { render :action => 'new' }
+        end
       end
+      format.html { redirect_to root_path, success: 'Cadastro realizado.'}
     end
   end
 
@@ -43,6 +48,6 @@ class StudentsController < ApplicationController
     end
 
     def student_params
-      params.require(:student).permit(:name, :matricula, :course_id)
+      params.require(:student).permit(:name, :matricula, :email, :course_id)
     end
 end

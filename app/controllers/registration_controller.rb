@@ -1,6 +1,7 @@
 class RegistrationController < ApplicationController
   
   def record
+     flash.now[:info] = "Identifique seu usuário."
   end
   
   def student_record
