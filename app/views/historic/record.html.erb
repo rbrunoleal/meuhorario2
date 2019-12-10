@@ -1,8 +1,3 @@
-<%= save_heatmap %>
-<% if request.query_parameters.include?("see_heatmap") %>
-    <%= show_heatmap %>
-<% end %>
-
 <div class="wrapper">
     <div class="row" id="header">
         <%= render 'shared/header' %>
@@ -101,8 +96,10 @@
         var last_semester = "";
         get_table_historic.forEach(function(x){
             if(x[0] != " "){
-                last_semester = x[0];
-                historic_semesters.push(x[0]);
+                if(x[0] != last_semester){
+                    last_semester = x[0];
+                    historic_semesters.push(x[0]);
+                }
             }
             if(x[1] != null){
                 var obj_hystoric = {
@@ -159,14 +156,6 @@
         
         $container = $("#handsontable");
         handsontable = $container.data('handsontable');
-        
-        /*if(inserted_historic.length > 0){
-            inserted_historic.forEach(function(x){
-                if(!historic_student.map(y=>y.semester).includes(x.semester)){
-                    historic_student.push(x);
-                }
-            });
-        }*/
         
         if(inserted_historic.length > 0){
             inserted_historic.forEach(function(x){
