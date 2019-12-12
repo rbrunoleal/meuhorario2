@@ -1,6 +1,6 @@
 class CoordinatorsController < ApplicationController
   before_filter :authenticate
-  before_action :set_coordinator, only: [:show, :edit, :update, :destroy]
+  before_action :set_coordinator, only: [:edit, :update, :destroy]
 
   def index
     @coordinators = Coordinator.all
@@ -21,9 +21,9 @@ class CoordinatorsController < ApplicationController
 
     respond_to do |format|
       if @coordinator.save
-        format.html { redirect_to @coordinator, notice: 'Criado.' }
+       format.html { redirect_to coordinators_path, sucess: 'Coordenador salvo.'}
       else
-        format.html { render :new }
+        format.html { render :new, danger: 'Erro ao salvar semestre, tente novamente.' }
       end
     end
   end
@@ -31,9 +31,9 @@ class CoordinatorsController < ApplicationController
   def update
     respond_to do |format|
       if @coordinator.update(coordinator_params)
-        format.html { redirect_to @coordinator, notice: 'Atualizado.' }
+        format.html { redirect_to coordinators_path, sucess: 'Coordenador salvo.'}
       else
-        format.html { render :edit }
+        format.html { render :edit, danger: 'Erro ao salvar coordenador, tente novamente.' }
       end
     end
   end

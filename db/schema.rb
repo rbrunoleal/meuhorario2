@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20191124141622) do
+ActiveRecord::Schema.define(version: 20191210153603) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -135,16 +135,6 @@ ActiveRecord::Schema.define(version: 20191124141622) do
     t.index ["planning_id"], name: "index_disciplines_plannings_on_planning_id", using: :btree
   end
 
-  create_table "heat_maps", force: :cascade do |t|
-    t.string   "path"
-    t.string   "click_type"
-    t.float    "offset_x"
-    t.float    "offset_y"
-    t.text     "xpath"
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
-  end
-
   create_table "historics", force: :cascade do |t|
     t.integer  "year"
     t.integer  "period"
@@ -152,6 +142,15 @@ ActiveRecord::Schema.define(version: 20191124141622) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.index ["student_id"], name: "index_historics_on_student_id", using: :btree
+  end
+
+  create_table "orientations", force: :cascade do |t|
+    t.integer  "professor_user_id"
+    t.integer  "student_id"
+    t.datetime "created_at",        null: false
+    t.datetime "updated_at",        null: false
+    t.index ["professor_user_id"], name: "index_orientations_on_professor_user_id", using: :btree
+    t.index ["student_id"], name: "index_orientations_on_student_id", using: :btree
   end
 
   create_table "plannings", force: :cascade do |t|
@@ -282,6 +281,8 @@ ActiveRecord::Schema.define(version: 20191124141622) do
   add_foreign_key "disciplines_historics", "historics"
   add_foreign_key "disciplines_plannings", "plannings"
   add_foreign_key "historics", "students"
+  add_foreign_key "orientations", "professor_users"
+  add_foreign_key "orientations", "students"
   add_foreign_key "plannings", "students"
   add_foreign_key "pre_enrollments", "coordinators"
   add_foreign_key "pre_enrollments", "courses"

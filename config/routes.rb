@@ -1,29 +1,31 @@
 Rails.application.routes.draw do
   get 'planning', to: 'planning#record'
-  post 'planning', to: 'planning#complete'
   get 'planning/show', to: 'planning#show'
+  post 'planning', to: 'planning#complete'
   
   get 'historic', to: 'historic#record'
-  post 'historic', to: 'historic#complete'
   get 'historic/show', to: 'historic#show'
+  post 'historic', to: 'historic#complete'
 
   get 'registration', to: 'registration#record'
   post 'registration/coordinator_record'
   post 'registration/professor_record'
   post 'registration/student_record'
   
+  get 'orientation/record/:id' => 'orientation#record'
+  get 'orientation/coordinator_record' => 'orientation#coordinator_record'
+  get 'orientation/professor_record' => 'orientation#professor_record'
+  
   devise_for :users
   
   resources :coordinators
   
-  get 'painel' => 'painel#index'
-  
-  resource :students, only: [:new, :edit, :create, :update]
-  resources :professor_users
+  resources :students, only: [:new, :edit, :create, :update]
+  resources :professor_users, only: [:index, :new, :edit, :create, :update, :destroy]
   get 'professor_users/new/access', to: 'professor_users#new_access'
-  post 'professor_users/create_access'
-  post '/professor_users/:id' => 'professor_users#approved'
-  post '/professor_users/:id' => 'professor_users#disapproved'
+  post 'professor_users/approved/:id' => 'professor_users#approved', :as => 'professorr_user_approved'
+  post 'professor_users/disapproved/:id' => 'professor_users#disapproved', :as => 'professor_user_disapproved'
+  post 'professor_users/create_access', to: 'professor_users#create_access'
   
   resources :pre_enrollments
   get '/pre_enrollments/:id/result' => 'pre_enrollments#result', as: :pre_enrollments_result

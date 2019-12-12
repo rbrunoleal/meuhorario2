@@ -6,4 +6,5 @@ class ProfessorUser < ApplicationRecord
   validates :department, presence: { message: "Por favor insira o Departamento." }
   validates :username, uniqueness: { message: "Usuário já cadastrado." }
   
+  has_many :orientations, dependent: :destroy
 end

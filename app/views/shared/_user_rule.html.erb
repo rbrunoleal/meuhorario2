@@ -1,0 +1,15 @@
+<% if user_signed_in? %>
+    <% if current_user.enable? %>
+        <% if current_user.rule == 'coordinator' %>
+            <li><a href="<%= professor_users_path  %>">Professores</a></li>
+            <li><a href="<%= orientation_coordinator_record_path %>">Orientação</a></li>
+            <li><a href="">Pré-Matricula</a></li>
+        <% elsif current_user.rule == 'professor' %>
+            <li><a href="<%= orientation_professor_record_path %>">Orientação</a></li>
+        <%else%>
+            <li><a href="<%= historic_path %>">Histórico</a></li>
+            <li><a href="<%= planning_path %>">Planejamento</a></li>
+            <li><a href="">Pré-Matricula</a></li>
+        <% end %>
+    <% end %>
+<% end %>

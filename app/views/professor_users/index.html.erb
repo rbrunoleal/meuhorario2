@@ -1,36 +1,60 @@
-<p id="notice"><%= notice %></p>
+<div class="wrapper">
+  <%= render 'shared/header' %>
+  <div class="row area-grid text-center">
+    <div class="row">
+        <div class="small-12 columns text-center info-text">
+            Professores
+        </div>
+    </div>
+    
+    <table id="largeTable" class="schedule-table large-table">
+      <thead>
+        <tr>
+          <th width="250"> Nome</th>
+          <th width="100"> Username</th>
+          <th width="30"></th>
+          <th width="30"></th>
+          <th width="30"></th>
+        </tr>
+      </thead>
+      <tbody>
+          <% @professor_users.each do |professor_user| %>
+            <tr>
+              <td><%= professor_user.name %></td>
+              <td><%= professor_user.username %></td>
+              <% if professor_user.approved? %>
+                <td><%= link_to 'Desaprovar', professor_user_disapproved_path(professor_user), method: :post %></td>
+              <% else %>
+                <td><%= link_to 'Aprovar', professorr_user_approved_path(professor_user), method: :post %></td>
+              <% end %>
+              <td><%= link_to 'Editar', edit_professor_user_path(professor_user) %></td>
+              <td><%= link_to 'Apagar', professor_user, method: :delete, data: { confirm: 'Você tem certeza?' } %></td>
+            </tr>
+          <% end %>
+      </tbody>
+    </table>
+    
+    
+    <div class="row">
+      <span id="goToTop" class="go-to-top float-left">▲ Topo</span>
+      <%= link_to "Novo Professor", new_professor_user_path, :class=>"button export-button float-right" %>
+    </div>
+    
+  </div>
+</div>
+<%= render 'shared/footer' %>
 
-<h1>Professores</h1>
+<% content_for :script do %>
+<script>
+    $("#goToTop").click(function() {
+          $('html,body').animate({
+              scrollTop: $("#header").offset().top
+          }, 500);
+    });
+</script>
+<% end %>
 
-<table>
-  <thead>
-    <tr>
-      <th>Nome</th>
-      <th>Username</th>
-      <th colspan="3"></th>
-    </tr>
-  </thead>
 
-  <tbody>
-    <% @professor_users.each do |professor_user| %>
-      <tr>
-        <td><%= professor_user.name %></td>
-        <td><%= professor_user.username %></td>
-        <td><%= link_to 'Abrir', professor_user %></td>
-        <td><%= link_to 'Editar', edit_professor_user_path(professor_user) %></td>
-        <td><%= link_to 'Apagar', professor_user, method: :delete, data: { confirm: 'Você tem certeza?' } %></td>
-        <% if professor_user.approved? %>
-          <td><%= link_to 'Desprovar Acesso', professor_user, method: :disapproved %></td>
-        <% else %>
-          <td><%= link_to 'Aprovar Acesso', professor_user, method: :approved %></td>
-        <% end %>
-      </tr>
-    <% end %>
-  </tbody>
-</table>
 
-<br>
 
-<%= link_to 'Novo Professor', new_professor_user_path %>
-</br>
-<%= link_to 'Voltar', painel_path %>
+

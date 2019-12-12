@@ -1,27 +1,20 @@
 <%= form_for(professor_user) do |f| %>
-  <% if professor_user.errors.any? %>
-    <div id="error_explanation">
-      <h2><%= pluralize(professor_user.errors.count, "erro") %>, não foi possível salvar os dados:</h2>
-
-      <ul>
-      <% professor_user.errors.full_messages.each do |message| %>
-        <li><%= message %></li>
-      <% end %>
-      </ul>
+  <div class="row">
+    <div class='large-4 columns'>
+      <%= f.label :name, 'Nome' %>
+      <%= f.text_field :name %>
     </div>
-  <% end %>
-
-  <div class="field">
-    <%= f.label :name, 'Nome' %>
-    <%= f.text_field :name %>
   </div>
-
-  <div class="field">
-    <%= f.label :username %>
-    <%= f.text_field :username %>
+  <div class="row">
+    <div class='large-4 columns'>
+      <%= f.label :username %>
+      <%= f.text_field :username %>       
+    </div>
   </div>
-
-  <div class="actions">
-    <%= f.submit %>
+  <div class="row">
+    <div class="small-12 columns">
+      <%= f.submit 'Salvar', class: 'button export-button float-right' %> 
+      <%= link_to "Voltar", professor_users_path, :class=>"button export-button float-left" %>
+    </div>  
   </div>
 <% end %>

@@ -19,7 +19,6 @@
 //= require spin
 //= require toastr
 //= require handsontable
-//= require heatmap.js
 //= require_tree .
 
 

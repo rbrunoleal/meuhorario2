@@ -1,6 +1,6 @@
 class ProfessorUsersController < ApplicationController
   before_action :authenticate_user!
-  before_action :set_professor_user, only: [:show, :edit, :update, :destroy, :approved, :disapproved]
+  before_action :set_professor_user, only: [:edit, :update, :destroy, :approved, :disapproved]
 
   def index
     @user = current_user
@@ -8,9 +8,6 @@ class ProfessorUsersController < ApplicationController
   end
 
   def edit
-  end
-  
-  def show
   end
 
   def new
@@ -22,16 +19,17 @@ class ProfessorUsersController < ApplicationController
   end
   
   def create_access
+    byebug
     @user = current_user
     @professor_user = ProfessorUser.new(professor_user_access_params)
     @professor_user.user = @user
     @professor_user.username = @user.username
     respond_to do |format|
       if @professor_user.save
-        @user.enable = true
+        @user.enable = false
         @user.rule = "professor"
         if @user.save
-          format.html { redirect_to painel_path, notice: 'Acesso Concluído.' }
+          format.html { redirect_to root_path, notice: 'Acesso Concluído.' }
         else
           format.html { render :new }
         end      
@@ -47,9 +45,9 @@ class ProfessorUsersController < ApplicationController
     @professor_user.approved = true
     respond_to do |format|
       if @professor_user.save
-        format.html { redirect_to @professor_user }
+        format.html { redirect_to professor_users_path, sucess: 'Professor salvo.'}
       else
-        format.html { render :new }
+        format.html { render :new, danger: 'Erro ao salvar professor, tente novamente.' }
       end
     end
   end

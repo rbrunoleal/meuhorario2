@@ -2,6 +2,8 @@ class Student < ApplicationRecord
   belongs_to :course
   belongs_to :user
   
+  has_one :orientation
+  
   validates :name, presence: { message: "Insira o Nome." }
   validates :course, presence: { message: "Insira o Curso." }
   

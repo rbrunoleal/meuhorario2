@@ -1,5 +1,14 @@
-<h1>Complete o Cadastro:</h1>
-
-<%= render 'form', professor_user: @professor_user %>
-
-<%= link_to 'Voltar', professor_users_path %>
+<div class="wrapper">
+  <%= render 'shared/header' %>
+  <div class="row area-grid">
+    <div class="row">
+        <div class="small-12 columns text-center info-text">
+            Professor
+        </div>
+    </div>
+    
+    <%= render 'form', professor_user: @professor_user %>
+   
+  </div>
+</div>
+<%= render 'shared/footer' %>

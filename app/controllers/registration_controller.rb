@@ -49,7 +49,7 @@ class RegistrationController < ApplicationController
           @coordinator.user = @user
           @coordinator.save!
           respond_to do |format|
-            format.html { redirect_to painel_path, success: 'Acesso concluído.' }
+            format.html { redirect_to root_path, success: 'Acesso concluído.' }
           end
         rescue ActiveRecord::RecordInvalid => exception
           respond_to do |format|

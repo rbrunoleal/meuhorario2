@@ -1,5 +1,14 @@
-<h1>Coordenador</h1>
-
-<%= render 'form', coordinator: @coordinator %>
-
-<%= link_to 'Voltar', coordinators_path %>
+<div class="wrapper">
+  <%= render 'shared/header' %>
+  <div class="row area-grid">
+    <div class="row">
+        <div class="small-12 columns text-center info-text">
+            Coordenador
+        </div>
+    </div>
+    
+    <%= render 'form', coordinator: @coordinator %>
+   
+  </div>
+</div>
+<%= render 'shared/footer' %>

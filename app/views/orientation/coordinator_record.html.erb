@@ -1,0 +1,26 @@
+<div class="wrapper">
+  <div class="row" id="header">
+     <%= render 'shared/header' %>
+  </div>
+  
+  <div class="row">
+    <table class="unstriped">
+      <thead>
+        <tr>
+          <th>Nome</th>
+          <th colspan="3"></th>
+        </tr>
+      </thead>
+      <tbody>
+        <% @professor_users.each do |x| %>
+          <tr>
+            <td><%= x.nome %></td>
+            <td><%= link_to 'Alunos', orientation_path(x.id) %></td>
+          </tr>
+        <% end %>
+      </tbody>
+    </table>
+  </div>
+  
+</div> 
+<%= render 'shared/footer' %>

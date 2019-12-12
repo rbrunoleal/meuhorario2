@@ -3,12 +3,7 @@
         <div class="top-bar-left">
             <ul class="dropdown menu" data-dropdown-menu>
                 <li><a href="<%= root_path %>">Meu Horário</a></li>
-                <% if user_signed_in? %>
-                    <% if current_user.enable? %>
-                        <li><a href="<%= historic_path %>">Histórico</a></li>
-                        <li><a href="<%= planning_path %>">Planejamento</a></li>
-                    <% end %>
-                <% end %>
+                <%= render 'shared/user_rule' %>
             </ul>
         </div>
         <div class="top-bar-right">
