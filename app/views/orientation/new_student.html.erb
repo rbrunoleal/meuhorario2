@@ -3,15 +3,11 @@
   <div class="row area-grid">
     <div class="row">
         <div class="small-12 columns text-center info-text">
-            Editar Aluno
+            Cadastro Aluno
         </div>
     </div>
     
-    <%= render 'form', student: @student %>
-  
-    <div class="row">  
-    <%= link_to "Voltar", students_path, :class=>"button export-button float-left" %>
-    </div>
+    <%= render 'form', orientation: @orientation %>
     
   </div>
 </div>

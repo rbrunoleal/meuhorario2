@@ -1,0 +1,44 @@
+<div class="wrapper">
+  <%= render 'shared/header' %>
+  <div class="row area-grid text-center">
+    <div class="row">
+      <div class="small-12 columns text-center info-text">
+          Professores
+      </div>
+    </div>
+    
+    <div class="row">
+       <table id="largeTable" class="schedule-table large-table">
+        <thead>
+          <tr>
+            <th width="250">Nome</th>
+            <th width="30"></th>
+          </tr>
+        </thead>
+        <tbody>
+          <% @professor_users.each do |professor| %>
+            <tr>
+              <td><%= professor.name %></td>
+              <td><%= link_to 'Alunos', orientations_path(professor) %></td>
+            </tr>
+          <% end %>
+        </tbody>
+      </table>
+    </div>
+    
+    <div class="row">
+      <span id="goToTop" class="go-to-top float-left">▲ Topo</span>
+    </div>
+  </div> 
+</div>
+<%= render 'shared/footer' %>
+
+<% content_for :script do %>
+<script>
+    $("#goToTop").click(function() {
+          $('html,body').animate({
+              scrollTop: $("#header").offset().top
+          }, 500);
+    });
+</script>
+<% end %>

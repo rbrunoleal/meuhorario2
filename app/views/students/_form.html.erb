@@ -1,4 +1,13 @@
 <%= form_for(student) do |f| %>
+   <% if student.errors.any? %>
+    <% student.errors.values.each do |msg| %>
+      <% msg.each do |ex| %>
+        <% flash.now[:danger] = ex %>
+      <% end %>
+    <% end %>
+  <% end %>
+
+
   <div class="row">
     <div class='large-8 columns'>
       <%= f.label :name, 'Nome Completo' %>

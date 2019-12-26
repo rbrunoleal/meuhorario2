@@ -1,0 +1,130 @@
+<div class="wrapper">
+  <%= render 'shared/header' %>
+  <div class="row area-grid">
+    <div class="row">
+        <div class="small-12 columns text-center info-text">
+            Professores
+            <div class="subtext">Professores <%= @department %> </div>
+        </div>
+    </div>
+    
+    <div class="row">
+        <ul id="blockTabs" class="tabs" data-tabs>
+            <li id="historic" class="tabs-title is-active" aria-selected="true"><a href="#historic">Professores</a></li>
+        </ul>
+    </div>
+
+    <div class="row block tabs-content" data-tabs-content="blockTabs">
+        <div id="historic" class="tabs-panel no-padding is-active">
+            <div id="historic_insert">
+                <div class="row" style="margin-bottom: 20px;">
+                   <div id="handsontable" class="hot htCenter handsontable htRowHeaders htColumnHeaders"></div>
+                   
+                </div>
+            </div>
+            
+            <div class="row">
+                <div class="small-12 columns">
+                    <span id="goToTop" class="go-to-top float-left">▲ Topo</span>
+                    <a id="moreLine" class="float-right">Adicionar +10 Linhas</a>
+                </div>
+            </div>
+            
+            <div class="row">
+              <div class="columns small-6 large-2">
+                  <%= link_to "Voltar", professor_users_path, :class=>"button export-button float-left" %>  
+              </div>
+              <div class="columns small-12 large-2">
+                <div id="orientation_record" class="button export-button float-right">Salvar</div>
+              </div>
+            </div>
+        </div>
+    </div>
+    
+  </div>
+</div>
+
+<%= render 'shared/footer' %>
+
+<% content_for :script do %>
+<script>
+    function load_handsontable() {
+        $container = $("#handsontable");
+        handsontable = $container.data('handsontable');
+        
+        var config = {
+            preventOverflow: 'horizontal',
+                startCols: 2,
+                startRows: 10,
+                className: "htCenter",
+                rowHeaders: true,
+                colHeaders: ['Nome', 'Usuário'],
+                licenseKey: "non-commercial-and-evaluation",
+                colWidths: [750, 320],
+                headerTooltips: {
+                    rows: false,
+                    columns: true,
+                    onlyTrimmed: true
+                }
+            };
+        $("#handsontable").handsontable(config);
+        
+    }
+    
+    var $container = $("#handsontable");
+    var handsontable = $container.data('handsontable');
+    
+    $("#goToTop").click(function() {
+      $('html,body').animate({
+          scrollTop: $("#header").offset().top
+      }, 500);
+    });
+    
+     $("#moreLine").click(function() {
+        $container = $("#handsontable");
+        handsontable = $container.data('handsontable');
+        var col = handsontable.countRows();
+        for (var i = 0; i < 10; i++) {
+            handsontable.alter('insert_row', col, 1);
+        }
+    })
+
+
+    function load_professors_inserted() {
+        var prefessors_inserted = [];
+        
+        var get_table_professors = $container.data('handsontable').getData();
+        
+        get_table_professors.forEach(function(x){
+            if(!x[0] || x[0] == null || x[0] == undefined || x[0] == "" || x[0].length == 0){
+                return;
+            }
+            if(!x[1] || x[1] == null || x[1] == undefined || x[1] == "" || x[1].length == 0){
+                return;
+            }
+            var obj_professor = {
+                name: x[0],
+                usuario: x[1]
+            }
+            prefessors_inserted.push(obj_professor);
+        });
+        return prefessors_inserted;
+    }
+    
+    $("#orientation_record").click(function() {
+        professor_users = load_professors_inserted();
+        $.ajax({
+          url: "/professor_users/table",
+          type: "post",
+          data: {
+              data_professor_users: JSON.stringify(professor_users)
+          }
+        });
+    });
+    
+    $(document).ready(function() {
+        load_handsontable();
+    });
+    
+</script>
+<% end %>

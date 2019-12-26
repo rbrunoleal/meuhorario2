@@ -145,12 +145,12 @@ ActiveRecord::Schema.define(version: 20191210153603) do
   end
 
   create_table "orientations", force: :cascade do |t|
+    t.string   "name"
+    t.string   "matricula"
     t.integer  "professor_user_id"
-    t.integer  "student_id"
     t.datetime "created_at",        null: false
     t.datetime "updated_at",        null: false
     t.index ["professor_user_id"], name: "index_orientations_on_professor_user_id", using: :btree
-    t.index ["student_id"], name: "index_orientations_on_student_id", using: :btree
   end
 
   create_table "plannings", force: :cascade do |t|
@@ -193,11 +193,10 @@ ActiveRecord::Schema.define(version: 20191210153603) do
   create_table "professor_users", force: :cascade do |t|
     t.string   "name"
     t.integer  "department_id"
-    t.boolean  "approved",      default: false
     t.string   "username"
     t.integer  "user_id"
-    t.datetime "created_at",                    null: false
-    t.datetime "updated_at",                    null: false
+    t.datetime "created_at",    null: false
+    t.datetime "updated_at",    null: false
     t.index ["department_id"], name: "index_professor_users_on_department_id", using: :btree
     t.index ["user_id"], name: "index_professor_users_on_user_id", unique: true, using: :btree
   end
@@ -256,8 +255,6 @@ ActiveRecord::Schema.define(version: 20191210153603) do
     t.datetime "last_sign_in_at"
     t.string   "current_sign_in_ip"
     t.string   "last_sign_in_ip"
-    t.integer  "failed_attempts",    default: 0,     null: false
-    t.string   "unlock_token"
     t.datetime "locked_at"
     t.datetime "created_at",                         null: false
     t.datetime "updated_at",                         null: false
@@ -282,7 +279,6 @@ ActiveRecord::Schema.define(version: 20191210153603) do
   add_foreign_key "disciplines_plannings", "plannings"
   add_foreign_key "historics", "students"
   add_foreign_key "orientations", "professor_users"
-  add_foreign_key "orientations", "students"
   add_foreign_key "plannings", "students"
   add_foreign_key "pre_enrollments", "coordinators"
   add_foreign_key "pre_enrollments", "courses"

@@ -18,12 +18,11 @@ class CoordinatorsController < ApplicationController
 
   def create
     @coordinator = Coordinator.new(coordinator_params)
-
     respond_to do |format|
       if @coordinator.save
-       format.html { redirect_to coordinators_path, sucess: 'Coordenador salvo.'}
+        format.html { redirect_to coordinators_path, success: 'Coordenador salvo.' }
       else
-        format.html { render :new, danger: 'Erro ao salvar semestre, tente novamente.' }
+        format.html { render :new, danger: 'Erro ao salvar coordenador, tente novamente.' }
       end
     end
   end
@@ -31,7 +30,7 @@ class CoordinatorsController < ApplicationController
   def update
     respond_to do |format|
       if @coordinator.update(coordinator_params)
-        format.html { redirect_to coordinators_path, sucess: 'Coordenador salvo.'}
+        format.html { redirect_to coordinators_path, success: 'Coordenador salvo.'}
       else
         format.html { render :edit, danger: 'Erro ao salvar coordenador, tente novamente.' }
       end
@@ -39,9 +38,16 @@ class CoordinatorsController < ApplicationController
   end
 
   def destroy
-    @coordinator.destroy
+    ActiveRecord::Base.transaction do
+      @user = User.find_by(username: @coordinator.username)
+      if @user
+        @user.reset
+        @user.save
+      end
+      @coordinator.destroy
+    end
     respond_to do |format|
-      format.html { redirect_to coordinators_url, notice: 'Excluido.' }
+     format.html { redirect_to coordinators_path, success: 'Coordenador excluído.' }
     end
   end
 

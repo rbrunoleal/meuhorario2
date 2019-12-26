@@ -1,0 +1,72 @@
+<div class="wrapper">
+  <%= render 'shared/header' %>
+  <div class="row area-grid text-center">
+    <div class="row">
+        <div class="small-12 columns text-center info-text">
+            Alunos
+            <div class="subtext"> <%= @course %> </div>
+        </div>
+    </div>
+    
+    <div class="row">
+      <%= form_tag '', :method => :get do  %>
+      <div class="columns large-12">
+        <div class='medium-2 columns '>
+           <div class="subtext"> Nome: </div>
+        </div>
+        <div class='medium-4 columns'>
+           <%= text_field_tag :name_student, @search[:name] %>
+        </div>
+        <div class='medium-2 columns '>
+           <div class="subtext"> Matrícula: </div>
+        </div>
+        <div class='medium-2 columns'>
+           <%= text_field_tag :matricula_student, @search[:matricula] %>
+        </div>
+        <div class='medium-2 columns'>
+          <%=submit_tag("Pesquisar", name: 'search', class: 'button')%>
+        </div>
+      </div>
+      <% end %>
+    </div>
+    
+    <table id="largeTable" class="schedule-table large-table unstriped">
+      <thead>
+        <tr>
+          <th width="80"> Nome</th>
+          <th width="80"> Matrícula</th>
+          <th width="80"> E-mail</th>
+          <th width="30"></th>
+          <th width="30"></th>
+        </tr>
+      </thead>
+      <tbody>
+          <% @students.each do |student| %>
+            <tr>
+              <td><%= student.name %></td>
+              <td><%= student.matricula %></td>
+              <td><%= student.email %></td>
+              <td><%= link_to 'Editar', edit_student_path(student) %></td>
+              <td><%= link_to 'Apagar', student, method: :delete, data: { confirm: 'Você tem certeza?' } %></td>
+            </tr>
+          <% end %>
+      </tbody>
+    </table>
+    
+    <div class="row">
+      <span id="goToTop" class="go-to-top float-left">▲ Topo</span>
+    </div>
+    
+  </div>
+</div>
+<%= render 'shared/footer' %>
+
+<% content_for :script do %>
+<script>
+    $("#goToTop").click(function() {
+          $('html,body').animate({
+              scrollTop: $("#header").offset().top
+          }, 500);
+    });
+</script>
+<% end %>

@@ -1,10 +1,11 @@
 class ProfessorUsersController < ApplicationController
   before_action :authenticate_user!
-  before_action :set_professor_user, only: [:edit, :update, :destroy, :approved, :disapproved]
+  before_action :set_professor_user, only: [:edit, :update, :destroy]
 
   def index
     @user = current_user
     @professor_users = ProfessorUser.all.select { |professor| professor.department.courses.include?(@user.coordinator.course) }
+    @department = @user.coordinator.course.department_course.department.name
   end
 
   def edit
@@ -14,77 +15,68 @@ class ProfessorUsersController < ApplicationController
     @professor_user = ProfessorUser.new
   end
   
-  def new_access
-    @professor_user = ProfessorUser.new
+  def table_professors
+    @user = current_user
+    @department = @user.coordinator.course.department_course.department.name
   end
   
-  def create_access
-    byebug
+  def complete_professors
     @user = current_user
-    @professor_user = ProfessorUser.new(professor_user_access_params)
-    @professor_user.user = @user
-    @professor_user.username = @user.username
+    @result =  JSON.parse(params[:data_professor_users])
+    ActiveRecord::Base.transaction do
+      begin
+        if(@result)
+          @result.each do |r|
+            @professor_user = ProfessorUser.find_by(username: r['usuario'].downcase)   
+            if(!@professor_user)
+              @professor_user = ProfessorUser.new(name: r['name'], username: r['usuario'].downcase)   
+              @professor_user.department = @user.coordinator.course.department_course.department
+              @professor_user.save!
+            end
+          end
+        end
+        respond_to do |format|
+          format.html { redirect_to professor_users_path, success: 'Professores cadastrados.'}      
+        end
+      rescue ActiveRecord::RecordInvalid => exception
+        respond_to do |format|
+          format.html { redirect_to professor_users_path, danger: 'Erro ao salvar professor, tente novamente.' }
+        end
+      end
+    end
+  end
+  
+  def create
+    @user = current_user
+    @professor_user = ProfessorUser.new(professor_user_params)
+    @professor_user.department = @user.coordinator.course.department_course.department
     respond_to do |format|
       if @professor_user.save
-        @user.enable = false
-        @user.rule = "professor"
-        if @user.save
-          format.html { redirect_to root_path, notice: 'Acesso Concluído.' }
-        else
-          format.html { render :new }
-        end      
+        format.html { redirect_to professor_users_path, success: 'Professor salvo.'}
       else
         format.html { render :new }
       end
     end
   end
   
-  def create
-    @professor_user = ProfessorUser.new(professor_user_params)
-    @professor_user.department = current_user.coordinator.course.department_course.department
-    @professor_user.approved = true
-    respond_to do |format|
-      if @professor_user.save
-        format.html { redirect_to professor_users_path, sucess: 'Professor salvo.'}
-      else
-        format.html { render :new, danger: 'Erro ao salvar professor, tente novamente.' }
-      end
-    end
-  end
-  
   def destroy
-    @professor_user.destroy
-    respond_to do |format|
-      format.html { redirect_to professor_users_url, notice: 'Professor excluido.' }
-    end
-  end
-  
-  def approved
-    @professor_user.approved = true
-    respond_to do |format|
-      if @professor_user.save
-        format.html { redirect_to professor_users_url, notice: 'Professor aprovado.' }
-      else
-        format.html { redirect_to professor_users_url, notice: 'Erro ao aprovar Professor.' }
+    ActiveRecord::Base.transaction do
+      @user = User.find_by(username: @professor_user.username)
+      if @user
+        @user.reset
+        @user.save
       end
+      @professor_user.destroy
     end
-  end
-  
-  def disapproved
-    @professor_user.approved = false
     respond_to do |format|
-      if @professor_user.save
-        format.html { redirect_to professor_users_url, notice: 'Professor desaprovado.' }
-      else
-        format.html { redirect_to professor_users_url, notice: 'Erro ao desaprovar Professor.' }
-      end
+     format.html { redirect_to professor_users_url, success: 'Professor excluído.' }
     end
   end
   
   def update
     respond_to do |format|
-      if @professor_user.update(professor_user_edit_params)
-        format.html { redirect_to @professor_user }
+      if @professor_user.update(professor_user_params)
+        format.html { redirect_to professor_users_path, success: 'Professor salvo.'}
       else
         format.html { render :edit }
       end
@@ -94,10 +86,6 @@ class ProfessorUsersController < ApplicationController
   private
     def set_professor_user
       @professor_user = ProfessorUser.find(params[:id])
-    end
-
-    def professor_user_access_params
-      params.require(:professor_user).permit(:name, :department_id)
     end
     
     def professor_user_params

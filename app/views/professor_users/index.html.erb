@@ -4,15 +4,15 @@
     <div class="row">
         <div class="small-12 columns text-center info-text">
             Professores
+            <div class="subtext"> <%= @department %> </div>
         </div>
     </div>
     
-    <table id="largeTable" class="schedule-table large-table">
+    <table id="largeTable" class="schedule-table large-table unstriped">
       <thead>
         <tr>
           <th width="250"> Nome</th>
-          <th width="100"> Username</th>
-          <th width="30"></th>
+          <th width="100"> Usuário</th>
           <th width="30"></th>
           <th width="30"></th>
         </tr>
@@ -22,11 +22,6 @@
             <tr>
               <td><%= professor_user.name %></td>
               <td><%= professor_user.username %></td>
-              <% if professor_user.approved? %>
-                <td><%= link_to 'Desaprovar', professor_user_disapproved_path(professor_user), method: :post %></td>
-              <% else %>
-                <td><%= link_to 'Aprovar', professorr_user_approved_path(professor_user), method: :post %></td>
-              <% end %>
               <td><%= link_to 'Editar', edit_professor_user_path(professor_user) %></td>
               <td><%= link_to 'Apagar', professor_user, method: :delete, data: { confirm: 'Você tem certeza?' } %></td>
             </tr>
@@ -34,10 +29,12 @@
       </tbody>
     </table>
     
-    
     <div class="row">
       <span id="goToTop" class="go-to-top float-left">▲ Topo</span>
-      <%= link_to "Novo Professor", new_professor_user_path, :class=>"button export-button float-right" %>
+      <div class="columns small-4 large-4 float-right">
+        <%= link_to "Adicionar via planilha", table_professors_path, :class=>"button export-button float-right" %>  
+        <%= link_to "Adicionar Professor", new_professor_user_path, :class=>"button export-button float-left" %>  
+      </div>
     </div>
     
   </div>

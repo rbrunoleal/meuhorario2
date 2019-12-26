@@ -1,4 +1,29 @@
 Rails.application.routes.draw do
+  
+  #User
+  devise_for :users, :skip => [:lockable] 
+  devise_scope :user do
+    get 'users', to: 'users#index'
+    delete 'users/:id', to: 'users#destroy', as: :delete_user
+    post 'users/lock_user/:id', to: 'users#lock', as: :lock_user
+    post 'users/unlock_user/:id', to: 'users#unlock', as: :unlock_user
+    post 'users/reset_user/:id', to: 'users#reset', as: :reset_user
+  end
+  
+  #Student
+  resources :students, only: [:index, :new, :edit, :create, :update, :destroy]
+  
+  #Coordinator
+  resources :coordinators, only: [:index, :new, :edit, :create, :update, :destroy]
+  
+  #Professor_user
+  resources :professor_users, only: [:index, :new, :edit, :create, :update, :destroy]
+  get 'professor_users/table' => 'professor_users#table_professors', as: :table_professors
+  post 'professor_users/table' => 'professor_users#complete_professors'
+  
+  
+  
+  
   get 'planning', to: 'planning#record'
   get 'planning/show', to: 'planning#show'
   post 'planning', to: 'planning#complete'
@@ -12,20 +37,27 @@ Rails.application.routes.draw do
   post 'registration/professor_record'
   post 'registration/student_record'
   
-  get 'orientation/record/:id' => 'orientation#record'
-  get 'orientation/coordinator_record' => 'orientation#coordinator_record'
-  get 'orientation/professor_record' => 'orientation#professor_record'
   
-  devise_for :users
+  get 'orientation/coordinator' => 'orientation#coordinator'
+  #Students
+  get 'orientation/:professor_id/students/:orientation_id/planning', :to => 'orientation#planning_student', as: :planning_orientation
+  get 'orientation/:professor_id/students/:orientation_id/historic', :to => 'orientation#historic_student', as: :historic_orientation
   
-  resources :coordinators
+  get 'orientation/:professor_id/students/many' => 'orientation#many_students', as: :many_orientations
+  post 'orientation/:professor_id/students/many' => 'orientation#complete_students'
+  get 'orientation/:professor_id/students' => 'orientation#students', as: :orientations
+  post 'orientation/:professor_id/students' => 'orientation#create_student'
+  get 'orientation/:professor_id/students/new' => 'orientation#new_student', as: :new_orientation
+  get 'orientation/:professor_id/students/:orientation_id/edit' => 'orientation#edit_student', as: :edit_orientation
   
-  resources :students, only: [:new, :edit, :create, :update]
-  resources :professor_users, only: [:index, :new, :edit, :create, :update, :destroy]
-  get 'professor_users/new/access', to: 'professor_users#new_access'
-  post 'professor_users/approved/:id' => 'professor_users#approved', :as => 'professorr_user_approved'
-  post 'professor_users/disapproved/:id' => 'professor_users#disapproved', :as => 'professor_user_disapproved'
-  post 'professor_users/create_access', to: 'professor_users#create_access'
+  patch 'orientation/:professor_id/students/:orientation_id', :to => 'orientation#student_update', as: :orientation
+  put 'orientation/:professor_id/students/:orientation_id', :to => 'orientation#student_update'
+  delete 'orientation/:professor_id/students/:orientation_id', :to => 'orientation#student_destroy'
+  
+  
+
+  
+ 
   
   resources :pre_enrollments
   get '/pre_enrollments/:id/result' => 'pre_enrollments#result', as: :pre_enrollments_result

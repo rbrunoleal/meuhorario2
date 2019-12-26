@@ -4,6 +4,7 @@
     <div class="row">
         <div class="small-12 columns text-center info-text">
             Coordenadores
+            <div class="subtext">Lista de Coordenadores</div>
         </div>
     </div>
     
@@ -11,7 +12,7 @@
       <thead> 
         <tr>
           <th width="100">Nome</th>
-          <th width="60">Username</th>
+          <th width="60">Usuário</th>
           <th width="130">Curso</th>
           <th width="30"></th>
           <th width="30"></th>
@@ -38,21 +39,14 @@
   </div>
 </div>
 
-<div class="tiny reveal" id="exampleModal5" data-reveal>
-    <p>OH I'M SO TIIINY</p>
-    <button class="close-button" data-close aria-label="Close reveal" type="button">
-      <span aria-hidden="true">&times;</span>
-    </button>
-</div>
 
 <%= render 'shared/footer' %>
-
 <% content_for :script do %>
 <script>
-    $("#goToTop").click(function() {
-          $('html,body').animate({
-              scrollTop: $("#header").offset().top
-          }, 500);
+   $("#goToTop").click(function() {
+        $('html,body').animate({
+            scrollTop: $("#header").offset().top
+        }, 500);
     });
 </script>
 <% end %>

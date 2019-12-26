@@ -1,7 +1,25 @@
 class StudentsController < ApplicationController
   before_action :authenticate_user!
-  before_action :set_student, only: [:edit, :update]
+  before_action :set_student, only: [:edit, :update, :destroy]
 
+  def index
+    @user = current_user
+    @course = @user.coordinator.course.name
+    
+    @students = Student.all.select { |student| student.course == @user.coordinator.course }
+    
+    @search = {name: "", matricula: ""}
+    if(params.has_key?(:search))
+      if params[:matricula_student].present?
+        @students = @students.select { |student| student.matricula.include? params[:matricula_student] }
+      end
+      if params[:name_student].present?
+        @students = @students.select { |student| student.name.include? params[:name_student] }
+      end
+      @search = {name: params[:name_student], matricula: params[:matricula_student]}
+    end
+  end
+  
   def edit
   end
   
@@ -31,11 +49,25 @@ class StudentsController < ApplicationController
       format.html { redirect_to root_path, success: 'Cadastro realizado.'}
     end
   end
+  
+  def destroy
+    ActiveRecord::Base.transaction do
+      @user = User.find_by(username: @student.username)
+      if @user
+        @user.reset
+        @user.save
+      end
+      @student.destroy
+    end
+    respond_to do |format|
+     format.html { redirect_to professor_users_url, success: 'Aluno excluído.' }
+    end
+  end
 
   def update
     respond_to do |format|
       if @student.update(student_params)
-        format.html { redirect_to painel_path }
+        format.html { redirect_to students_path }
       else
         format.html { render :edit }
       end

@@ -1,10 +1,15 @@
 <ul class="dropdown menu" data-dropdown-menu>
-  <% if user_signed_in? %>
-    <% if !current_user.enable? %>
-      <li><%= link_to('Cadastro', registration_path) %></li>
-    <% end %>  
-    <li><%= link_to('Logout', destroy_user_session_path, method: :delete) %></li>
-<% else %>
-    <li><%= link_to('Login', new_user_session_path) %></li>
-<% end %>
+   <% if user_signed_in? %>
+    <li>
+      <a><%= current_user.username %></a>
+        <ul class="menu">
+            <% if !current_user.enable? %>
+                <li><%= link_to('Completar cadastro', registration_path) %></li>
+            <% end %>
+            <li><%= link_to('Logout', destroy_user_session_path, method: :delete) %></li>
+        </ul>
+    </li>
+   <% else %>
+        <li><%= link_to('Login', new_user_session_path) %></li>
+   <% end %>
 </ul>

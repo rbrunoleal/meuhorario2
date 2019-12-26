@@ -1,0 +1,23 @@
+<%= form_for (orientation) do |f| %>
+  <div class="row">
+    <div class='large-8 columns'>
+      <%= f.label :name, 'Nome Completo' %>
+      <%= f.text_field :name %>
+    </div>  
+  </div>
+  
+  <div class="row">
+    <div class='medium-2 columns'>
+      <%= f.label :matricula, 'Matrícula' %>
+      <%= f.text_field :matricula %>
+    </div>
+  </div>
+
+  <div class="row">
+    <div class="small-12 columns">
+      <%= f.submit 'Salvar', :class => 'button export-button float-right'%>
+      <%= link_to "Voltar", orientations_path, :class=>"button export-button float-left" %>
+    </div>  
+  </div>
+  
+<% end %>

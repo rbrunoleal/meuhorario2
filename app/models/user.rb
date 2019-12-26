@@ -11,15 +11,15 @@ class User < ApplicationRecord
     coordinator: 2
   }
   
-  def name
-    return case self.rule
-    when "student"
-      return self.student.name
-    when "professor"
-      return self.professor_user.name
-    else
-      return self.coordinator.name
+  def reset
+    if self.student
+      self.student.destroy
     end
+    self.student = nil
+    self.coordinator = nil
+    self.professor_user = nil
+    self.rule = 0
+    self.enable = false
   end
   
 end
