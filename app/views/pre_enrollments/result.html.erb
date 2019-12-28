@@ -1,19 +1,94 @@
-<h3>Obrigatórias</h3>
-  
-  <div class = "field">
-    <% @disciplines_ob.each do |discipline| -%>
-        <%= discipline.identifier + ' - ' + discipline.association_quantity.to_s %>
-      </br>
-    <% end -%>
+<div class="wrapper">
+  <div class="row">
+     <%= render 'shared/header' %>
   </div>
+  <div class="row">
+        <div class="small-12 columns text-center info-text">
+            Pré-Matrícula Resultado
+            <div class="subtext"> <%= @course %> </div>
+        </div>
+    </div>
   
-<h3>Optativas</h3>
-  
-  <div class = "field">
-    <% @disciplines_op.each do |discipline| -%>
-        <%= discipline.identifier + ' - ' + discipline.association_quantity.to_s %>
-      </br>
-    <% end -%>
+  <div id="row_tabs" class="row staticsss">
+    <ul id="blockTabs" class="tabs" data-tabs>
+      <li id="discipline_ob" class="tabs-title is-active" aria-selected="true"><a href="#mandatory">Obrigatórias</a></li>
+      <li id="discipline_op" class="tabs-title"><a href="#elective">Optativas</a></li>
+    </ul>
   </div>
 
-<%= link_to 'Voltar', pre_enrollments_path %>
+  <div class="row block tabs-content" data-tabs-content="blockTabs">
+    <div id="mandatory" class="tabs-panel no-padding is-active">
+       <table id="largeTable" class="schedule-table large-table unstriped">
+        <thead> 
+          <tr>
+            <th width="40">Código</th>
+            <th width="130">Nome</th>
+            <th width="40">Quantidade</th>
+            <th width="30"></th>
+          </tr>
+        </thead>
+        <tbody>
+            <% @disciplines_ob.each do |ob| %>
+              <tr>
+                <td><%= ob.code %></td>
+                <td><%= ob.name %></td>
+                <td><%= ob.quantity %></td>
+                <% if ob.quantity > 0 %>
+                  <td>alunos</td>
+                <% else %>
+                  <td>-</td>
+                <% end %>
+              </tr>
+            <% end %>
+        </tbody>
+      </table>
+    </div>
+
+    <div id="elective" class="tabs-panel no-padding">
+       <table id="largeTable" class="schedule-table large-table unstriped">
+        <thead> 
+          <tr>
+            <th width="40">Código</th>
+            <th width="130">Nome</th>
+            <th width="40">Quantidade</th>
+            <th width="30"></th>
+          </tr>
+        </thead>
+        <tbody>
+            <% @disciplines_op.each do |ob| %>
+              <tr>
+                <td><%= ob.code %></td>
+                <td><%= ob.name %></td>
+                <td><%= ob.quantity %></td>
+                <% if ob.quantity > 0 %>
+                  <td>alunos</td>
+                <% else %>
+                  <td>-</td>
+                <% end %>
+              </tr>
+            <% end %>
+        </tbody>
+      </table>
+    </div>
+    
+    <div class="row">
+      <div class="small-12 columns">
+        <span id="goToTop" class="go-to-top">▲ Topo</span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<%= render 'shared/footer' %>
+
+<% content_for :script do %>
+<script>
+    
+  $("#goToTop").click(function() {
+      $('html,body').animate({
+          scrollTop: $("#header").offset().top
+      }, 500);
+  });
+
+</script>
+<% end %>

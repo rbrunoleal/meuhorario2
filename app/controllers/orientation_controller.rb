@@ -5,6 +5,7 @@ class OrientationController < ApplicationController
   def coordinator
     @user = current_user
     @professor_users = ProfessorUser.all.select { |professor| professor.department.courses.include?(@user.coordinator.course) }
+    @department = @user.coordinator.course.department_course.department.name
   end
   
   def students
@@ -18,8 +19,8 @@ class OrientationController < ApplicationController
         matricula: o.matricula,
         email: (@student.present?) ? @student.email : "",
         record: (@student.present?) ? "Realizado" : "Pendente",
-        planning: (@student.present?) ? (@student.plannings?) ? @student.id : "" : "",
-        historic: (@student.present?) ? (@student.historics?) ? @student.id : "" : "",
+        planning: (@student.present?) ? (@student.plannings.present?) ? @student.id : "" : "",
+        historic: (@student.present?) ? (@student.historics.present?) ? @student.id : "" : "",
       })
       @orientation_result << obj
     end
@@ -61,34 +62,36 @@ class OrientationController < ApplicationController
     end
   end
   
-  def many_students
-    @professor = params[:professor_id].to_json
+  def table_students
+    @professor = ProfessorUser.find(params[:professor_id])
   end
   
   def complete_students
     @result =  JSON.parse(params[:data_orientations])
     @professor = ProfessorUser.find(params[:professor_id])
-    orientations_record = []
-    respond_to do |format|
-      ActiveRecord::Base.transaction do
+    ActiveRecord::Base.transaction do
       begin
         if(@result)
           @result.each do |r|
-            @orientation = Orientation.new(name: r['name'], matricula: r['matricula']) 
-            orientations_record << @orientation
+            byebug
+            @orientation = @professor.orientations.select {|x| x.matricula == r['matricula']} 
+            if(!@orientation)
+              @orientation = Orientation.new(name: r['name'], matricula: r['matricula']) 
+              @professor.orientations << @orientation
+            end
           end
-          @professor.orientations = orientations_record
           @professor.save!
         end
-        rescue ActiveRecord::RecordInvalid => exception
-          flash.now[:danger] = 'Erro ao salvar Alunos, tente novamente.'
-          format.html { render :many_students }
+        respond_to do |format|
+          format.html { redirect_to orientations_path, success: 'Alunos cadastrados.'}      
+        end
+      rescue ActiveRecord::RecordInvalid => exception
+        respond_to do |format|
+          format.html { redirect_to orientations_path, danger: 'Erro ao salvar alunos, tente novamente.' }
         end
       end
-      format.html { redirect_to orientations_path, success: 'Alunos cadastrados.'}
     end
   end
-  
   
   def planning_student
     @student = Student.find(params[:orientation_id])

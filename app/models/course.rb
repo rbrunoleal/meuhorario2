@@ -8,13 +8,16 @@ class Course < ApplicationRecord
   has_one :department_course, dependent: :destroy
   
   has_many :pre_enrollments
+  
   def pre_enrollments_available
     @now = Time.current
-    return self.pre_enrollments.where('date_start <= ? and date_end >= ?', @now, @now)
+    return self.pre_enrollments.where('start_date <= ? and end_date >= ?', @now, @now)
   end
+  
   def disciplines_required
     return self.course_disciplines.where(nature: 'OB').sort_by { |e| e.discipline.code }
   end
+  
   def disciplines_optional
     return self.course_disciplines.where(nature: 'OP').sort_by { |e| e.discipline.code }
   end

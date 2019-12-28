@@ -14,6 +14,7 @@ class Student < ApplicationRecord
   validates :email, format: { with: /(\A([a-z]*\s*)*\<*([^@\s]+)@((?:[-a-z0-9]+\.)+[a-z]{2,})\>*\Z)/i , message: "E-mail inválido."}
     
   has_many :record_enrollments, dependent: :destroy  
+  has_many :pre_enrollments, :through => :record_enrollments
   
   has_many :plannings, dependent: :destroy
   has_many :disciplines_plannings, :through => :plannings

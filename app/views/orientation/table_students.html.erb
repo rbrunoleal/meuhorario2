@@ -4,16 +4,8 @@
     <div class="row">
         <div class="small-12 columns text-center info-text">
             Alunos
+            <div class="subtext">Cadastrar alunos para orientação acadêmica com <%= @professor.name %></div>
         </div>
-    </div>
-    
-    <div class="row">
-      <div class="columns small-6 large-2">
-          <%= link_to "Voltar", orientations_path, :class=>"button export-button float-left" %>  
-      </div>
-      <div class="columns small-12 large-2">
-        <div id="orientation_record" class="button export-button float-right">Salvar</div>
-      </div>
     </div>
     
     <div class="row">
@@ -29,16 +21,21 @@
                    <div id="handsontable" class="hot htCenter handsontable htRowHeaders htColumnHeaders"></div>
                    
                 </div>
-                <div class="row">
-                    <div class="small-12 columns">
-                        <a id="moreLine" class="float-right">Adicionar +10 Linhas</a>
-                    </div>
+            </div>
+
+            <div class="row">
+                <div class="small-12 columns">
+                    <span id="goToTop" class="go-to-top float-left">▲ Topo</span>
+                    <a id="moreLine" class="float-right">Adicionar +10 Linhas</a>
                 </div>
             </div>
             
             <div class="row">
-              <div class="small-12 columns">
-                <span id="goToTop" class="go-to-top">▲ Topo</span>
+              <div class="columns small-6 large-2">
+                  <%= link_to "Voltar", orientations_path, :class=>"button export-button float-left" %>  
+              </div>
+              <div class="columns small-12 large-2">
+                <div id="orientation_record" class="button export-button float-right">Salvar</div>
               </div>
             </div>
         </div>
@@ -51,7 +48,7 @@
 
 <% content_for :script do %>
 <script>
-    var professor = <%= raw @professor  %>;
+    var professor = <%= raw @professor.id  %>;
     
     function load_handsontable() {
         $container = $("#handsontable");

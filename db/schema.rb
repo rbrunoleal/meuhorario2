@@ -108,10 +108,9 @@ ActiveRecord::Schema.define(version: 20191210153603) do
 
   create_table "disciplines_enrollments", force: :cascade do |t|
     t.integer  "pre_enrollment_id"
-    t.integer  "course_discipline_id"
-    t.datetime "created_at",           null: false
-    t.datetime "updated_at",           null: false
-    t.index ["course_discipline_id"], name: "index_disciplines_enrollments_on_course_discipline_id", using: :btree
+    t.string   "code"
+    t.datetime "created_at",        null: false
+    t.datetime "updated_at",        null: false
     t.index ["pre_enrollment_id"], name: "index_disciplines_enrollments_on_pre_enrollment_id", using: :btree
   end
 
@@ -163,9 +162,10 @@ ActiveRecord::Schema.define(version: 20191210153603) do
   end
 
   create_table "pre_enrollments", force: :cascade do |t|
-    t.string   "semester"
-    t.datetime "date_start"
-    t.datetime "date_end"
+    t.integer  "year"
+    t.integer  "period"
+    t.datetime "start_date"
+    t.datetime "end_date"
     t.integer  "course_id"
     t.integer  "coordinator_id"
     t.datetime "created_at",     null: false
@@ -273,7 +273,6 @@ ActiveRecord::Schema.define(version: 20191210153603) do
   add_foreign_key "department_courses", "departments"
   add_foreign_key "discipline_class_offers", "discipline_classes"
   add_foreign_key "discipline_classes", "disciplines"
-  add_foreign_key "disciplines_enrollments", "course_disciplines"
   add_foreign_key "disciplines_enrollments", "pre_enrollments"
   add_foreign_key "disciplines_historics", "historics"
   add_foreign_key "disciplines_plannings", "plannings"

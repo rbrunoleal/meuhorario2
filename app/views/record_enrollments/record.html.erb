@@ -1,0 +1,240 @@
+<div class="wrapper">
+  <div class="row">
+     <%= render 'shared/header' %>
+  </div>
+
+  <div data-sticky-container>
+    <div id="header_sticky" data-sticky data-margin-top='0' data-top-anchor="header:bottom" class="sticky_custom">
+      <div class="row">
+        <div id=course_info class="row">
+          <div class="small-12 columns text-center info-text">
+            Cadastro Pré-Matrícula
+            <div class="subtext"><%= @course.name %></div>
+          </div>
+        </div>
+        <div class="row">
+          <div id="button_complete_record" class="button export-button float-right">Concluir</div>
+          <%= link_to "Voltar", record_enrollments_path, :class=>"button export-button float-left" %>
+        </div>
+      </div>
+    </div>
+  </div>
+  
+  
+  <div id="row_tabs" class="row staticsss">
+    <ul id="blockTabs" class="tabs" data-tabs>
+      <li id="discipline_ob" class="tabs-title is-active" aria-selected="true"><a href="#mandatory">Obrigatórias</a></li>
+      <li id="discipline_op" class="tabs-title"><a href="#elective">Optativas</a></li>
+    </ul>
+  </div>
+
+  <div class="row block tabs-content" data-tabs-content="blockTabs">
+    <div id="mandatory" class="tabs-panel no-padding is-active">
+      <div class="row show-for-large">
+        <div class="medium-1 columns text-center no-padding column-title">
+          Semestre
+        </div>
+        <div class="medium-11 columns text-center column-title">
+          Disciplinas
+        </div>
+      </div>
+
+      <% unless @semesters.blank? %>
+        <% width = 100.0 / @semesters.max_by{ |s| s ? s.size : 0 }.size %>
+        <% @semesters[1..-1].each_with_index do |semester, i| %>
+          <% if semester %>
+            <div id="semester_row_number<%=i + 1%>" class="row semester-row">
+              <div class="small-12 large-1 columns text-center no-padding semester">
+                <span class="number"><%= i + 1 %><span class="hide-for-large">º Semestre</span></span>
+              </div>
+
+              <div class="small-12 large-11 columns">
+                <% semester.each do |discipline| %>
+                  <div id="<%= discipline.code %>" code="<%= discipline.code %>" click-source="curriculo" class="block-discipline discipline text-center" style="width: <%= width %>%;" >
+                    <div class="text">
+                      <div class="code"><%= discipline.code %></div>
+                      <div class="name"><%= discipline.name %></div>
+                    </div>
+                  </div>
+                <% end %>
+              </div>
+            </div>
+          <% end %>
+        <% end %>
+      <% end %>
+    </div>
+
+    <div id="elective" class="tabs-panel no-padding">
+      <div class="search">
+        <i class="icon-search"></i>
+        <input id="electiveFilterInput" class="search-bar small-12 large-offset-1 large-10 columns" type="text" placeholder="Nome ou código da disciplina" />
+      </div>
+
+      <div class="small-12 columns no-padding">
+        <ul class="block-list">
+          <% @ops.each do |op| %>
+            <li id="<%= op.code %>" code="<%= op.code %>" click-source="optativa" class="block-list-item list-item-discipline elective-discipline discipline"><%= "#{op.code} - #{op.name}" %></li>
+          <% end %>
+        </ul>
+      </div>
+    </div>
+    
+    <div class="row">
+      <div class="small-12 columns">
+        <span id="goToTop" class="go-to-top">▲ Topo</span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<%= render 'shared/footer' %>
+<% content_for :script do %>
+<script>
+  var pre_requisites       = <%= raw @pre  %>;
+  var post_requisites      = <%= raw @post %>;
+  var disciplines_pre      = <%= raw @disciplines_pre.to_json %>;
+  var pre_enrollment       = <%= raw @pre_enrollment.to_json %>;
+  var record_enrollment    = <%= raw @record_enrollment %>;
+
+  var selected_disciplines = [];
+  
+  if (record_enrollment){
+    selected_disciplines = record_enrollment.disciplines;  
+  }
+  
+  
+  $("#goToTop").click(function() {
+      $('html,body').animate({
+          scrollTop: $("#header").offset().top
+      }, 500);
+  });
+  
+  $("#electiveFilterInput").on("input", function() {
+      filterList("elective-discipline", $(this).val());
+  });
+  
+  $("#button_complete_record").click(function() {
+        var obj_record_enrollment = {
+           pre_enrollment: pre_enrollment,
+           disciplines: selected_disciplines
+        };
+        $.ajax({
+            url: "/record_enrollments",
+            type: "post",
+            data: {
+                data_record_enrollment: JSON.stringify(obj_record_enrollment)
+            }
+        });
+  });
+  
+  $("#searchForm").submit(function() {
+    var pattern = $("#allinput").val();
+    if (pattern.length == 0)
+        $("#allinput").addClass("error");
+    else {
+        $("#allinput").removeClass("error");
+        $("#allBlockList").empty();
+        var query = $("#allinput").val();
+
+        $.ajax({
+                type: 'GET',
+                url: '<%= discipline_ajax_search_path %>',
+                data: {
+                    pattern: query
+                },
+                dataType: 'html'
+            })
+            .done(function(html) {
+                $("#allBlockList").html(html);
+                updateDisciplineEvents("search-discipline", true);
+            });
+    }
+    return false;
+  });
+  
+  contains_discipline  = function(code) {
+    var semester_discipline = paramSemesters.find(function(x) {
+      if (x.disciplines.includes(code)) {
+        return x;
+      }
+    });
+    return semester_discipline;
+  }
+  
+  delete_discipline_selected  = function(code) {
+    var indexDiscipline = selected_disciplines.indexOf(code);
+    if (indexDiscipline > -1) {
+      selected_disciplines.splice(indexDiscipline, 1);
+    }
+  }
+  
+  fill_disciplines = function() {
+    selected_disciplines.forEach(function(disc) {
+        fill_selected(disc);
+      });
+  }
+
+  fill_selected = function(code) {
+    var $discipline = $("#" + code);
+    if ($discipline) {
+      if($discipline.is("li")) {
+        !selected_disciplines.includes(code) ? $discipline.removeClass("highlight_discipline_op") : $discipline.addClass("highlight_discipline_op");  
+      }
+      else {
+        !selected_disciplines.includes(code) ? $discipline.removeClass("highlight_discipline_ob") : $discipline.addClass("highlight_discipline_ob");
+      }
+    }
+  }
+
+  var select_discipline = function(class_name) {
+      $("." + class_name).off('click').click(function(event) {
+          var code = $(this).attr('code');
+          if (selected_disciplines.includes(code)) {
+            delete_discipline_selected(code);
+          }
+          else {
+            selected_disciplines.push(code);
+          }
+          fill_selected(code);
+          event.stopPropagation();
+          event.preventDefault();
+      });
+  }
+  
+  var changeBgColor = function(code, color_pre, color_post) {
+      return function() {
+          if (pre_requisites[code]) {
+              pre_requisites[code].forEach(function(preReq) {
+                  var $preReq = $("#" + preReq);
+                  if ($preReq)
+                    $preReq.css("background-color", color_pre);
+              });
+          }
+          if (post_requisites[code]) {
+              post_requisites[code].forEach(function(postReq) {
+                  if (!selected_disciplines.includes(postReq)) {
+                      var $postReq = $("#" + postReq);
+                      if ($postReq)
+                          $postReq.css("background-color", color_post);
+                  }
+              });
+          }
+      };
+  }
+  
+  $(document).ready(function() {
+      var spinner = new Spinner().spin();
+      $("#loader").append(spinner.el)
+  
+      $(".block-discipline").each(function() {
+          var code = $(this).attr("code");
+          $(this).mouseenter(changeBgColor(code, "#F5C5C5", "#C5F5C5"));
+          $(this).mouseleave(changeBgColor(code, "", ""));
+      });
+      
+      select_discipline("discipline");
+      
+      fill_disciplines();
+  });
+</script>
+<% end %>
