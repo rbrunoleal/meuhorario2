@@ -1,17 +1,16 @@
 class PreEnrollmentsController < ApplicationController
   before_action :authenticate_user!
-  before_action :set_pre_enrollment, only: [:destroy]
-  require 'date'
-  
+  before_action :set_pre_enrollment, only: [:edit, :update, :result,:destroy]
+  before_action :authorize_pre_enrollment
+ 
   def index
     @user = current_user
     @course = @user.coordinator.course.name
     @pre_enrollments = @user.coordinator.pre_enrollments
   end
-
-  def record
+  
+  def load_record
     @user = current_user
-
     @course = Course.includes(
       course_disciplines: [
         { pre_requisites: [
@@ -60,19 +59,18 @@ class PreEnrollmentsController < ApplicationController
 
     @ops = cds.reject{ |cd| cd.nature == 'OB' }.map{ |cd| cd.discipline }
     @obs = cds.reject{ |cd| cd.nature == 'OP' }.map{ |cd| cd.discipline.code }
+  end
+
+  def edit
+    load_record
     
-    pre_enrollment = ""
-    if(params[:id].present?)
-      pre_en = PreEnrollment.find(params[:id])
-      pre_enrollment = {
-        "year" =>  pre_en.year,
-        "period" =>  pre_en.period,
-        "start_date" =>  pre_en.start_date.to_date,
-        "end_date" =>  pre_en.end_date.to_date,
-        "disciplines" => pre_en.disciplines_enrollments.map{ |d| d.code }
-      };
-    end
-    @pre_enrollment = pre_enrollment.to_json
+    @pre_enrollment_discipline = @pre_enrollment.disciplines_enrollments.map { |x| x.code }
+  end
+  
+  def new
+    @pre_enrollment = PreEnrollment.new
+    @pre_enrollment_discipline = []
+    load_record
   end
   
   def result
@@ -82,40 +80,70 @@ class PreEnrollmentsController < ApplicationController
     @disciplines_ob = @pre_enrollment.disciplines_required.sort_by { |x| x.name }
     @disciplines_op = @pre_enrollment.disciplines_optional.sort_by { |x| x.name }
   end
-  
-  def complete
-    @user = current_user
-    @result = JSON.parse(params[:data_pre_enrollment])
+   
+  def create
     ActiveRecord::Base.transaction do
       begin
-        if(@result)
-          disciplines_enrollments_selected = []
-          @preenrollment = PreEnrollment.find_by(year: @result['semester'], period: @result['period'])
-          if(!@preenrollment)
-            @preenrollment = PreEnrollment.new(year: @result['semester'], period: @result['period'], start_date: Date.parse(@result['start_date']), end_date: Date.parse(@result['end_date']), course: @user.coordinator.course, coordinator: @user.coordinator)
-          end
-          @result['disciplines'].each do |d|
-            discipline = @preenrollment.disciplines_enrollments.find { |x| x.code == d }
-            if(discipline)
-              disciplines_enrollments_selected << discipline
-            else
-              disciplines_enrollments_selected << DisciplinesEnrollment.new(code: d)
-            end
-          end
-          @preenrollment.disciplines_enrollments = disciplines_enrollments_selected
-          @preenrollment.save!
+        @user = current_user
+        @pre_enrollment = PreEnrollment.new(pre_enrollment_params)
+        @pre_enrollment.course = @user.coordinator.course
+        @pre_enrollment.coordinator = @user.coordinator
+        @disciplines = disciplines_params
+        @disciplines.each do |d|
+          @pre_enrollment.disciplines_enrollments << DisciplinesEnrollment.new(code: d)
         end
-      rescue ActiveRecord::RecordInvalid => exception
+        @pre_enrollment.save!
         respond_to do |format|
-         format.html { redirect_to pre_enrollments_path, danger: 'Erro ao salvar pré-matrícula, tente novamente.'}
+          format.html { redirect_to pre_enrollments_path, success: 'Pré-Matricula salva.' }
+        end
+      rescue ActiveRecord::RecordInvalid
+        ex_value = []
+        if @pre_enrollment.errors.any? 
+           @pre_enrollment.errors.values.each do |msg| 
+            msg.each do |ex| 
+               ex_value << ex 
+             end 
+           end 
+        end 
+        respond_to do |format|
+         format.html { redirect_to pre_enrollments_path, danger: ex_value.join(', ')}
         end
       end
     end
-    respond_to do |format|
-      format.html { redirect_to pre_enrollments_path, success: 'Pré-Matrícula salva'}
-    end
   end
 
+  def update
+      ActiveRecord::Base.transaction do
+      begin
+        @pre_enrollment.update(pre_enrollment_params)
+        @disciplines = disciplines_params
+        @disciplines.each do |d|
+          @discipline = @pre_enrollment.disciplines_enrollments.find { |x| x.code == d }
+          if(!@discipline)
+            @pre_enrollment.disciplines_enrollments << DisciplinesEnrollment.new(code: d)
+          end
+        end
+        @pre_enrollment.save!
+        respond_to do |format|
+           format.html { redirect_to pre_enrollments_path, success: 'Pré-Matricula salva.' }
+        end
+      rescue ActiveRecord::RecordInvalid
+          ex_value = []
+          if @pre_enrollment.errors.any? 
+             @pre_enrollment.errors.values.each do |msg| 
+              msg.each do |ex| 
+                 ex_value << ex 
+               end 
+             end 
+          end 
+        respond_to do |format|
+           format.html { redirect_to pre_enrollments_path, danger: ex_value.join(', ')}
+        end
+      end
+    end
+  end
+    
+  
   def destroy
     @pre_enrollment.destroy
     respond_to do |format|
@@ -124,9 +152,23 @@ class PreEnrollmentsController < ApplicationController
   end
   
   private
+    def authorize_pre_enrollment
+      if @pre_enrollment.present?
+        authorize @pre_enrollment
+      else
+        authorize PreEnrollment
+      end
+    end
+    
     def set_pre_enrollment
       @pre_enrollment = PreEnrollment.find(params[:id])
     end
-
-  
+    
+    def pre_enrollment_params
+      params.require(:pre_enrollment).permit(:year, :period, :start_date, :end_date)
+    end
+    
+    def disciplines_params
+      params.require(:pre_enrollment)['disciplines_enrollment']
+    end
 end

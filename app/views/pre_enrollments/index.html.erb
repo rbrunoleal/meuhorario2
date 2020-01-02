@@ -26,7 +26,7 @@
             <td><%= pre_enrollment.semester %></td>
             <td><%= pre_enrollment.date_start_format %></td>
             <td><%= pre_enrollment.date_end_format %></td>
-            <td><%= link_to 'Editar', pre_enrollments_edit_path(pre_enrollment) %></td>
+            <td><%= link_to 'Editar', edit_pre_enrollment_path(pre_enrollment) %></td>
             <td><%= link_to 'Resultado', pre_enrollments_result_path(pre_enrollment.id) %></td>
             <td><%= link_to 'Apagar', pre_enrollment, method: :delete, data: { confirm: 'Você tem certeza?' } %></td>
           </tr>
@@ -38,7 +38,7 @@
     <div class="row">
       <span id="goToTop" class="go-to-top float-left">▲ Topo</span>
       <div data-turbolinks="false">
-        <%= link_to 'Nova Pré-Matrícula', pre_enrollments_record_path, :class=>"button export-button float-right"  %>
+        <%= link_to 'Nova Pré-Matrícula', new_pre_enrollment_path, :class=>"button export-button float-right"  %>
       </div>
     </div>
     

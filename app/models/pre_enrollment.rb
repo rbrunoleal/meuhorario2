@@ -5,6 +5,8 @@ class PreEnrollment < ApplicationRecord
   has_many :disciplines_enrollments, dependent: :destroy
   has_many :record_enrollments, dependent: :destroy
   
+  validates_uniqueness_of :year, scope: :period, :message => "Semestre já cadastrado." 
+  
   def semester
     return self.year.to_s + "." + self.period.to_s
   end

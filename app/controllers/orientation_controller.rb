@@ -1,23 +1,34 @@
 class OrientationController < ApplicationController
   before_action :authenticate_user!
+  before_action :authorize_orientation, only: [:students, :new_student, :create_student, :edit_student, :update_student, :destroy_student, :table_students, :complete_students]
+  before_action :set_course, only: [:students,:create_student, :complete_students]
+  before_action :set_professor, only: [:create_student, :complete_students]
   before_action :set_orientation, only: [:edit_student, :update_student, :destroy_student]
-
+  
+  
   def coordinator
     @user = current_user
     @professor_users = ProfessorUser.all.select { |professor| professor.department.courses.include?(@user.coordinator.course) }
     @department = @user.coordinator.course.department_course.department.name
   end
   
+  def department
+    @user = current_user 
+    @professor = @user.professor_user
+    @courses = @professor.department.courses
+    @department = @professor.department
+  end
+  
   def students
     @orientation_result = [];
-    @professor = ProfessorUser.find(params[:professor_id])
-    @orientations = @professor.orientations
+    @orientations = @professor.orientations.select { |x| x.course == @course }
     @orientations.each do |o|
       @student = Student.find_by(matricula: o.matricula)
       obj = OpenStruct.new({
+        id: o.id,
         name: o.name,
         matricula: o.matricula,
-        email: (@student.present?) ? @student.email : "",
+        email: (@student.present?) ? @student.email : "-",
         record: (@student.present?) ? "Realizado" : "Pendente",
         planning: (@student.present?) ? (@student.plannings.present?) ? @student.id : "" : "",
         historic: (@student.present?) ? (@student.historics.present?) ? @student.id : "" : "",
@@ -35,12 +46,13 @@ class OrientationController < ApplicationController
   
   def create_student
     @orientation = Orientation.new(student_params)
-    @orientation.professor_user = ProfessorUser.find(params[:professor_id])
+    @orientation.professor_user = @professor
+    @orientation.course = @course
     respond_to do |format|
       if @orientation.save
-        format.html { redirect_to orientations_path(params[:professor_id]) }
+        format.html { redirect_to orientations_path(params[:professor_id]), success: 'Aluno salvo.' }
       else
-        format.html { render :new_student }
+        format.html { render :new_student, danger: 'Erro ao salvar aluno, tente novamente.'  }
       end
     end
   end
@@ -48,9 +60,9 @@ class OrientationController < ApplicationController
   def update_student
     respond_to do |format|
       if @orientation.update(student_params)
-        format.html { redirect_to orientations_path(:professor_id => @orientation.professor_user.id) }
+        format.html { redirect_to orientations_path(:professor_id => @orientation.professor_user.id), success: 'Aluno salvo.' }
       else
-        format.html { render :edit_student }
+        format.html { render :edit_student, danger: 'Erro ao salvar aluno, tente novamente.' }
       end
     end
   end
@@ -58,7 +70,7 @@ class OrientationController < ApplicationController
   def destroy_student
     @orientation.destroy
     respond_to do |format|
-      format.html { redirect_to orientations_path(params[:professor_id]) }
+      format.html { redirect_to orientations_path(:professor_id => params[:professor_id]), success: 'Aluno excluído.' }
     end
   end
   
@@ -68,15 +80,14 @@ class OrientationController < ApplicationController
   
   def complete_students
     @result =  JSON.parse(params[:data_orientations])
-    @professor = ProfessorUser.find(params[:professor_id])
     ActiveRecord::Base.transaction do
       begin
         if(@result)
           @result.each do |r|
-            byebug
             @orientation = @professor.orientations.select {|x| x.matricula == r['matricula']} 
             if(!@orientation)
               @orientation = Orientation.new(name: r['name'], matricula: r['matricula']) 
+              @orientation.course = @course
               @professor.orientations << @orientation
             end
           end
@@ -158,6 +169,24 @@ class OrientationController < ApplicationController
   
   
   private
+    def authorize_orientation
+      @professor = ProfessorUser.find(params[:professor_id])
+      @course = Course.find(params[:course_id])
+      @object = OpenStruct.new({
+        course: @course,
+        professor: @professor
+      })
+      authorize @object, policy_class: OrientationPolicy
+    end
+    
+    def set_course
+      @course = Course.find(params[:course_id])
+    end
+  
+    def set_professor
+      @professor = ProfessorUser.find(params[:professor_id])
+    end
+  
     def set_orientation
       @orientation = Orientation.find(params[:orientation_id])
     end

@@ -1,5 +1,6 @@
 class Orientation < ApplicationRecord
   belongs_to :professor_user
+  belongs_to :course
   
   validates :name, presence: { message: "Insira o Nome." }
   validates :matricula, format: { with: /\A[+-]?\d+\z/, message: "Matrícula e composta por apenas números." }

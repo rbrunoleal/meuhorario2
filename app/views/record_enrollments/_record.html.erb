@@ -1,43 +1,14 @@
-<div class="wrapper">
-  <div class="row">
-     <%= render 'shared/header' %>
-  </div>
-
   <div data-sticky-container>
     <div id="header_sticky" data-sticky data-margin-top='0' data-top-anchor="header:bottom" class="sticky_custom">
       <div class="row">
         <div id=course_info class="row">
           <div class="small-12 columns text-center info-text">
             Cadastro Pré-Matrícula
-            <div class="subtext"><%= @course.name %></div>
           </div>
-        </div>
-        
-        <div class="row">
-            <div class="columns medium-2 large-2">
-              <label>Semestre
-                <input id="semester_pre_enrollment" type="number" value="<%= Semester.first.year %>">
-              </label>
-            </div>
-            <div class="columns small-1 large-1">
-              <label>Período
-                <input id="period_pre_enrollment" type="number" value="<%= Semester.first.period %>" min="1" max="2">
-              </label>
-            </div>
-            <div class="columns small-2 large-2">
-              <label>Data inicial Pré-Matrícula
-                <input id="date_start_pre_enrollment" type="date" value="<%=DateTime.now.to_date%>" min="<%=DateTime.now.to_date%>">
-              </label>
-            </div>
-            <div class="columns small-2 large-2 float-left">
-              <label>Data final Pré-Matrícula
-                <input id="date_end_pre_enrollment" type="date">
-              </label>
-            </div>
         </div>
         <div class="row">
           <div id="button_complete_record" class="button export-button float-right">Concluir</div>
-          <%= link_to "Voltar", pre_enrollments_path, :class=>"button export-button float-left" %>
+          <%= link_to "Voltar", record_enrollments_path, :class=>"button export-button float-left" %>
         </div>
       </div>
     </div>
@@ -65,7 +36,7 @@
       <% unless @semesters.blank? %>
         <% width = 100.0 / @semesters.max_by{ |s| s ? s.size : 0 }.size %>
         <% @semesters[1..-1].each_with_index do |semester, i| %>
-          <% if semester %>
+          <% if semester.any?%>
             <div id="semester_row_number<%=i + 1%>" class="row semester-row">
               <div class="small-12 large-1 columns text-center no-padding semester">
                 <span class="number"><%= i + 1 %><span class="hide-for-large">º Semestre</span></span>
@@ -110,26 +81,25 @@
   </div>
 </div>
 
-<%= render 'shared/footer' %>
-
 <% content_for :script do %>
 <script>
   var pre_requisites       = <%= raw @pre  %>;
   var post_requisites      = <%= raw @post %>;
-  var required             = <%= raw @obs %>;
-  var pre_enrollment_edit  = <%= raw @pre_enrollment %>;
+  var disciplines_pre      = <%= raw @disciplines_pre.to_json %>;
+  var pre_enrollment       = <%= raw @pre_enrollment.to_json %>;
+  var record_enrollment       = <%= raw @record_enrollment.to_json %>;
+  var record_enrollment_disciplines    = <%= raw @record_enrollment_disciplines.to_json %>;
 
   var selected_disciplines = [];
   
-  if (!pre_enrollment_edit){
-    selected_disciplines = required;
-  }
-  else{
-     document.getElementById("semester_pre_enrollment").value = pre_enrollment_edit.year
-    document.getElementById("period_pre_enrollment").value = pre_enrollment_edit.period
-    document.getElementById("date_start_pre_enrollment").value = pre_enrollment_edit.start_date
-    document.getElementById("date_end_pre_enrollment").value = pre_enrollment_edit.end_date
-    selected_disciplines = pre_enrollment_edit.disciplines;
+  if(record_enrollment_disciplines){
+    if (record_enrollment_disciplines.length > 0){
+      record_enrollment_disciplines.forEach(function(disc) {
+       if(!selected_disciplines.includes(disc)){
+          selected_disciplines.push(disc);
+       }
+      });
+    }
   }
   
   $("#goToTop").click(function() {
@@ -142,55 +112,44 @@
       filterList("elective-discipline", $(this).val());
   });
   
+  get_ids  = function(selected) {
+    ids = []
+    selected.forEach(function(disc) {
+      disciplines_pre.forEach(function(disc_pre) {
+        if(disc_pre.code == disc){
+          ids.push(disc_pre.id)
+        }
+      });
+    });
+    return ids;
+  }
+
   $("#button_complete_record").click(function() {
-      var $toastContent;
-      var message;
-      var start_date = $('#date_start_pre_enrollment').val();
-      var end_date = $('#date_end_pre_enrollment').val();
-      var semester = document.getElementById("semester_pre_enrollment").value;
-      var period = document.getElementById("period_pre_enrollment").value;
-      
-      if (start_date === undefined || start_date == null || start_date.length <= 0){
-        message = "Preencher data inicial.";
-        $toastContent = $('<span>' + message + '</span>');
-        toastr.error($toastContent)
-      }
-      else if (end_date === undefined || end_date == null || end_date.length <= 0){
-        message = "Preencher data final.";
-        $toastContent = $('<span>' + message + '</span>');
-        toastr.error($toastContent)
-      }
-      else if (semester === undefined || semester == null || semester.length <= 0){
-        message = "Preencher Semestre.";
-        $toastContent = $('<span>' + message + '</span>');
-        toastr.error($toastContent)
-      }
-      else if (period === undefined || period == null || period.length <= 0){
-        message = "Preencher período.";
-        $toastContent = $('<span>' + message + '</span>');
-        toastr.error($toastContent)
-      }
-      else if ((new Date(end_date)) < (new Date(start_date))){
-        message = "Data final menor que a data inicial.";
-        $toastContent = $('<span>' + message + '</span>');
-        toastr.error($toastContent)
-      }
-      else{
-        var obj_pre_enrollment = {
-           start_date: start_date,
-           end_date: end_date,
-           semester: semester,
-           period: period,
-           disciplines: selected_disciplines
-        };
-        $.ajax({
-            url: "/pre_enrollments",
-            type: "post",
-            data: {
-                data_pre_enrollment: JSON.stringify(obj_pre_enrollment)
-            }
-        });
-      }
+        ids = get_ids(selected_disciplines);
+        if(record_enrollment.id){
+          $.ajax({
+              url: "/record_enrollments/" + pre_enrollment.id  + "/" + record_enrollment.id,
+              type: "put",
+              data: {
+                record_enrollment: {
+                  disciplines_enrollment_ids: ids,
+                  pre_enrollment_id: pre_enrollment.id,
+                }
+              }
+          });
+        }
+        else{
+          $.ajax({
+              url: "/record_enrollments",
+              type: "post",
+              data: {
+                record_enrollment: {
+                  disciplines_enrollment_ids: ids,
+                  pre_enrollment_id: pre_enrollment.id,
+                }
+              }
+          });
+        }
   });
   
   $("#searchForm").submit(function() {
@@ -251,17 +210,7 @@
       }
     }
   }
-  
-  var delete_record_planning = function(class_name) {
-      $("." + class_name).off('click').click(function(event) {
-        var code = jQuery(this).attr('data-id');
-        delete_record(code, "planning");
-        table_planning_record(false);
-        event.stopPropagation();
-        event.preventDefault();
-      });
-  }
-  
+
   var select_discipline = function(class_name) {
       $("." + class_name).off('click').click(function(event) {
           var code = $(this).attr('code');

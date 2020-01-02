@@ -1,6 +1,7 @@
 class ProfessorUsersController < ApplicationController
-  before_action :authenticate_user!
   before_action :set_professor_user, only: [:edit, :update, :destroy]
+  before_action :authenticate_user!
+  before_action :authorize_professoruser
 
   def index
     @user = current_user
@@ -84,6 +85,14 @@ class ProfessorUsersController < ApplicationController
   end
 
   private
+    def authorize_professoruser
+      if @professor_user.present?
+        authorize @professor_user
+      else
+        authorize ProfessorUser
+      end
+    end
+    
     def set_professor_user
       @professor_user = ProfessorUser.find(params[:id])
     end

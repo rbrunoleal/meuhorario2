@@ -71,7 +71,6 @@ GEM
     ffi (1.11.1)
     globalid (0.4.2)
       activesupport (>= 4.2.0)
-    heatmap-rails (0.2.0)
     http-cookie (1.0.3)
       domain_name (~> 0.5)
     i18n (1.7.0)
@@ -121,6 +120,8 @@ GEM
     pg (1.1.4)
     puma (4.2.1)
       nio4r (~> 2.0)
+    pundit (2.1.0)
+      activesupport (>= 3.0.0)
     rack (2.0.7)
     rack-test (0.6.3)
       rack (>= 1.0)
@@ -222,7 +223,6 @@ DEPENDENCIES
   devise
   devise-i18n
   devise_cas_authenticatable (~> 1.10.0)
-  heatmap-rails
   jbuilder (~> 2.5)
   jquery-rails
   listen (~> 3.0.5)
@@ -231,6 +231,7 @@ DEPENDENCIES
   nokogumbo
   pg
   puma (~> 4.2.1)
+  pundit
   rails (~> 5.0.0)
   sass-rails (~> 5.0)
   spring

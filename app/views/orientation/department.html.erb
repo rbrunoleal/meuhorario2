@@ -3,30 +3,24 @@
   <div class="row area-grid text-center">
     <div class="row">
       <div class="small-12 columns text-center info-text">
-          Professores
-          <div class="subtext"> <%= @department %> </div>
+          Cursos
+          <div class="subtext"> <%= @department.name %> </div>
       </div>
     </div>
     
     <div class="row">
-       <table id="largeTable" class="schedule-table large-table">
+       <table id="largeTable" class="schedule-table large-table unstriped">
         <thead>
           <tr>
             <th width="200">Nome</th>
-            <th width="80">Cadastro</th>
             <th width="30"></th>
           </tr>
         </thead>
         <tbody>
-          <% @professor_users.each do |professor| %>
+          <% @courses.each do |course| %>
             <tr>
-              <td><%= professor.name %></td>
-              <% if professor.user.present? %>
-                <td>Realizado</td>
-              <%else%>
-                <td>Pendente</td>
-              <% end %>
-              <td><%= link_to 'Alunos', orientations_path(:professor_id => professor, :course_id =>  @user.coordinator.course) %></td>
+              <td><%= course.name %></td>
+              <td><%= link_to 'Alunos', orientations_path(:professor_id => @professor, :course_id =>  course) %></td>
             </tr>
           <% end %>
         </tbody>

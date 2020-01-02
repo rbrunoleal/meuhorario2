@@ -22,7 +22,15 @@ namespace :parameter_load do
             @department.courses << @courses
             @department.save
         end
-        puts '-> Finished load departmentss'
+        puts '-> Finished load departments'
+        puts '-----------------------------------------------------------------------'
+    end
+    
+    task :discipline_code => :environment do
+        puts '-----------------------------------------------------------------------'
+        puts '-> Starting load discipline code'
+        
+        puts '-> Finished load discipline code'
         puts '-----------------------------------------------------------------------'
     end
 end

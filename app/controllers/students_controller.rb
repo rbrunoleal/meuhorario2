@@ -1,6 +1,7 @@
 class StudentsController < ApplicationController
-  before_action :authenticate_user!
   before_action :set_student, only: [:edit, :update, :destroy]
+  before_action :authenticate_user!
+  before_action :authorize_student
 
   def index
     @user = current_user
@@ -75,6 +76,14 @@ class StudentsController < ApplicationController
   end
 
   private
+    def authorize_student
+      if @student.present?
+        authorize @student
+      else
+        authorize Student
+      end
+    end
+    
     def set_student
       @student = Student.find(params[:id])
     end

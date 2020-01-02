@@ -1,4 +1,8 @@
 class ApplicationController < ActionController::Base
+  include Pundit
+  
+  rescue_from Pundit::NotAuthorizedError, with: :user_not_authorized
+  
   protect_from_forgery with: :exception
   add_flash_types :success, :danger, :info
 
@@ -59,4 +63,10 @@ class ApplicationController < ActionController::Base
 
   def updating
   end
+  
+  private
+    def user_not_authorized
+      redirect_to root_path
+    end
+ 
 end

@@ -147,8 +147,10 @@ ActiveRecord::Schema.define(version: 20191210153603) do
     t.string   "name"
     t.string   "matricula"
     t.integer  "professor_user_id"
+    t.integer  "course_id"
     t.datetime "created_at",        null: false
     t.datetime "updated_at",        null: false
+    t.index ["course_id"], name: "index_orientations_on_course_id", using: :btree
     t.index ["professor_user_id"], name: "index_orientations_on_professor_user_id", using: :btree
   end
 
@@ -277,6 +279,7 @@ ActiveRecord::Schema.define(version: 20191210153603) do
   add_foreign_key "disciplines_historics", "historics"
   add_foreign_key "disciplines_plannings", "plannings"
   add_foreign_key "historics", "students"
+  add_foreign_key "orientations", "courses"
   add_foreign_key "orientations", "professor_users"
   add_foreign_key "plannings", "students"
   add_foreign_key "pre_enrollments", "coordinators"

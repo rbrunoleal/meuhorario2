@@ -1,6 +1,11 @@
 <div class="wrapper">
-    <div class="row" id="header">
-        <%= render 'shared/header' %>
+    <%= render 'shared/header' %>
+    <div class="row area-grid text-center">
+    <div class="row">
+      <div class="small-12 columns text-center info-text">
+          Planejamento
+          <div class="subtext"><%= @student.name %> </div>
+      </div>
     </div>
 
     <div class="row">
@@ -21,12 +26,12 @@
            
             <div class="row">
               <div class="small-12 columns">
-                <span id="goToTop" class="go-to-top">▲ Topo</span>
+                <span id="goToTop" class="go-to-top float-left">▲ Topo</span>
               </div>
             </div>
         </div>
     </div>
-    
+    </div>
 </div>
 <%= render 'shared/footer' %>
 

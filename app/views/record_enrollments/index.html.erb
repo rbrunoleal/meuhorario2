@@ -22,7 +22,7 @@
           <tr>
             <td><%= pre_enrollment.semester %></td>
             <td><%= pre_enrollment.date_end_format %></td>
-            <td><%= link_to 'Preencher Pré-Matricula', record_enrollments_record_path(pre_enrollment.id) %></td>
+            <td><%= link_to 'Preencher Pré-Matricula', record_enrollments_new_path(pre_enrollment.id) %></td>
           </tr>
         <% end %>
       </tbody>
@@ -45,7 +45,7 @@
               <td><%= record_enrollment.pre_enrollment.semester %></td>
               <% if record_enrollment.pre_enrollment.available %>
                 <td><%= link_to 'Editar', record_enrollments_edit_path(:id => record_enrollment, :pre_enrollment_id => record_enrollment.pre_enrollment) %></td>
-                <td><%= link_to 'Apagar', record_enrollment, method: :delete, data: { confirm: 'Você tem certeza?' } %></td>
+                <td><%= link_to 'Apagar', record_enrollment_path(:id => record_enrollment, :pre_enrollment_id => record_enrollment.pre_enrollment), method: :delete, data: { confirm: 'Você tem certeza?' }%></td>
               <% else %>
                 <td>Fechado</td>
               <% end %>

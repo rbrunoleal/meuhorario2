@@ -1,7 +1,6 @@
 Rails.application.routes.draw do
-  
   #User
-  devise_for :users, :skip => [:lockable] 
+  devise_for :users, :skip => 'unlock'
   devise_scope :user do
     get 'users', to: 'users#index'
     delete 'users/:id', to: 'users#destroy', as: :delete_user
@@ -9,6 +8,12 @@ Rails.application.routes.draw do
     post 'users/unlock_user/:id', to: 'users#unlock', as: :unlock_user
     post 'users/reset_user/:id', to: 'users#reset', as: :reset_user
   end
+  
+  #Registration
+  get 'registration', to: 'registration#record'
+  post 'registration/coordinator_record'
+  post 'registration/professor_record'
+  post 'registration/student_record'
   
   #Semester
   resources :semesters, only: [:index, :edit, :update]
@@ -24,6 +29,29 @@ Rails.application.routes.draw do
   get 'professor_users/table' => 'professor_users#table_professors', as: :table_professors
   post 'professor_users/table' => 'professor_users#complete_professors'
   
+  #Orientation
+  get 'orientation/coordinator' => 'orientation#coordinator'
+  get 'orientation/department' => 'orientation#department'
+  #Orientation - Resources
+  get 'orientation/:professor_id/:course_id/students' => 'orientation#students', as: :orientations
+  get 'orientation/:professor_id/:course_id/students/new' => 'orientation#new_student', as: :new_orientation
+  get 'orientation/:professor_id/:course_id/students/:orientation_id/edit' => 'orientation#edit_student', as: :edit_orientation
+  post 'orientation/:professor_id/:course_id/students' => 'orientation#create_student'
+  patch 'orientation/:professor_id/:course_id/students/:orientation_id', :to => 'orientation#update_student', as: :orientation
+  put 'orientation/:professor_id/:course_id/students/:orientation_id', :to => 'orientation#update_student'
+  delete 'orientation/:professor_id/:course_id/students/:orientation_id', :to => 'orientation#destroy_student'
+  #Orientation - Table
+  get 'orientation/:professor_id/:course_id/students/table' => 'orientation#table_students', as: :table_orientations
+  post 'orientation/:professor_id/:course_id/students/table' => 'orientation#complete_students'
+  #Orientation - Student
+  get 'orientation/:professor_id/students/:orientation_id/planning', :to => 'orientation#planning_student', as: :planning_orientation
+  get 'orientation/:professor_id/students/:orientation_id/historic', :to => 'orientation#historic_student', as: :historic_orientation
+  
+  
+  
+  
+  
+  
   
   
   get 'planning', to: 'planning#record'
@@ -33,42 +61,20 @@ Rails.application.routes.draw do
   get 'historic', to: 'historic#record'
   get 'historic/show', to: 'historic#show'
   post 'historic', to: 'historic#complete'
-
-  get 'registration', to: 'registration#record'
-  post 'registration/coordinator_record'
-  post 'registration/professor_record'
-  post 'registration/student_record'
-  
-  
-  get 'orientation/coordinator' => 'orientation#coordinator'
-  #Students
-  get 'orientation/:professor_id/students/:orientation_id/planning', :to => 'orientation#planning_student', as: :planning_orientation
-  get 'orientation/:professor_id/students/:orientation_id/historic', :to => 'orientation#historic_student', as: :historic_orientation
-  
-  get 'orientation/:professor_id/students/table' => 'orientation#table_students', as: :many_orientations
-  post 'orientation/:professor_id/students/table' => 'orientation#complete_students'
-  get 'orientation/:professor_id/students' => 'orientation#students', as: :orientations
-  post 'orientation/:professor_id/students' => 'orientation#create_student'
-  get 'orientation/:professor_id/students/new' => 'orientation#new_student', as: :new_orientation
-  get 'orientation/:professor_id/students/:orientation_id/edit' => 'orientation#edit_student', as: :edit_orientation
-  
-  patch 'orientation/:professor_id/students/:orientation_id', :to => 'orientation#student_update', as: :orientation
-  put 'orientation/:professor_id/students/:orientation_id', :to => 'orientation#student_update'
-  delete 'orientation/:professor_id/students/:orientation_id', :to => 'orientation#student_destroy'
-  
   
   #PreEnrollment
-  resources :pre_enrollments, only: [:index, :destroy]
-  get '/pre_enrollments/record' => 'pre_enrollments#record', as: :pre_enrollments_record
-  get '/pre_enrollments/:id/edit' => 'pre_enrollments#record', as: :pre_enrollments_edit
+  resources :pre_enrollments
   get '/pre_enrollments/:id/result' => 'pre_enrollments#result', as: :pre_enrollments_result
-  post 'pre_enrollments', to: 'pre_enrollments#complete'
-  
-  
-  resources :record_enrollments, only: [:index, :destroy]
-  get '/record_enrollments/record/:pre_enrollment_id' => 'record_enrollments#record', as: :record_enrollments_record
-  get '/record_enrollments/record/:pre_enrollment_id/edit/:id' => 'record_enrollments#record', as: :record_enrollments_edit
-  post 'record_enrollments', to: 'record_enrollments#complete'
+
+  #RecordEnrollment
+  get '/record_enrollments', :to => 'record_enrollments#index', as: :record_enrollments
+  get '/record_enrollments/:pre_enrollment_id/new' => 'record_enrollments#new', as: :record_enrollments_new
+  post '/record_enrollments' => 'record_enrollments#create'
+  get '/record_enrollments/:pre_enrollment_id/:id/edit/' => 'record_enrollments#edit', as: :record_enrollments_edit
+  patch '/record_enrollments/:pre_enrollment_id/:id', :to => 'record_enrollments#update', as: :record_enrollment
+  put '/record_enrollments/:pre_enrollment_id/:id', :to => 'record_enrollments#update'
+  delete '/record_enrollments/:pre_enrollment_id/:id', :to => 'record_enrollments#destroy'
+
   
   
   # For details on the DSL available within this file, see http://guides.rubyonrails.org/routing.html
