@@ -2,7 +2,7 @@ function result_table_planning(list, delete_button) {
     var trs = "";
     list.forEach(function(x){
         if(list.indexOf(x) > 0){
-            trs += "<tr><td class=\"td_divider\" colspan=\"5\"></td></tr>";    
+           trs += "<tr style=\"background-color:#f8f8f8\"><td colspan=\"5\"></td></tr>";      
         }
         var trRow = "<tr><td rowspan=" + (x.disciplines.length + 1) + ">" + x.semester.year +"."+x.semester.period  + "</td></tr>";
         trs += trRow;

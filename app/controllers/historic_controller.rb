@@ -35,12 +35,15 @@ class HistoricController < ApplicationController
                   else
                     code_verify = d['code']
                   end
-                  discipline_historic_student << DisciplinesHistoric.new(
-                  code: code_verify,
-                  workload: d['ch'] == '--' ? 0 : d['ch'],
-                  credits: d['cr'] == '--' ? 0 : d['cr'],
-                  note: d['note'] == '--' ? 0 : d['note'],
-                  result: d['res'])
+                  discipline_record = Discipline.find_by(code: code_verify)
+                  if discipline_record
+                    discipline_historic_student << DisciplinesHistoric.new(
+                    code: code_verify,
+                    workload: d['ch'] == '--' ? 0 : d['ch'],
+                    credits: d['cr'] == '--' ? 0 : d['cr'],
+                    note: d['note'] == '--' ? 0 : d['note'],
+                    result: d['res'])
+                  end
                 end
               end
               @historic.disciplines_historics = discipline_historic_student
@@ -71,19 +74,26 @@ class HistoricController < ApplicationController
       @student.historics.each do |h|  
         current_historic_disciplines = []
         h.disciplines_historics.each do |d|
-          discipline = @student.course.disciplines.find { |x| x.code == d.code }
-          course_discipline = CourseDiscipline.find_by(course: @student.course.id, discipline: discipline.id)
-          current_discipline = {
+          discipline = Discipline.find_by(code: d.code)
+          if discipline
+            course_discipline = CourseDiscipline.find_by(course: @student.course.id, discipline: discipline.id)
+            if course_discipline
+              nt = course_discipline.nature
+            else
+              nt = '-'
+            end
+            current_discipline = {
             code: discipline.code,
             name: discipline.name,
             curricular_component: discipline.code + ' - ' + discipline.name,
-            nt: course_discipline.nature,
+            nt: nt,
             ch: d.workload,
             cr: d.credits,
             note: d.note.to_s,
             res: d.result
-          }
-          current_historic_disciplines << current_discipline
+            }
+            current_historic_disciplines << current_discipline
+          end
         end
         current_historic = {
           semester: h.year.to_s + "." + h.period.to_s,

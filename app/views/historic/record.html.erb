@@ -98,12 +98,15 @@
         var last_semester = "";
         get_table_historic.forEach(function(x){
             if(x[0] != " "){
-                if(x[0] != last_semester){
-                    last_semester = x[0];
-                    historic_semesters.push(x[0]);
+                if((/([0-9][0-9][0-9][0-9].[0-9])/.test(x[0]))){
+                    if(x[0] != last_semester){
+                        last_semester = x[0];
+                        historic_semesters.push(x[0]);
+                    }
                 }
             }
             if(x[1] != null){
+                if(last_semester != "" && x[2] != null && x[3] != null && x[4] != null  && x[5] != null && x[6] != null && x[7] != null){
                 var obj_hystoric = {
                     semester_period: last_semester,
                     curricular_component: x[1] + " - " + x[2],
@@ -116,6 +119,7 @@
                     res: x[7]
                 };
                 historic_trated.push(obj_hystoric);
+                }
             }
         });
         historic_trated = groupBy(historic_trated, 'semester_period');
@@ -123,12 +127,14 @@
         if(historic_semesters.length > 0){
             inserted_historic = [];
             historic_semesters.forEach(function(semester){
-                var obj_inserted = {
-                  semester: semester,
-                  disciplines_historic: historic_trated[semester]
-                };
-                if(obj_inserted.semester != null && obj_inserted.disciplines_historic.length > 0){
-                    inserted_historic.push(obj_inserted);
+                if (historic_trated) {
+                    var obj_inserted = {
+                      semester: semester,
+                      disciplines_historic: historic_trated[semester]
+                    };
+                    if(obj_inserted.semester != null && obj_inserted.disciplines_historic.length > 0){
+                        inserted_historic.push(obj_inserted);
+                    }
                 }
             });
         }
@@ -262,7 +268,7 @@
                     validate = false;
                     show_message_validade_item(y, "Resultado(RES) inválido, Legenda RES: AP-Aprovado, RF-Reprovado Frequencia, RR-Reprovado, TR-Trancamento.");
                 }
-                if(!(parseFloat(y.note) >= 0.0 && parseFloat(y.note) <= 10)){
+                if(y.note != '--' && !(parseFloat(y.note) >= 0.0 && parseFloat(y.note) <= 10)){
                     validate = false;
                     show_message_validade_item(y, "Nota inválida.");
                 }
