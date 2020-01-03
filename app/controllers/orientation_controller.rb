@@ -181,14 +181,20 @@ class OrientationController < ApplicationController
     
     def set_course
       @course = Course.find(params[:course_id])
+      rescue ActiveRecord::RecordNotFound
+        redirect_to :action => 'index'
     end
   
     def set_professor
       @professor = ProfessorUser.find(params[:professor_id])
+      rescue ActiveRecord::RecordNotFound
+        redirect_to :action => 'index'
     end
   
     def set_orientation
       @orientation = Orientation.find(params[:orientation_id])
+      rescue ActiveRecord::RecordNotFound
+        redirect_to :action => 'index'
     end
     
     def student_params

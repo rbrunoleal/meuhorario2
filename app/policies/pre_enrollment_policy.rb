@@ -11,6 +11,10 @@ class PreEnrollmentPolicy < ApplicationPolicy
     user.rule == "coordinator" 
   end
   
+  def students?
+    user.rule == "coordinator" && user.coordinator.pre_enrollments.include?(record) 
+  end
+  
   def edit?
     user.rule == "coordinator" && user.coordinator.pre_enrollments.include?(record)
   end

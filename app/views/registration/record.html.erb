@@ -38,3 +38,8 @@
     </div>
 </div>
 <%= render 'shared/footer' %>
+<% content_for :script do %>
+<script>
+   mixpanel.track("Acessou pagina de registro");
+</script>
+<% end %>

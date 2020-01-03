@@ -95,6 +95,8 @@ class ProfessorUsersController < ApplicationController
     
     def set_professor_user
       @professor_user = ProfessorUser.find(params[:id])
+      rescue ActiveRecord::RecordNotFound
+        redirect_to :action => 'index'
     end
     
     def professor_user_params

@@ -3,3 +3,8 @@
     <%= render 'record', record_enrollment: @record_enrollment %>
 </div>
 <%= render 'shared/footer' %>
+<% content_for :script do %>
+<script>
+  mixpanel.track("Acessou pagina para incluir pre-matricula", { "matricula_aluno": "<%= @student.matricula %>" });
+</script>
+<% end %>

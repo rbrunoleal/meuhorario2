@@ -54,6 +54,8 @@ class CoordinatorsController < ApplicationController
   private
     def set_coordinator
       @coordinator = Coordinator.find(params[:id])
+      rescue ActiveRecord::RecordNotFound
+        redirect_to :action => 'index'
     end
 
     def coordinator_params

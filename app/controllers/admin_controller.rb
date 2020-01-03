@@ -41,6 +41,21 @@ class AdminController < ApplicationController
     call_rake 'crawler:titleize'
     render 'index'
   end
+  
+  def semester
+    call_rake 'parameter_load:semester'
+    render 'index'
+  end
+  
+  def departments
+    call_rake 'parameter_load:departments'
+    render 'index'
+  end
+  
+  def discipline_code
+    call_rake 'parameter_load:discipline_code '
+    render 'index'
+  end
 
   private
     def call_rake(task, options = {})

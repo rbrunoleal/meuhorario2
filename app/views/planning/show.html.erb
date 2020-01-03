@@ -37,6 +37,8 @@
 
 <% content_for :script do %>
 <script>
+    mixpanel.track("Acessou pagina eixibir planejamento aluno", { "matricula_aluno": "<%= @student.matricula %>" });
+
     var planning = <%= raw @planning.to_json %>;
     
     $("#goToTop").click(function() {

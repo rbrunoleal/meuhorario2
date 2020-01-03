@@ -22,6 +22,8 @@ class SemestersController < ApplicationController
   private
     def set_semester
       @semester = Semester.find(params[:id])
+      rescue ActiveRecord::RecordNotFound
+        redirect_to :action => 'index'
     end
     
     def semester_params

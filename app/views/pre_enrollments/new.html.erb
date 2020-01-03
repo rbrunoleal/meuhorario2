@@ -3,3 +3,14 @@
     <%= render 'record', pre_enrollment: @pre_enrollment %>
 </div>
 <%= render 'shared/footer' %>
+<% content_for :script do %>
+<script>
+    mixpanel.track("Acessou pagina cadastro incluir pré-matrícula");
+  
+    $("#goToTop").click(function() {
+          $('html,body').animate({
+              scrollTop: $("#header").offset().top
+          }, 500);
+    });
+</script>
+<% end %>

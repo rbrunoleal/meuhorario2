@@ -5,9 +5,12 @@
   <div class="row">
         <div class="small-12 columns text-center info-text">
             Pré-Matrícula Resultado
-            <div class="subtext"> <%= @course %> </div>
+            <div class="subtext"> <%= @pre_enrollment.semester %> </div>
         </div>
     </div>
+     <div class="row">
+          <%= link_to "Voltar", pre_enrollments_path, :class=>"button export-button float-right" %>
+     </div>
   
   <div id="row_tabs" class="row staticsss">
     <ul id="blockTabs" class="tabs" data-tabs>
@@ -34,7 +37,7 @@
                 <td><%= ob.name %></td>
                 <td><%= ob.quantity %></td>
                 <% if ob.quantity > 0 %>
-                  <td>alunos</td>
+                <td><%= link_to 'Alunos', pre_enrollments_students_path(:id => @pre_enrollment.id, :discipline_id => ob.id) %></td>
                 <% else %>
                   <td>-</td>
                 <% end %>

@@ -2,17 +2,20 @@ class RecordEnrollmentsController < ApplicationController
   before_action :authenticate_user!
   before_action :set_record_enrollment, only: [:edit, :update, :destroy]
   before_action :set_pre_enrollment, only: [:edit, :new]
+  before_action :authorize_record_enrollment
 
   def index
     @user = current_user
-    @pre_enrollments_registered = @user.student.record_enrollments.pluck(:pre_enrollment_id)
-    @pre_enrollments = @user.student.course.pre_enrollments_available.where.not(id: @pre_enrollments_registered)
-    @record_enrollments = @user.student.record_enrollments
-    @course = @user.student.course
+    @student = @user.student
+    @pre_enrollments_registered = @student.record_enrollments.pluck(:pre_enrollment_id)
+    @pre_enrollments = @student.course.pre_enrollments_available.where.not(id: @pre_enrollments_registered)
+    @record_enrollments = @student.record_enrollments
+    @course = @student.course
   end
   
   def load_record
     @user = current_user
+    @student = @user.student
     @course = Course.includes(
       course_disciplines: [
         { pre_requisites: [
@@ -31,10 +34,14 @@ class RecordEnrollmentsController < ApplicationController
       }
     ).find_by_code @user.student.course.code
 
-    cds_all = @course.course_disciplines
-    @all_disciplines = cds_all.map {|d| [d.discipline.code, d.discipline.name, d.nature, d.semester.blank? ? 0 : d.semester] }
-    
     cds = @course.course_disciplines 
+    cds.each do |x|
+      discipline = DisciplineCode.find_by(from_code: x.discipline.code)
+      if(discipline)
+        x.discipline.code = discipline.to_code
+      end
+    end
+    @all_disciplines = cds.map {|d| [d.discipline.code, d.discipline.name, d.nature, d.semester.blank? ? 0 : d.semester] }
 
     unless @course.nil?
       @semesters = []
@@ -138,12 +145,24 @@ class RecordEnrollmentsController < ApplicationController
   end
 
   private
+    def authorize_record_enrollment
+      if @record_enrollment.present?
+        authorize @record_enrollment
+      else
+        authorize RecordEnrollment
+      end
+    end
+  
     def set_record_enrollment
       @record_enrollment = RecordEnrollment.find(params[:id])
+      rescue ActiveRecord::RecordNotFound
+        redirect_to :action => 'index'
     end
     
     def set_pre_enrollment
       @pre_enrollment = PreEnrollment.find(params[:pre_enrollment_id])
+      rescue ActiveRecord::RecordNotFound
+        redirect_to :action => 'index'
     end
     
     def record_enrollment_params

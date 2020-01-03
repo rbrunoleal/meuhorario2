@@ -48,6 +48,8 @@
 
 <% content_for :script do %>
 <script>
+    mixpanel.track("Acessou pagina cadastro alunos da orientação via tabela");
+
     var professor = <%= raw @professor.id  %>;
     
     function load_handsontable() {

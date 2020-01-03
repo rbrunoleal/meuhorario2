@@ -29,7 +29,8 @@ namespace :parameter_load do
     task :discipline_code => :environment do
         puts '-----------------------------------------------------------------------'
         puts '-> Starting load discipline code'
-        
+            DisciplineCode.create(from_code: "MATE12", to_code: "MATA56")
+            DisciplineCode.create(from_code: "MATE11", to_code: "MATA63")
         puts '-> Finished load discipline code'
         puts '-----------------------------------------------------------------------'
     end

@@ -86,6 +86,8 @@ class StudentsController < ApplicationController
     
     def set_student
       @student = Student.find(params[:id])
+      rescue ActiveRecord::RecordNotFound
+        redirect_to :action => 'index'
     end
 
     def student_params

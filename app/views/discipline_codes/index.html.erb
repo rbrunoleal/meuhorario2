@@ -3,29 +3,26 @@
   <div class="row area-grid text-center">
     <div class="row">
         <div class="small-12 columns text-center info-text">
-            Coordenadores
-            <div class="subtext">Lista de Coordenadores</div>
+            Códigos Disciplinas
         </div>
     </div>
     
     <table id="largeTable" class="schedule-table large-table unstriped">
       <thead> 
         <tr>
-          <th width="100">Nome</th>
-          <th width="60">Usuário</th>
-          <th width="130">Curso</th>
+          <th width="100">Código(DE)</th>
+          <th width="60">Código(PARA)</th>
           <th width="30"></th>
           <th width="30"></th>
         </tr>
       </thead>
       <tbody>
-          <% @coordinators.each do |coordinator| %>
+          <% @discipline_codes.each do |disc| %>
             <tr>
-              <td><%= coordinator.name %></td>
-              <td><%= coordinator.username %></td>
-              <td><%= coordinator.course.name %></td>
-              <td><%= link_to 'Editar', edit_coordinator_path(coordinator) %></td>
-              <td><%= link_to 'Apagar', coordinator, method: :delete, data: { confirm: 'Você tem certeza?' } %></td>
+              <td><%= disc.from_code %></td>
+              <td><%= disc.to_code %></td>
+              <td><%= link_to 'Editar', edit_discipline_code_path(disc) %></td>
+              <td><%= link_to 'Apagar', disc, method: :delete, data: { confirm: 'Você tem certeza?' } %></td>
             </tr>
           <% end %>
       </tbody>
@@ -34,7 +31,7 @@
     
     <div class="row">
       <span id="goToTop" class="go-to-top float-left">▲ Topo</span>
-      <%= link_to "Novo Coordenador", new_coordinator_path, :class=>"button export-button float-right" %>
+      <%= link_to "Novo Código", new_discipline_code_path, :class=>"button export-button float-right" %>
     </div>
   </div>
 </div>
@@ -43,7 +40,7 @@
 <%= render 'shared/footer' %>
 <% content_for :script do %>
 <script>
-  mixpanel.track("Acessou o cadastro de Coordenadores");
+   mixpanel.track("Acessou pagina de cadastro código disciplina");
 
    $("#goToTop").click(function() {
         $('html,body').animate({

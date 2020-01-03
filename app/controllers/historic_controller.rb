@@ -1,5 +1,6 @@
 class HistoricController < ApplicationController
   before_action :authenticate_user!
+  before_action :authorize_historic, only: [:record, :complete]
   
   def record
     @student = current_user.student
@@ -28,8 +29,14 @@ class HistoricController < ApplicationController
                 if(discipline)
                   discipline_historic_student << discipline
                 else
+                  discipline_code = DisciplineCode.find_by(to_code: d['code'])
+                  if(discipline_code)
+                    code_verify = discipline_code.from_code
+                  else
+                    code_verify = d['code']
+                  end
                   discipline_historic_student << DisciplinesHistoric.new(
-                  code: d['code'],
+                  code: code_verify,
                   workload: d['ch'] == '--' ? 0 : d['ch'],
                   credits: d['cr'] == '--' ? 0 : d['cr'],
                   note: d['note'] == '--' ? 0 : d['note'],
@@ -87,4 +94,13 @@ class HistoricController < ApplicationController
     end
     return historic_student.to_json
   end
+  
+  private
+    def authorize_historic
+      if @historic.present?
+        authorize @historic
+      else
+        authorize Historic
+      end
+    end
 end

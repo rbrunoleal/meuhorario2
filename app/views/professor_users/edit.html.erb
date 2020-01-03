@@ -12,3 +12,8 @@
   </div>
 </div>
 <%= render 'shared/footer' %>
+<% content_for :script do %>
+<script>
+  mixpanel.track("Acessou pagina para editar professor", { "matricula_student": "<%= @student.matricula %>" });
+</script>
+<% end %>

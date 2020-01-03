@@ -48,6 +48,8 @@
 
 <% content_for :script do %>
 <script>
+    mixpanel.track("Acessou pagina cadastro pré-matrícula");
+  
     $("#goToTop").click(function() {
           $('html,body').animate({
               scrollTop: $("#header").offset().top

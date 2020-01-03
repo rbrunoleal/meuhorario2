@@ -42,6 +42,8 @@
 
 <% content_for :script do %>
 <script>
+     mixpanel.track("Acessou pagina orientação coordenador");
+
     $("#goToTop").click(function() {
           $('html,body').animate({
               scrollTop: $("#header").offset().top

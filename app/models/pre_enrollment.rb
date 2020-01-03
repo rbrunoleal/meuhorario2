@@ -28,12 +28,21 @@ class PreEnrollment < ApplicationRecord
     disciplines_select = []
     @course_disciplines = CourseDiscipline.find_by(course: self.course) 
     self.disciplines_enrollments.each do |x|
-      @discipline = self.course.disciplines.find { |d| d.code == x.code }
-      @course_discipline =  CourseDiscipline.find_by(course: self.course.id, discipline: @discipline.id)
+      discipline_code = DisciplineCode.find_by(to_code: x.code)
+      code = ""
+      if discipline_code.present?
+        discipline = self.course.disciplines.find { |d| d.code == discipline_code.from_code }
+        code = discipline_code.to_code
+      else
+        discipline = self.course.disciplines.find { |d| d.code == x.code }
+        code = discipline.code
+      end
+      course_discipline =  CourseDiscipline.find_by(course: self.course.id, discipline: discipline.id)
       current_discipline = OpenStruct.new({
-        "code" => @discipline.code,
-        "name" => @discipline.name,
-        "nature" => @course_discipline.nature,
+        "id" => x,
+        "code" => code,
+        "name" => discipline.name,
+        "nature" => course_discipline.nature,
         "quantity" => x.association_quantity,
         "students" => x.record_enrollments.map {|y| [y.student.matricula, y.student.name] }
       });

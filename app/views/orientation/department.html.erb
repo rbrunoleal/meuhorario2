@@ -36,6 +36,8 @@
 
 <% content_for :script do %>
 <script>
+    mixpanel.track("Acessou pagina orientação departamento");
+
     $("#goToTop").click(function() {
           $('html,body').animate({
               scrollTop: $("#header").offset().top

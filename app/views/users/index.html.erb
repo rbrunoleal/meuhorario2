@@ -73,6 +73,7 @@
 
 <% content_for :script do %>
 <script>
+   mixpanel.track("Acessou pagina de controle de usuarios");
     $("#goToTop").click(function() {
           $('html,body').animate({
               scrollTop: $("#header").offset().top

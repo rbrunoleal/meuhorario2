@@ -32,6 +32,8 @@
 
 <% content_for :script do %>
 <script>
+    mixpanel.track("Acessou pagina exibição do histórico", { "matricula_aluno": "<%= @student.matricula %>" });
+
     var historic_student = <%= raw @historic  %>;
     
     $("#goToTop").click(function() {

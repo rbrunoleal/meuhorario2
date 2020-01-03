@@ -48,11 +48,11 @@ Rails.application.routes.draw do
   get 'orientation/:professor_id/students/:orientation_id/historic', :to => 'orientation#historic_student', as: :historic_orientation
   
   
+  resources :discipline_codes, only: [:index, :new, :edit, :create, :update, :destroy]
   
-  
-  
-  
-  
+  get 'parameter_load_semester' => 'admin#semester', :as => 'parameter_load_semester'
+  get 'parameter_load_departments' => 'admin#departments', :as => 'parameter_load_departments'
+  get 'parameter_load_discipline_code ' => 'admin#discipline_code', :as => 'parameter_load_discipline_code'
   
   get 'planning', to: 'planning#record'
   get 'planning/show', to: 'planning#show'
@@ -65,6 +65,7 @@ Rails.application.routes.draw do
   #PreEnrollment
   resources :pre_enrollments
   get '/pre_enrollments/:id/result' => 'pre_enrollments#result', as: :pre_enrollments_result
+  get '/pre_enrollments/:id/students/:discipline_id' => 'pre_enrollments#students', as: :pre_enrollments_students
 
   #RecordEnrollment
   get '/record_enrollments', :to => 'record_enrollments#index', as: :record_enrollments
@@ -75,8 +76,6 @@ Rails.application.routes.draw do
   put '/record_enrollments/:pre_enrollment_id/:id', :to => 'record_enrollments#update'
   delete '/record_enrollments/:pre_enrollment_id/:id', :to => 'record_enrollments#destroy'
 
-  
-  
   # For details on the DSL available within this file, see http://guides.rubyonrails.org/routing.html
 
 =begin

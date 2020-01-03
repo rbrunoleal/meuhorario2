@@ -1,6 +1,6 @@
 class PreEnrollmentsController < ApplicationController
   before_action :authenticate_user!
-  before_action :set_pre_enrollment, only: [:edit, :update, :result,:destroy]
+  before_action :set_pre_enrollment, only: [:edit, :update, :result, :students, :destroy]
   before_action :authorize_pre_enrollment
  
   def index
@@ -29,11 +29,15 @@ class PreEnrollmentsController < ApplicationController
       }
     ).find_by_code @user.coordinator.course.code
 
-    cds_all = @course.course_disciplines
-    @all_disciplines = cds_all.map {|d| [d.discipline.code, d.discipline.name, d.nature, d.semester.blank? ? 0 : d.semester] }
-    
     cds = @course.course_disciplines 
-
+    cds.each do |x|
+      discipline = DisciplineCode.find_by(from_code: x.discipline.code)
+      if(discipline)
+        x.discipline.code = discipline.to_code
+      end
+    end
+    @all_disciplines = cds.map {|d| [d.discipline.code, d.discipline.name, d.nature, d.semester.blank? ? 0 : d.semester] }
+ 
     unless @course.nil?
       @semesters = []
       pre = {}
@@ -63,7 +67,6 @@ class PreEnrollmentsController < ApplicationController
 
   def edit
     load_record
-    
     @pre_enrollment_discipline = @pre_enrollment.disciplines_enrollments.map { |x| x.code }
   end
   
@@ -80,6 +83,11 @@ class PreEnrollmentsController < ApplicationController
     @disciplines_ob = @pre_enrollment.disciplines_required.sort_by { |x| x.name }
     @disciplines_op = @pre_enrollment.disciplines_optional.sort_by { |x| x.name }
   end
+   
+  def students
+    @discipline = @pre_enrollment.disciplines_enrollments.find { |x| x.id ==  params['discipline_id'].to_i }
+    @students = @discipline.association_enrollments.map { |x| x.record_enrollment.student }
+  end 
    
   def create
     ActiveRecord::Base.transaction do
@@ -117,12 +125,15 @@ class PreEnrollmentsController < ApplicationController
       begin
         @pre_enrollment.update(pre_enrollment_params)
         @disciplines = disciplines_params
+        selected_disciplines = []
         @disciplines.each do |d|
           @discipline = @pre_enrollment.disciplines_enrollments.find { |x| x.code == d }
           if(!@discipline)
-            @pre_enrollment.disciplines_enrollments << DisciplinesEnrollment.new(code: d)
+            @discipline = DisciplinesEnrollment.new(code: d)
           end
+          selected_disciplines << @discipline
         end
+        @pre_enrollment.disciplines_enrollments = selected_disciplines
         @pre_enrollment.save!
         respond_to do |format|
            format.html { redirect_to pre_enrollments_path, success: 'Pré-Matricula salva.' }
@@ -162,6 +173,8 @@ class PreEnrollmentsController < ApplicationController
     
     def set_pre_enrollment
       @pre_enrollment = PreEnrollment.find(params[:id])
+      rescue ActiveRecord::RecordNotFound
+        redirect_to :action => 'index'
     end
     
     def pre_enrollment_params

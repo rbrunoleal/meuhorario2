@@ -13,3 +13,8 @@
   </div>
 </div>
 <%= render 'shared/footer' %>
+<% content_for :script do %>
+<script>
+  mixpanel.track("Acessou pagina para incluir coordenador");
+</script>
+<% end %>

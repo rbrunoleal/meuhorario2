@@ -57,6 +57,8 @@ class UsersController < ApplicationController
   private
     def set_user
       @user = User.find(params[:id])
+      rescue ActiveRecord::RecordNotFound
+        redirect_to :action => 'index'
     end
   
   protected

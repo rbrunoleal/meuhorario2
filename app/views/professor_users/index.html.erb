@@ -43,6 +43,8 @@
 
 <% content_for :script do %>
 <script>
+    mixpanel.track("Acessou o cadastro de Professores");
+    
     $("#goToTop").click(function() {
           $('html,body').animate({
               scrollTop: $("#header").offset().top

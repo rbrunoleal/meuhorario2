@@ -1,5 +1,6 @@
 class PlanningController < ApplicationController
   before_action :authenticate_user!
+  before_action :authorize_planning, only: [:record, :complete]
   
   def record
     @user = current_user
@@ -24,12 +25,11 @@ class PlanningController < ApplicationController
         discipline_class: :discipline
       }
     ).find_by_code @user.student.course.code
-
-    cds_all = @course.course_disciplines
-    @all_disciplines = cds_all.map {|d| [d.discipline.code, d.discipline.name, d.nature, d.semester.blank? ? 0 : d.semester] }
-    
+ 
     @disciplines_historic = @user.student.approved_disciplines.to_json
+    
     cds = @course.course_disciplines 
+    @all_disciplines = cds.map {|d| [d.discipline.code, d.discipline.name, d.nature, d.semester.blank? ? 0 : d.semester] }
 
     unless @course.nil?
       @semesters = []
@@ -61,6 +61,7 @@ class PlanningController < ApplicationController
     end
 
     @ops = cds.reject{ |cd| cd.nature == 'OB' }.map{ |cd| cd.discipline }
+    @student = @user.student
   end
   
   def complete
@@ -128,5 +129,14 @@ class PlanningController < ApplicationController
     end
     @planning = planning_student
   end
+  
+  private
+    def authorize_planning
+      if @planning.present?
+        authorize @planning
+      else
+        authorize Planning
+      end
+    end
 
 end
