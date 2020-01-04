@@ -231,23 +231,23 @@
         var validate = true;
         inserted_historic.forEach(function(x){
             x.disciplines_historic.forEach(function(y){
-                if(['RR', 'TR', 'RF'].includes(y.res) && y.ch != '--'){
+                if(['RR', 'TR', 'RF'].includes(y.res.toUpperCase()) && y.ch != '--'){
                     validate = false;
                     show_message_validade_item(y, "Carga Horária(CH) inválida, para o Resultado(RES).");
                 }
-                if(['RR', 'TR'].includes(y.res) && y.cr != '--'){
+                if(['RR', 'TR'].includes(y.res.toUpperCase()) && y.cr != '--'){
                     validate = false;
                     show_message_validade_item(y, "Crédito(CR) inválido, para o Resultado(RES).");
                 }
-                if(['AP'].includes(y.res) && parseFloat(y.note) < 5){
+                if(['AP'].includes(y.res.toUpperCase()) && parseFloat(y.note) < 5){
                     validate = false;
                     show_message_validade_item(y, "Nota inválida, para o Resultado(RES): Aprovado(AP).");
                 }
-                if(['TR', 'RF'].includes(y.res) && y.note != '--'){
+                if(['TR', 'RF'].includes(y.res.toUpperCase()) && y.note != '--'){
                     validate = false;
                     show_message_validade_item(y, "Nota inválida, para o Resultado(RES): Trancamento(TR).");
                 }
-                if(['RR'].includes(y.res) && parseFloat(y.note) > 5){
+                if(['RR'].includes(y.res.toUpperCase()) && parseFloat(y.note) > 5){
                     validate = false;
                     show_message_validade_item(y, "Nota inválida, para o Resultado(RES): Reprovado(RR).");
                 }
@@ -260,11 +260,11 @@
         var validate = true;
         inserted_historic.forEach(function(x){
             x.disciplines_historic.forEach(function(y){
-                if(!['OB', 'OP'].includes(y.nt)){
+                if(!['OB', 'OP'].includes(y.nt.toUpperCase())){
                     validate = false;
                     show_message_validade_item(y, "Natureza(NT) inválida, Legenda NT: OB-Obrigatoria, OP-Optativa.");
                 }
-                if(!['AP', 'RF', 'RR', 'TR'].includes(y.res)){
+                if(!['AP', 'RF', 'RR', 'TR'].includes(y.res.toUpperCase())){
                     validate = false;
                     show_message_validade_item(y, "Resultado(RES) inválido, Legenda RES: AP-Aprovado, RF-Reprovado Frequencia, RR-Reprovado, TR-Trancamento.");
                 }
