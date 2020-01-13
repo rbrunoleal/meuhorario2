@@ -48,7 +48,9 @@
     <div class="row">
       <span id="goToTop" class="go-to-top float-left">▲ Topo</span>
       <div class="columns small-4 large-4 float-right">
-        <%= link_to "Adicionar via planilha", table_orientations_path, :class=>"button export-button float-right" %>  
+        <div data-turbolinks="false">
+          <%= link_to "Adicionar via planilha", table_orientations_path, :class=>"button export-button float-right" %>    
+        </div>
         <%= link_to "Adicionar Aluno", new_orientation_path, :class=>"button export-button float-left" %>  
       </div>
     </div>

@@ -76,6 +76,7 @@ class OrientationController < ApplicationController
   
   def table_students
     @professor = ProfessorUser.find(params[:professor_id])
+    @course = Course.find(params[:course_id])
   end
   
   def complete_students
@@ -84,9 +85,9 @@ class OrientationController < ApplicationController
       begin
         if(@result)
           @result.each do |r|
-            @orientation = @professor.orientations.select {|x| x.matricula == r['matricula']} 
+            @orientation = @professor.orientations.find {|x| x.matricula == r['matricula']} 
             if(!@orientation)
-              @orientation = Orientation.new(name: r['name'], matricula: r['matricula']) 
+              @orientation = Orientation.new(name: r['name'], matricula: r['matricula'])
               @orientation.course = @course
               @professor.orientations << @orientation
             end

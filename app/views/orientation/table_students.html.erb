@@ -49,8 +49,13 @@
 <% content_for :script do %>
 <script>
     mixpanel.track("Acessou pagina cadastro alunos da orientação via tabela");
+    
+    students_inserted = [];
+    var $container = $("#handsontable");
+    var handsontable = $container.data('handsontable');
 
     var professor = <%= raw @professor.id  %>;
+    var course = <%= raw @course.id  %>;
     
     function load_handsontable() {
         $container = $("#handsontable");
@@ -72,11 +77,7 @@
                 }
             };
         $("#handsontable").handsontable(config);
-        
     }
-    
-    var $container = $("#handsontable");
-    var handsontable = $container.data('handsontable');
     
     $("#goToTop").click(function() {
       $('html,body').animate({
@@ -92,10 +93,19 @@
             handsontable.alter('insert_row', col, 1);
         }
     })
-
+    
+    function show_message_validade_item(item_student, ex){
+        var message = '';
+        var $toastContent;
+        message = 'Nome: ' + item_student.name + ', Matrícula: ' + item_student.matricula + '. ' + ex;
+        $toastContent = $('<span>' + message + '</span>');
+        toastr.error($toastContent)
+    }
 
     function load_orientation_inserted() {
-        var students_inserted = [];
+        students_inserted = [];
+        students_inserted_local = [];
+        validate_students = true;
         
         var get_table_students = $container.data('handsontable').getData();
         
@@ -110,20 +120,40 @@
                 name: x[0],
                 matricula: x[1]
             }
-            students_inserted.push(obj_student);
+            if(!(obj_student.matricula.length == 9)){
+                validate_students = false;
+                show_message_validade_item(obj_student, "Matrícula deve conter 9 dígitos.");
+            }
+            if(!(/(^[0-9]{9,9})$/.test(obj_student.matricula))){
+                validate_students = false;
+                show_message_validade_item(obj_student, "Matrícula inválida.");
+            }
+            if(!(/(^[a-záàâãéèêíïóôõöúçñ ]+)$/.test(obj_student.name.toLowerCase()))){
+                validate_students = false;
+                show_message_validade_item(obj_student, "Nome inválido.");
+            }
+            students_inserted_local.push(obj_student);
         });
-        return students_inserted;
+        if(validate_students){
+            students_inserted_local.forEach(function(x){
+                students_inserted.push(x);
+            });
+        }
+        return validate_students;
     }
     
     $("#orientation_record").click(function() {
-        orientation_students = load_orientation_inserted();
-        $.ajax({
-          url: "/orientation/" + professor + "/students/many",
-          type: "post",
-          data: {
-              data_orientations: JSON.stringify(orientation_students)
-          }
-        });
+        if(load_orientation_inserted()){
+            orientation_students = students_inserted;
+            $.ajax({
+              url: "/orientation/" + professor + "/" + course + "/students/table",
+              type: "post",
+              data: {
+                  data_orientations: JSON.stringify(orientation_students)
+              }
+            });
+        }
+        
     });
     
     $(document).ready(function() {
