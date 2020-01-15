@@ -11,8 +11,8 @@
     <table id="largeTable" class="schedule-table large-table unstriped">
       <thead>
         <tr>
-          <th width="180">Nome</th>
           <th width="60">Matrícula</th>
+          <th width="180">Nome</th>
           <th width="80">E-mail</th>
           <th width="60"> Cadastro</th>
           <th width="60"></th>
@@ -24,8 +24,8 @@
       <tbody>
           <% @orientation_result.each do |orientation| %>
             <tr>
-              <td><%= orientation.name %></td>
               <td><%= orientation.matricula %></td>
+              <td><%= orientation.name %></td>
               <td><%= orientation.email %></td>
               <td><%= orientation.record %></td>
               <% if orientation.planning.present? %>

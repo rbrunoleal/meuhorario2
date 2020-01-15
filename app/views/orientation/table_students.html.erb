@@ -67,9 +67,9 @@
                 startRows: 10,
                 className: "htCenter",
                 rowHeaders: true,
-                colHeaders: ['Nome', 'Matrícula'],
+                colHeaders: ['Matrícula', 'Nome'],
                 licenseKey: "non-commercial-and-evaluation",
-                colWidths: [750, 320],
+                colWidths: [320, 750],
                 headerTooltips: {
                     rows: false,
                     columns: true,
@@ -117,8 +117,8 @@
                 return;
             }
             var obj_student = {
-                name: x[0],
-                matricula: x[1]
+                name: x[1],
+                matricula: x[0]
             }
             if(!(obj_student.matricula.length == 9)){
                 validate_students = false;
