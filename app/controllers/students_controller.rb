@@ -7,7 +7,7 @@ class StudentsController < ApplicationController
     @user = current_user
     @course = @user.coordinator.course.name
     
-    @students = Student.all.select { |student| student.course == @user.coordinator.course }
+    @students = Student.order(:name).select { |student| student.course == @user.coordinator.course }
     
     @search = {name: "", matricula: ""}
     if(params.has_key?(:search))

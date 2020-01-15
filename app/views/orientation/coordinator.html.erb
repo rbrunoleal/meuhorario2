@@ -9,7 +9,7 @@
     </div>
     
     <div class="row">
-       <table id="largeTable" class="schedule-table large-table">
+       <table id="largeTable" class="schedule-table large-table unstriped">
         <thead>
           <tr>
             <th width="200">Nome</th>
@@ -21,7 +21,7 @@
           <% @professor_users.each do |professor| %>
             <tr>
               <td><%= professor.name %></td>
-              <% if professor.user.present? %>
+              <% if professor.record_active %>
                 <td>Realizado</td>
               <%else%>
                 <td>Pendente</td>

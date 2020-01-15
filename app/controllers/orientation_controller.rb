@@ -8,7 +8,7 @@ class OrientationController < ApplicationController
   
   def coordinator
     @user = current_user
-    @professor_users = ProfessorUser.all.select { |professor| professor.department.courses.include?(@user.coordinator.course) }
+    @professor_users = ProfessorUser.order(:name).select { |professor| professor.department.courses.include?(@user.coordinator.course) }
     @department = @user.coordinator.course.department_course.department.name
   end
   
@@ -144,19 +144,30 @@ class OrientationController < ApplicationController
       @student.historics.each do |h|  
         current_historic_disciplines = []
         h.disciplines_historics.each do |d|
-          discipline = @student.course.disciplines.find { |x| x.code == d.code }
-          course_discipline = CourseDiscipline.find_by(course: @student.course.id, discipline: discipline.id)
-          current_discipline = {
-            code: discipline.code,
-            name: discipline.name,
-            curricular_component: discipline.code + ' - ' + discipline.name,
-            nt: course_discipline.nature,
-            ch: d.workload,
-            cr: d.credits,
-            note: d.note.to_s,
-            res: d.result
-          }
-          current_historic_disciplines << current_discipline
+          discipline = Discipline.find_by(code: d.code)
+          if discipline
+            name_discipline = discipline.name
+            code_discipline = discipline.code
+            course_discipline = CourseDiscipline.find_by(course: @student.course.id, discipline: discipline.id)
+            if course_discipline
+              nt_discipline = course_discipline.nature
+            end
+          else
+            name_discipline = d.name.blank? ? '' : d.name
+            nt_discipline = d.nt.blank? ? '--' : d.nt
+            code_discipline = d.code
+          end
+            current_discipline = {
+              code: code_discipline,
+              name: name_discipline,
+              curricular_component: code_discipline + ' - ' + name_discipline,
+              nt: nt_discipline,
+              ch: d.workload,
+              cr: d.credits,
+              note: d.result == 'DI' ? '--' : d.note.to_s,
+              res: d.result
+            }
+            current_historic_disciplines << current_discipline
         end
         current_historic = {
           semester: h.year.to_s + "." + h.period.to_s,

@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20200102141556) do
+ActiveRecord::Schema.define(version: 20200115204159) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -130,6 +130,8 @@ ActiveRecord::Schema.define(version: 20200102141556) do
     t.integer  "historic_id"
     t.datetime "created_at",  null: false
     t.datetime "updated_at",  null: false
+    t.string   "name"
+    t.string   "nt"
     t.index ["historic_id"], name: "index_disciplines_historics_on_historic_id", using: :btree
   end
 

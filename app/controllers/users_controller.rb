@@ -3,7 +3,7 @@ class UsersController < ApplicationController
   before_action :set_user, only: [:lock, :unlock, :destroy, :reset]
   
   def index
-    @users = User.all
+    @users = User.order(:username)
     
     @search = {username: ""}
     if(params.has_key?(:search))

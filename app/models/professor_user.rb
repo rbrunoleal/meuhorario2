@@ -11,6 +11,15 @@ class ProfessorUser < ApplicationRecord
   
   has_many :orientations, dependent: :destroy
   
+  def record_active
+      @record = Coordinator.find_by(username: self.username)
+      if(@record)
+        return @record.user.present?
+      else
+        return self.user.present?
+      end
+  end
+  
   private
     def downcase_username
       self.username = self.username.downcase

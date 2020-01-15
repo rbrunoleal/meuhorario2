@@ -25,32 +25,28 @@ class HistoricController < ApplicationController
               end
               discipline_historic_student =[]
               r['disciplines_historic'].each do |d|
-                discipline = @historic.disciplines_historics.find { |x| x.code == d['code'] }
-                if(discipline)
-                  discipline_historic_student << discipline
+                discipline_code = DisciplineCode.find_by(to_code: d['code'])
+                if(discipline_code)
+                  code_verify = discipline_code.from_code
                 else
-                  discipline_code = DisciplineCode.find_by(to_code: d['code'])
-                  if(discipline_code)
-                    code_verify = discipline_code.from_code
-                  else
-                    code_verify = d['code']
-                  end
-                  discipline_record = Discipline.find_by(code: code_verify)
-                  if discipline_record
-                    discipline_historic_student << DisciplinesHistoric.new(
+                  code_verify = d['code']
+                end
+                  discipline_historic_student << DisciplinesHistoric.new(
                     code: code_verify,
                     workload: d['ch'] == '--' ? 0 : d['ch'],
                     credits: d['cr'] == '--' ? 0 : d['cr'],
                     note: d['note'] == '--' ? 0 : d['note'],
+                    name: d['name'],
+                    nt: d['nt'],
                     result: d['res'])
-                  end
-                end
               end
               @historic.disciplines_historics = discipline_historic_student
-              historic_student << @historic
+              if(@historic.disciplines_historics.any?)
+                historic_student << @historic
+              end
             end
-            @student.historics = historic_student
-            @student.save!
+              @student.historics = historic_student
+              @student.save!
           end
         rescue ActiveRecord::RecordInvalid => exception
             flash.now[:danger] = 'Erro ao salvar histórico, tente novamente.'
@@ -76,24 +72,28 @@ class HistoricController < ApplicationController
         h.disciplines_historics.each do |d|
           discipline = Discipline.find_by(code: d.code)
           if discipline
+            name_discipline = discipline.name
+            code_discipline = discipline.code
             course_discipline = CourseDiscipline.find_by(course: @student.course.id, discipline: discipline.id)
             if course_discipline
-              nt = course_discipline.nature
-            else
-              nt = '-'
+              nt_discipline = course_discipline.nature
             end
+          else
+            name_discipline = d.name.blank? ? '' : d.name
+            nt_discipline = d.nt.blank? ? '--' : d.nt
+            code_discipline = d.code
+          end
             current_discipline = {
-            code: discipline.code,
-            name: discipline.name,
-            curricular_component: discipline.code + ' - ' + discipline.name,
-            nt: nt,
-            ch: d.workload,
-            cr: d.credits,
-            note: d.note.to_s,
-            res: d.result
+              code: code_discipline,
+              name: name_discipline,
+              curricular_component: code_discipline + ' - ' + name_discipline,
+              nt: nt_discipline,
+              ch: d.workload,
+              cr: d.credits,
+              note: d.result == 'DI' ? '--' : d.note.to_s,
+              res: d.result
             }
             current_historic_disciplines << current_discipline
-          end
         end
         current_historic = {
           semester: h.year.to_s + "." + h.period.to_s,

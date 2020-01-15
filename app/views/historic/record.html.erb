@@ -260,13 +260,13 @@
         var validate = true;
         inserted_historic.forEach(function(x){
             x.disciplines_historic.forEach(function(y){
-                if(!['OB', 'OP'].includes(y.nt.toUpperCase())){
+                if(!['OB', 'OP', '--'].includes(y.nt.toUpperCase())){
                     validate = false;
                     show_message_validade_item(y, "Natureza(NT) inválida, Legenda NT: OB-Obrigatoria, OP-Optativa.");
                 }
-                if(!['AP', 'RF', 'RR', 'TR'].includes(y.res.toUpperCase())){
+                if(!['AP', 'RF', 'RR', 'TR', 'DI', 'DU'].includes(y.res.toUpperCase())){
                     validate = false;
-                    show_message_validade_item(y, "Resultado(RES) inválido, Legenda RES: AP-Aprovado, RF-Reprovado Frequencia, RR-Reprovado, TR-Trancamento.");
+                    show_message_validade_item(y, "Resultado(RES) inválido, Legenda RES: AP-Aprovado, RF-Reprovado Frequencia, RR-Reprovado, TR-Trancamento., DI-Dispensa , DU-Dispensa UFBA");
                 }
                 if(y.note != '--' && !(parseFloat(y.note) >= 0.0 && parseFloat(y.note) <= 10)){
                     validate = false;

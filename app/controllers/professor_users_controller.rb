@@ -5,7 +5,7 @@ class ProfessorUsersController < ApplicationController
 
   def index
     @user = current_user
-    @professor_users = ProfessorUser.all.select { |professor| professor.department.courses.include?(@user.coordinator.course) }
+    @professor_users = ProfessorUser.order(:name).select { |professor| professor.department.courses.include?(@user.coordinator.course) }
     @department = @user.coordinator.course.department_course.department.name
   end
 
