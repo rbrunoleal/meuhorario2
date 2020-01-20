@@ -462,4 +462,74 @@ namespace :crawler do
     puts '-> Finished'
     puts '-----------------------------------------------------------------------'
   end
+  
+  
+  desc 'Crawl the disciplines of SI course'
+  task :disciplines_cc => :environment do
+    puts '-----------------------------------------------------------------------'
+    puts '-> Starting disciplines crawling...'
+
+    require 'rubygems'
+    require 'mechanize'
+
+    codes = ["195140", "196120"];
+    @courses = Course.all.select { |c| codes.include?(c.code) }
+    @courses.each do |course|
+      byebug
+      puts "    Crawling #{course.name}"
+
+      agent = Mechanize.new
+      hub = agent.get "https://alunoweb.ufba.br/SiacWWW/CurriculoCursoGradePublico.do?cdCurso=#{course.code}&nuPerCursoInicial=#{course.curriculum}"
+
+      for i in 0..1
+        page = hub.links[i].click
+
+        table = page.search('table')[0]
+        rows = table.css('tr')[2..-1]
+
+        semester = nil
+        next if rows.blank?
+        rows.each do |row|
+          columns = row.css('td')
+
+          semester = columns[0].text.to_i unless columns[0].text.blank?
+          nature = columns[1].text
+          code = columns[2].text
+          name = columns[3].css('a').text.strip
+          name = columns[3].text.strip if name == ""
+
+          curriculum = nil
+          discipline_link = columns[3].css('a')
+          if discipline_link.size == 1 && discipline_link.first.attr('href') =~ /nuPerInicial=(\d+)/
+            curriculum = $1
+          end
+
+          discipline = Discipline.find_by_code code
+
+          unless discipline
+            discipline = Discipline.new
+            discipline.code = code
+            discipline.name = name
+            discipline.curriculum = curriculum
+            discipline.save
+          end
+
+          course_discipline = CourseDiscipline.where(course_id: course.id, discipline_id: discipline.id)
+          if course_discipline.blank?
+            course_discipline = CourseDiscipline.new
+            course_discipline.semester = semester
+            course_discipline.nature = nature
+            course_discipline.discipline = discipline
+            course_discipline.course = course
+            course_discipline.save
+          end
+        end
+      end
+    end
+    puts '-> Finished disciplines crawling'
+    puts '-----------------------------------------------------------------------'
+  end
+  
+  
+  
 end
