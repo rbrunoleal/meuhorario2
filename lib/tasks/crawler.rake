@@ -475,7 +475,6 @@ namespace :crawler do
     codes = ["195140", "196120"];
     @courses = Course.all.select { |c| codes.include?(c.code) }
     @courses.each do |course|
-      byebug
       puts "    Crawling #{course.name}"
 
       agent = Mechanize.new
