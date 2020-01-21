@@ -24,7 +24,8 @@ class Student < ApplicationRecord
   
   def approved_disciplines
     result = []
-    approved = self.disciplines_historics.select {|x| x.result == 'AP'} 
+    results = ["AP", "DI", "DU"];
+    approved = self.disciplines_historics.select {|x| results.include?(x.result) } 
     approved.each do |n|
       obj = {
         code: n.code,
