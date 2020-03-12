@@ -4,6 +4,17 @@ class DisciplineCodesController < ApplicationController
 
   def index
     @discipline_codes = DisciplineCode.all
+    
+    @search = {from_code: "", to_code: ""}
+    if(params.has_key?(:search))
+      if params[:discipline_code_from_code].present?
+        @discipline_codes = @discipline_codes.select { |discipline_code| discipline_code.from_code.downcase.include? params[:discipline_code_from_code].downcase }
+      end
+      if params[:discipline_code_to_code].present?
+        @discipline_codes = @discipline_codes.select { |discipline_code| discipline_code.to_code.downcase.include? params[:discipline_code_to_code].downcase }
+      end
+      @search = {from_code: params[:discipline_code_from_code], to_code: params[:discipline_code_to_code]}
+    end
   end
 
   def show

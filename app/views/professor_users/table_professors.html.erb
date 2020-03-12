@@ -9,14 +9,23 @@
     </div>
     
     <div class="row">
+      <div class="columns small-6 large-2">
+          <%= link_to "Voltar", professor_users_path, :class=>"button export-button float-left" %>  
+      </div>
+      <div class="columns small-6 large-2">
+        <div id="orientation_record" class="button export-button float-right">Salvar</div>
+      </div>
+    </div>
+    
+    <div class="row">
         <ul id="blockTabs" class="tabs" data-tabs>
-            <li id="historic" class="tabs-title is-active" aria-selected="true"><a href="#historic">Professores</a></li>
+            <li id="professor" class="tabs-title is-active" aria-selected="true"><a href="#professor">Professores</a></li>
         </ul>
     </div>
 
     <div class="row block tabs-content" data-tabs-content="blockTabs">
-        <div id="historic" class="tabs-panel no-padding is-active">
-            <div id="historic_insert">
+        <div id="professor" class="tabs-panel no-padding is-active">
+            <div id="professor_insert">
                 <div class="row" style="margin-bottom: 20px;">
                    <div id="handsontable" class="hot htCenter handsontable htRowHeaders htColumnHeaders"></div>
                    
@@ -30,14 +39,7 @@
                 </div>
             </div>
             
-            <div class="row">
-              <div class="columns small-6 large-2">
-                  <%= link_to "Voltar", professor_users_path, :class=>"button export-button float-left" %>  
-              </div>
-              <div class="columns small-12 large-2">
-                <div id="orientation_record" class="button export-button float-right">Salvar</div>
-              </div>
-            </div>
+            
         </div>
     </div>
     

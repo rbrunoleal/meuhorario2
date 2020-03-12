@@ -8,7 +8,7 @@ class UsersController < ApplicationController
     @search = {username: ""}
     if(params.has_key?(:search))
       if params[:user_username].present?
-        @users = @users.select { |user| user.username.include? params[:user_username] }
+        @users = @users.select { |user| user.username.include? params[:user_username].downcase }
       end
       @search = {username: params[:user_username]}
     end

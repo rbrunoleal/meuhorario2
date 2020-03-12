@@ -8,7 +8,7 @@ class RecordEnrollmentsController < ApplicationController
     @user = current_user
     @student = @user.student
     @pre_enrollments_registered = @student.record_enrollments.pluck(:pre_enrollment_id)
-    @pre_enrollments = @student.course.pre_enrollments_available.where.not(id: @pre_enrollments_registered)
+    @pre_enrollments = @student.course.pre_enrollments_available.select { |pre_enrollment| not @pre_enrollments_registered.include?(pre_enrollment.id) }
     @record_enrollments = @student.record_enrollments
     @course = @student.course
   end

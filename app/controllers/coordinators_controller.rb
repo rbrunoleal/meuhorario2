@@ -3,7 +3,23 @@ class CoordinatorsController < ApplicationController
   before_action :set_coordinator, only: [:edit, :update, :destroy]
 
   def index
-    @coordinators = Coordinator.all
+    @coordinators = Coordinator.order(:name)
+    @courses = Course.order(:name)
+    
+    @search = {name: "", username: "", course: ""}
+    if(params.has_key?(:search))
+      if params[:coordinator_name].present?
+        @coordinators = @coordinators.select { |coordinator| coordinator.name.downcase.include? params[:coordinator_name].downcase }
+      end
+      if params[:coordinator_username].present?
+        @coordinators = @coordinators.select { |coordinator| coordinator.username.downcase.include? params[:coordinator_username].downcase }
+      end
+      if params[:coordinator_course].present?
+        @coordinators = @coordinators.select { |coordinator| coordinator.course.id ==  params[:coordinator_course].to_i }
+      end
+      @search = {name: params[:coordinator_name], username: params[:coordinator_username], course: params[:coordinator_course]}
+    end
+    
   end
 
   def show

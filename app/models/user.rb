@@ -12,12 +12,14 @@ class User < ApplicationRecord
   }
   
   def reset
-    if self.student
-      self.student.destroy
+    case self.rule
+      when "student"
+        self.student.destroy
+      when "professor"
+        self.professor_user.destroy
+      else
+        self.coordinator.destroy
     end
-    self.student = nil
-    self.coordinator = nil
-    self.professor_user = nil
     self.rule = 0
     self.enable = false
   end

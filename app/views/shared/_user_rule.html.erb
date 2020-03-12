@@ -10,7 +10,9 @@
         <% else %>
             <li><%= link_to('Histórico', historic_path) %></li>
             <li><%= link_to('Planejamento', planning_path) %></li>
-            <li><%= link_to('Pré-Matrícula', record_enrollments_path) %></li>
+            <% if current_user.student.course.pre_enrollments_available.any? %>
+                <li><%= link_to('Pré-Matrícula', record_enrollments_path) %></li>    
+            <% end %>
         <% end %>
     <% end %>
 <% end %>

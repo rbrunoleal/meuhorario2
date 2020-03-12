@@ -1,6 +1,6 @@
 class RecordEnrollmentPolicy < ApplicationPolicy
   def index?
-    user.rule == "student" && user.enable == true
+    (user.rule == "student" && user.enable == true) && user.student.course.pre_enrollments_available.any?
   end
 
   def new?

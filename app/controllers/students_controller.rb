@@ -11,13 +11,13 @@ class StudentsController < ApplicationController
     
     @search = {name: "", matricula: ""}
     if(params.has_key?(:search))
-      if params[:matricula_student].present?
-        @students = @students.select { |student| student.matricula.include? params[:matricula_student] }
+      if params[:student_matricula].present?
+        @students = @students.select { |student| student.matricula.include? params[:student_matricula] }
       end
-      if params[:name_student].present?
-        @students = @students.select { |student| student.name.include? params[:name_student] }
+      if params[:student_name].present?
+        @students = @students.select { |student| student.name.downcase.include? params[:student_name].downcase }
       end
-      @search = {name: params[:name_student], matricula: params[:matricula_student]}
+      @search = {name: params[:student_name], matricula: params[:student_matricula]}
     end
   end
   

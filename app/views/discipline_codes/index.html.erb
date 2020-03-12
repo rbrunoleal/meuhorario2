@@ -7,6 +7,31 @@
         </div>
     </div>
     
+    <div class="row">
+      <%= form_tag '', :method => :get do  %>
+        <div class="columns medium-2 float-left">
+          <label>Código(DE)
+            <%= text_field_tag :discipline_code_from_code, @search[:from_code] %>
+          </label>
+        </div>
+        <div class="columns medium-2 float-left">
+          <label>Código(PARA)
+             <%= text_field_tag :discipline_code_to_code, @search[:to_code] %>
+          </label>
+        </div>
+        <div class="columns medium-2 float-left">
+          <div class='medium-2 columns'>
+            <%=submit_tag("Pesquisar", name: 'search', class: 'button')%>
+          </div>
+        </div>
+      <% end %>
+        <div class="columns large-2 float-right">
+          <div class='medium-12 columns'>
+            <%= link_to "Novo Código", new_discipline_code_path, :class=>"button export-button" %>
+          </div>
+        </div>
+    </div>
+    
     <table id="largeTable" class="schedule-table large-table unstriped">
       <thead> 
         <tr>
@@ -31,7 +56,6 @@
     
     <div class="row">
       <span id="goToTop" class="go-to-top float-left">▲ Topo</span>
-      <%= link_to "Novo Código", new_discipline_code_path, :class=>"button export-button float-right" %>
     </div>
   </div>
 </div>

@@ -14,6 +14,8 @@ class ProfessorUsersController < ApplicationController
 
   def new
     @professor_user = ProfessorUser.new
+    @user = current_user
+    @department = @user.coordinator.course.department_course.department.name
   end
   
   def table_professors
