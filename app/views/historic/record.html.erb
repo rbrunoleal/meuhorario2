@@ -29,6 +29,36 @@
             <div id="historic_show">
                 <div class="row">
                     <div class="small-12 columns">
+                        <div class="small-6 columns float-left">
+                            <div class="subtext float-left">NOME: <%= @student.name.upcase %></div>
+                        </div> 
+                        <div class="small-6 columns float-right">
+                            <div id="workload" class="subtext float-right">CARGA HORÁRIA OBRIGATÓRIA: <%= @ch_ob %></div>
+                        </div>
+                    </div>
+                </div>
+                 <div class="row">
+                    <div class="small-12 columns">
+                        <div class="small-6 columns float-left">
+                            <div class="subtext float-left">MATRÍCULA: <%= @student.matricula %></div>
+                        </div> 
+                        <div class="small-6 columns float-right">
+                            <div id="workload" class="subtext float-right">CARGA HORÁRIA OPTATIVA: <%= @ch_op %></div>
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="small-12 columns">
+                        <div class="small-6 columns float-left">
+                            <div class="subtext float-left">CURSO: <%= @course.name %></div>
+                        </div>    
+                        <div class="small-6 columns float-right">
+                            <div id="workload" class="subtext float-right">CARGA HORÁRIA TOTAL: <%= @ch %></div>
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="small-12 columns">
                         <%= render partial: 'historic_table', locals: { table_id: 'large_table_historic', table_class: 'historic-table unstriped large-table'} %>
                     </div>
                 </div>
@@ -49,7 +79,6 @@
                         <a id="moreLine" class="float-right">Adicionar +10 Linhas</a>
                     </div>
                 </div>
-
             </div>
             
             <div class="row">
@@ -140,6 +169,16 @@
         }
     }
     
+    function workload_result() {
+        var result = 0;
+        inserted_historic.forEach(function(semester){
+            semester.disciplines_historic.forEach(function(d){
+                result += d.ch;
+            });
+        });
+        return result;
+    }
+    
     function historic_inserted_result_table() {
         $("#large_table_historic tbody").empty();
         $("#large_table_historic tbody").append(get_result_table_history(inserted_historic));
@@ -149,6 +188,7 @@
             $toastContent = $('<span>' + message + '</span>');
             toastr.info($toastContent)
         }
+        $("#workload").text("CARGA HORÁRIA: " + workload_result());
     }
     
     function load_historic() {

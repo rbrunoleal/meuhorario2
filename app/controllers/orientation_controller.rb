@@ -107,29 +107,61 @@ class OrientationController < ApplicationController
   
   def planning_student
     @student = Student.find(params[:orientation_id])
-    planning_student=[]
-    @student.plannings.each do |p|
-      current_planning_disciplines = []
-      p.disciplines_plannings.each do |d|
-        discipline = @student.course.disciplines.find { |x| x.code == d.code }
-        course_discipline = CourseDiscipline.find_by(course: @student.course.id, discipline: discipline.id)
-        current_discipline = {
-          code: discipline.code,
-          name: discipline.name,
-          nature: course_discipline.nature
-        }
-        current_planning_disciplines << current_discipline
-      end
-      current_planning = {
-        semester: {
-          year: p.year,
-          period: p.period
+    
+    
+    @course = Course.includes(
+      course_disciplines: [
+        { pre_requisites: [
+            { pre_discipline: :discipline },
+            { post_discipline: :discipline }
+          ],
+          post_requisites: [
+            { pre_discipline: :discipline },
+            { post_discipline: :discipline }
+          ]
         },
-        disciplines: current_planning_disciplines
+        :discipline
+      ],
+      discipline_class_offers: {
+        discipline_class: :discipline
       }
-      planning_student << current_planning
+    ).find_by_code @student.course.code
+ 
+    @disciplines_historic = @student.approved_disciplines.to_json
+    
+    cds = @course.course_disciplines 
+    @all_disciplines = cds.map {|d| [d.discipline.code, d.discipline.name, d.nature, d.semester.blank? ? 0 : d.semester] }
+
+    unless @course.nil?
+      @semesters = []
+      pre = {}
+      post = {}
+
+      cds.reject{ |cd| cd.nature != 'OB' }.each do |cd|
+        (@semesters[cd.semester] ||= []) << cd.discipline
+
+        pre_requisites = cd.pre_requisites.reject{ |pre| pre.pre_discipline.nature != 'OB' }
+        pre_requisites.each do |p|
+          (pre[cd.discipline.code] ||= []) << p.pre_discipline.discipline.code
+        end
+
+        post_requisites = cd.post_requisites.reject{ |post| post.post_discipline.nature != 'OB' }
+        post_requisites.each do |p|
+          (post[cd.discipline.code] ||= []) << p.post_discipline.discipline.code
+        end
+      end
+
+      @pre  = pre.to_json
+      @post = post.to_json
+      @plannings = (@student.plannings.map do |p|
+      {
+        :semester => { year: p.year, period: p.period },
+        :disciplines => p.disciplines_plannings.map{ |x| x.code }
+      }
+      end).to_json
     end
-    @planning = planning_student
+
+    @ops = cds.reject{ |cd| cd.nature == 'OB' }.map{ |cd| cd.discipline }
   end
   
   def historic_student
@@ -178,7 +210,6 @@ class OrientationController < ApplicationController
     end
     return historic_student.to_json
   end
-  
   
   private
     def authorize_orientation

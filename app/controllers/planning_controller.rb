@@ -52,7 +52,7 @@ class PlanningController < ApplicationController
 
       @pre  = pre.to_json
       @post = post.to_json
-      @planning = (@user.student.plannings.map do |p|
+      @plannings = (@user.student.plannings.map do |p|
       {
         :semester => { year: p.year, period: p.period },
         :disciplines => p.disciplines_plannings.map{ |x| x.code }

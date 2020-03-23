@@ -10,7 +10,7 @@ class Course < ApplicationRecord
   has_many :pre_enrollments
   
   def pre_enrollments_available
-    @pre_enrollments = self.pre_enrollments.select { |pre_enrollment|  Date.today.between?(pre_enrollment.start_date, pre_enrollment.end_date) }
+    @pre_enrollments = self.pre_enrollments.select { |pre_enrollment|  Date.today.between?(pre_enrollment.start_date.to_date, pre_enrollment.end_date.to_date) }
     return @pre_enrollments
   end
   

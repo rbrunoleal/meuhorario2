@@ -139,17 +139,17 @@
 
 <% content_for :script do %>
 <script>
-
   mixpanel.track("Acessou pagina planejamento aluno", { "matricula_aluno": "<%= @student.matricula %>" });
 
 
   var pre_requisites       = <%= raw @pre  %>;
   var post_requisites      = <%= raw @post %>;
   var all_disciplines      = <%= raw @all_disciplines %>;
-  var student_plannings    = <%= raw @planning %>
+  var student_plannings    = <%= raw @plannings %>
   var student_historic     = <%= raw @disciplines_historic %>
   
   var selected_disciplines = [];
+  var selected_unavailable_disciplines = [];
   var paramSemesters = [];
   
   var disciplines_per_semester = 
@@ -166,19 +166,10 @@
     return obj;
   }),'semester');
   
-  var semester_start;
-  if (student_plannings.length > 0) {
-    semester_start = {
-      year: student_plannings[0].semester.year,
-      period: student_plannings[0].semester.period
-    };
-  }
-  else{
-    semester_start = {
-      year: <%= Semester.first.year %>,
-      period: <%= Semester.first.period %>
-    };
-  }
+  var semester_start = {
+    year: <%= Semester.first.year %>,
+    period: <%= Semester.first.period %>
+  };
   
   var semester_current = {
       year: semester_start.year,
@@ -273,7 +264,7 @@
       return result;
   }
   
-  disciplines_done = function(semester) {
+  disciplines_done = function(semester) { 
       var result_historic = student_historic.map(function(h) {
           if (h.semester.year < semester.year) {
               return h.code;
@@ -282,15 +273,21 @@
               return h.code;
           }
       });
-      var result_planning = paramSemesters.map(function(param) {
+      var result_planning = [];
+      paramSemesters.forEach(function(param) {
           if (param.semester.year < semester.year) {
-              return param.disciplines;
+              param.disciplines.forEach(function(d){
+                result_planning.push(d);
+              });
           } 
           else if (param.semester.year == semester.year && param.semester.period < semester.period) {
-              return param.disciplines;
+              param.disciplines.forEach(function(d){
+                result_planning.push(d);
+              });
           }
-      }).reduce((list, sub) => list.concat(sub), []).concat(result_historic);
-      return result_planning;
+      });
+      var result  = result_planning.concat(result_historic);
+      return result;
   }
   
   delete_discipline_selected  = function(code) {
@@ -339,10 +336,36 @@
     var $discipline = $("#" + code);
     if ($discipline) {
       if($discipline.is("li")) {
-        !selected_disciplines.includes(code) ? $discipline.removeClass("highlight_discipline_op") : $discipline.addClass("highlight_discipline_op");  
+        if(!selected_disciplines.includes(code)){
+          $discipline.removeClass("highlight_discipline_op")
+          if (!selected_unavailable_disciplines.includes(code)){
+            $discipline.removeClass("highlight_unavailable_discipline_op")
+          }
+          else{
+            $discipline.removeClass("highlight_discipline_op");
+            $discipline.addClass("highlight_unavailable_discipline_op");
+          }
+        }
+        else{
+          $discipline.removeClass("highlight_unavailable_discipline_op")
+          $discipline.addClass("highlight_discipline_op");
+        }
       }
       else {
-        !selected_disciplines.includes(code) ? $discipline.removeClass("highlight_discipline_ob") : $discipline.addClass("highlight_discipline_ob");
+        if(!selected_disciplines.includes(code)){
+          $discipline.removeClass("highlight_discipline_ob")
+          if (!selected_unavailable_disciplines.includes(code)){
+            $discipline.removeClass("highlight_unavailable_discipline_ob")
+          }
+          else{
+            $discipline.removeClass("highlight_discipline_ob");
+            $discipline.addClass("highlight_unavailable_discipline_ob");
+          }
+        }
+        else{
+          $discipline.removeClass("highlight_unavailable_discipline_ob")
+          $discipline.addClass("highlight_discipline_ob");
+        }
       }
     }
     fill_info_disciplines_selected();
@@ -364,16 +387,6 @@
           var pre_requisitesStudent = [];
           if (selected_disciplines.includes(code)) {
               delete_discipline_selected(code);
-              selected_disciplines.forEach(function(discipline) {
-                if(pre_requisites[discipline]){
-                  pre_requisites[discipline].forEach(function(x) {
-                    if(!selected_disciplines.includes(x)){
-                      delete_discipline_selected(discipline);    
-                      fill_selected(discipline);
-                    }
-                  });
-                }
-              });
           } 
           else {
               var message = '';
@@ -381,7 +394,7 @@
               var disciplines_planning = disciplines_planning_semester(semester_current);
               if (disciplines_planning.includes(code)) {
                   var semesterDiscipline = contains_discipline(code)
-                  message = 'Disciplina ' + code + " já selecionada para o semestre: " + semesterDiscipline.semester.year + "." + semesterDiscipline.semester.period;
+                  message = 'Disciplina ' + code + " já selecionada para o semestre " + semesterDiscipline.semester.year + "." + semesterDiscipline.semester.period;
                   $toastContent = $('<span>' + message + '</span>');
                   toastr.error($toastContent)
               } 
@@ -487,12 +500,11 @@
   }
   
   fill_info_semester = function(semester) { 
-      var disciplinesAvailable = disciplines_per_semester;
-      var disciplinesUsed = disciplines_done(semester);
+      var disciplinesdone = disciplines_done(semester);
       all_disciplines.forEach(function(disc) {
           var $discipline = $("#" + disc[0]);
           if ($discipline) {
-            if (disciplinesUsed.includes(disc[0])) {
+            if (disciplinesdone.includes(disc[0])) {
               $discipline.hide();
               if(disc[3] != 0){
                 reviews_discipline_available_semester(disc[0], disc[3], 'hide');
@@ -509,7 +521,7 @@
       });
   }
    
-  function valid_Previous(semester) {
+  function valid_previous(semester) {
       if (semester.year == semester_start.year && semester.period == semester_start.period) {
         $("#button_previous_semester").css( {'visibility': 'hidden'});
       } 
@@ -518,18 +530,44 @@
       }
   }
   
-  function load_disciplines(semester) {
-      valid_Previous(semester);
+  function load_disciplines(semester) { 
+      selected_disciplines_temp = [];
+      selected_unavailable_disciplines_temp = [];
+      valid_previous(semester);
       var semester_selected = paramSemesters.find(function(element) {
           return element.semester.year == semester_current.year && element.semester.period == semester_current.period;
       });
       if (semester_selected) {
-          selected_disciplines = semester_selected.disciplines;
-          $('#info_semester').text(semester_current.year + "." + semester_current.period);
+        selected_disciplines = semester_selected.disciplines;
+        semester_selected.disciplines.forEach(function(x) {
+          var available = true;
+          if (pre_requisites[x]) {
+            var disciplinesdone = disciplines_done(semester_current); 
+            pre_requisites[x].forEach(function(discipline) {
+                if (!disciplinesdone.includes(discipline) && !selected_disciplines.includes(discipline)) {
+                    available = false;
+                }
+            });
+          }
+          if (available){
+            selected_disciplines_temp.push(x);
+          }
+          else{
+            selected_unavailable_disciplines_temp.push(x);
+          }
+        });
+        selected_disciplines = selected_disciplines_temp;
+        selected_unavailable_disciplines = selected_unavailable_disciplines_temp;
       } 
       else {
           selected_disciplines = [];
-          $('#info_semester').text(semester_current.year + "." + semester_current.period);
+          selected_unavailable_disciplines = [];
+      }
+      $('#info_semester').text(semester_current.year + "." + semester_current.period);
+      if(selected_unavailable_disciplines.length > 0){
+        message = 'Planejamento para o semestre ' + semester_current.year + '.' + semester_current.period + ' possui restrição de pré-requisitos baseado no histórico.';
+        $toastContent = $('<span>' + message + '</span>');
+        toastr.error($toastContent)
       }
       fill_info_semester(semester);
   }
@@ -566,13 +604,29 @@
     }
   }
   
-  function table_planning_record(open_modal) {
+   function table_planning_record(open_modal) {
     listItens = [];
+    disciplines_available = [];
     update_disciplines_result("complete");
     paramSemesters.forEach(function(param){
+      disciplines_available = [];
+      param.disciplines.forEach(function(x) {
+          var available = true;
+          if (pre_requisites[x]) {
+            var disciplinesdone = disciplines_done(semester_current); 
+            pre_requisites[x].forEach(function(discipline) {
+                if (!disciplinesdone.includes(discipline) && !selected_disciplines.includes(discipline)) {
+                    available = false;
+                }
+            });
+          }
+          if (available){
+            disciplines_available.push(x);
+          }
+        });
       var objParam = {
         semester: param.semester,
-        disciplines: param.disciplines.map(x => new info_additional_discipline(x))
+        disciplines: disciplines_available.map(x => new info_additional_discipline(x))
       }
       listItens.push(objParam);
     });
@@ -626,13 +680,24 @@
           $(this).mouseleave(changeBgColor(code, "", ""));
       });
   
+      //REVISAR LOGICA
       if (student_plannings.length > 0) {
-        paramSemesters = student_plannings;
+        paramSemesters = student_plannings.filter(function(p) {
+          if (p.semester.year > semester_start.year) {
+              return p;
+          } 
+          else if (p.semester.year == semester_start.year && p.semester.period > semester_start.period) {
+              return p;
+          }
+          else if ((p.semester.year == semester_start.year) && (p.semester.period == semester_start.period)){
+              return p;
+          }
+        });
       }
       
       load_disciplines(semester_current)
       
-      valid_Previous(semester_current);
+      valid_previous(semester_current);
       
       select_discipline("discipline");
   });

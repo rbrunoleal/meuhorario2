@@ -4,6 +4,7 @@
         <div id=course_info class="row">
           <div class="small-12 columns text-center info-text">
             Cadastro Pré-Matrícula
+            <div class="subtext"><%=  @pre_enrollment.year.to_s + '.' + @pre_enrollment.period.to_s %></div>
           </div>
         </div>
         <div class="row">
@@ -89,6 +90,8 @@
   var pre_enrollment       = <%= raw @pre_enrollment.to_json %>;
   var record_enrollment       = <%= raw @record_enrollment.to_json %>;
   var record_enrollment_disciplines    = <%= raw @record_enrollment_disciplines.to_json %>;
+  var planning  = <%= raw @permitted.to_json %>;
+  var student_historic  = <%= raw @disciplines_historic %>
 
   var selected_disciplines = [];
   
@@ -98,6 +101,15 @@
        if(!selected_disciplines.includes(disc)){
           selected_disciplines.push(disc);
        }
+      });
+    }
+  }
+  else{
+    if (planning.length > 0){
+      planning.forEach(function(disc) {
+        if(!selected_disciplines.includes(disc)){
+          selected_disciplines.push(disc);
+        }
       });
     }
   }
@@ -196,7 +208,7 @@
   fill_disciplines = function() {
     selected_disciplines.forEach(function(disc) {
         fill_selected(disc);
-      });
+    });
   }
 
   fill_selected = function(code) {
@@ -210,15 +222,49 @@
       }
     }
   }
-
+  
+  disciplines_done = function(semester) { 
+      var result_historic = student_historic.map(function(h) {
+          if (h.semester.year < semester.year) {
+              return h.code;
+          } 
+          else if (h.semester.year == semester.year && h.semester.period < semester.period) {
+              return h.code;
+          }
+      });
+      return result_historic;
+  }
+  
   var select_discipline = function(class_name) {
       $("." + class_name).off('click').click(function(event) {
           var code = $(this).attr('code');
+          var pre_requisitesStudent = [];
           if (selected_disciplines.includes(code)) {
-            delete_discipline_selected(code);
-          }
+              delete_discipline_selected(code);
+          } 
           else {
-            selected_disciplines.push(code);
+            var message = '';
+            var $toastContent;
+            if (pre_requisites[code]) {
+              var semester_current = {
+                  year: pre_enrollment.year,
+                  period: pre_enrollment.period
+              };
+              var disciplinesUsed = disciplines_done(semester_current);
+              pre_requisites[code].forEach(function(discipline) {
+                  if (!disciplinesUsed.includes(discipline) && !selected_disciplines.includes(discipline)) {
+                      pre_requisitesStudent.push(discipline);
+                  }
+              });
+            }
+            if (pre_requisitesStudent.length > 0) {
+                message = 'Pré-requisito necessário ' + pre_requisitesStudent.join();
+                $toastContent = $('<span>' + message + '</span>');
+                toastr.error($toastContent)
+            }
+            else{
+              selected_disciplines.push(code);
+            }
           }
           fill_selected(code);
           event.stopPropagation();

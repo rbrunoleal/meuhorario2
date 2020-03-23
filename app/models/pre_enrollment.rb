@@ -12,8 +12,10 @@ class PreEnrollment < ApplicationRecord
   end
   
   def available
-    @now = Time.current
-    return (self.start_date <= @now and self.start_date >= @now) ? false : true
+    #@now = Time.current
+    #byebug
+    return Date.today.between?(self.start_date.to_date, self.end_date.to_date)
+    #return (self.start_date <= @now and self.start_date >= @now) ? false : true
   end
   
   def date_start_format

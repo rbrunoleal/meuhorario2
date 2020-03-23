@@ -33,7 +33,9 @@ class RecordEnrollmentsController < ApplicationController
         discipline_class: :discipline
       }
     ).find_by_code @user.student.course.code
-
+    
+    @disciplines_historic = @student.approved_disciplines.to_json
+    
     cds = @course.course_disciplines 
     cds.each do |x|
       discipline = DisciplineCode.find_by(from_code: x.discipline.code)
@@ -65,7 +67,34 @@ class RecordEnrollmentsController < ApplicationController
       @pre  = pre.to_json
       @post = post.to_json
     end
-
+    
+    @permitted = []
+    @historics_disciplines = []
+    @pre_disc = @pre_enrollment.disciplines_enrollments.map { |z| z.code }
+    @planning = @student.plannings.find { |i| i.year == @pre_enrollment.year && i.period == @pre_enrollment.period }
+    if(@planning)
+      @historics = @student.approved_disciplines
+      @historics.each do |h|
+        if h[:semester][:year] < @pre_enrollment.year
+          @historics_disciplines.push(h[:code])
+        elsif h[:semester][:year] == @pre_enrollment.year && h[:semester][:period] < @pre_enrollment.period
+          @historics_disciplines.push(h[:code])
+        end
+      end
+      @planning_disciplines = @planning.disciplines_plannings.map {|c| c.code }
+      @planning_disciplines.each do |disc|
+        avaible = true
+        pre[disc].each do |pre_d|
+          if !@historics_disciplines.include?(pre_d)
+            avaible = false
+          end
+        end
+        if(avaible == true &&  @pre_disc.include?(disc))
+          @permitted.push(disc)
+        end
+      end
+    end
+    
     @ops = cds.reject{ |cd| cd.nature == 'OB' }.map{ |cd| cd.discipline }
     
     @disciplines_pre = []
@@ -75,21 +104,18 @@ class RecordEnrollmentsController < ApplicationController
       discipline["code"] = disc.code
       @disciplines_pre << discipline
     end
-   
-    @disciplines_pre_code = []
-    @disciplines_pre.each do |disc|
-      @disciplines_pre_code << disc['code']
-    end
     
-    @ops = @ops.select { |x| @disciplines_pre_code.include?(x.code) }
+    @disciplines_pre_code = @disciplines_pre.map{ |x| x['code'] }
     
+    
+    @ops = @ops.select { |x| @disciplines_pre_code.include?(x.code) && !@disciplines_historic.include?(x.code) }
    
     @semesters_new = []
     @semesters.each do |x|
       if x.present?
         @semester_array = []
         x.each do |y|
-          if(@disciplines_pre_code.include?(y.code))
+          if(@disciplines_pre_code.include?(y.code) && !@disciplines_historic.include?(y.code))
             @semester_array << y
           end
         end
@@ -112,7 +138,37 @@ class RecordEnrollmentsController < ApplicationController
     load_record
   end
   
-   def create
+   def update_planning
+    @user = current_user
+    @student = @user.student
+    plannings_student = []
+    if record_enrollment_params["disciplines_enrollment_ids"].any?
+      @pre_enrollment = PreEnrollment.find(record_enrollment_params["pre_enrollment_id"])
+      @code_disciplines = []
+      record_enrollment_params["disciplines_enrollment_ids"].each do |disc|
+        @disc = DisciplinesEnrollment.find(disc)
+        @code_disciplines.push(@disc.code)
+      end
+      @planning = Planning.find_by year: @pre_enrollment.year, period: @pre_enrollment.period
+      if(!@planning)
+        @planning = Planning.new(student: @student, year: @pre_enrollment.year, period: @pre_enrollment.period)
+      end
+      discipline_planning_student =[]
+      @code_disciplines.each do |d|
+        discipline = @planning.disciplines_plannings.find { |x| x.code == d }
+        if(discipline)
+          discipline_planning_student << discipline
+        else
+          discipline_planning_student << DisciplinesPlanning.new(code: d)
+        end
+      end
+      @planning.disciplines_plannings = discipline_planning_student
+      @planning.save!
+    end
+  end
+  
+  def create
+    update_planning
     @record_enrollment = RecordEnrollment.new(record_enrollment_params)
     if current_user.student?
       @record_enrollment.student = current_user.student
@@ -125,8 +181,9 @@ class RecordEnrollmentsController < ApplicationController
       end
     end
   end
-
+  
   def update
+    update_planning
     respond_to do |format|
       if @record_enrollment.update(record_enrollment_params)
         format.html { redirect_to record_enrollments_path, success: 'Pré-Matricula salva.' }
@@ -137,7 +194,6 @@ class RecordEnrollmentsController < ApplicationController
   end
 
   def destroy
-    byebug
     @record_enrollment.destroy
     respond_to do |format|
       format.html { redirect_to record_enrollments_path, success: 'Pré-Matricula excluída.' }

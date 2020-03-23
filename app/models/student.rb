@@ -23,9 +23,9 @@ class Student < ApplicationRecord
   has_many :disciplines_historics, :through => :historics
   
   def approved_disciplines
-    result = []
-    results = ["AP", "DI", "DU"];
-    approved = self.disciplines_historics.select {|x| results.include?(x.result) } 
+    disciplines = []
+    results_permitted = ["AP", "DI", "DU"];
+    approved = self.disciplines_historics.select {|x| results_permitted.include?(x.result) } 
     approved.each do |n|
       obj = {
         code: n.code,
@@ -34,7 +34,37 @@ class Student < ApplicationRecord
           period: n.historic.period
         }
       }
-      result << obj
+      disciplines << obj
+    end
+    return disciplines
+  end
+  
+  def ch
+    result = 0
+    workloads = self.disciplines_historics.select {|x| x.workload != '--' } 
+    workloads = workloads.map { |x| x.workload } 
+    workloads.each do |h|
+      result += h.to_i
+    end
+    return result
+  end
+  
+  def ch_op
+    result = 0
+    workloads = self.disciplines_historics.select {|x| x.workload != '--' && x.nt == 'OP' } 
+    workloads = workloads.map { |x| x.workload } 
+    workloads.each do |h|
+      result += h.to_i
+    end
+    return result
+  end
+  
+  def ch_ob
+    result = 0
+    workloads = self.disciplines_historics.select {|x| x.workload != '--' && x.nt == 'OB' } 
+    workloads = workloads.map { |x| x.workload } 
+    workloads.each do |h|
+      result += h.to_i
     end
     return result
   end

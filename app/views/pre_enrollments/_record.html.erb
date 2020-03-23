@@ -9,6 +9,11 @@
         </div>
         
         <div class="row">
+          <%= link_to "Voltar", pre_enrollments_path, :class=>"button export-button float-left" %>
+          <div id="button_complete_record" class="button export-button float-right">Concluir</div>
+        </div>
+        
+        <div class="row">
             <div class="columns medium-2 large-2">
               <label>Ano
               <% if pre_enrollment.year.present? %>
@@ -39,21 +44,14 @@
             <div class="columns small-2 large-2 float-left">
               <label>Data final Pré-Matrícula
                 <% if pre_enrollment.end_date.present? %>
-                <input id="date_end_pre_enrollment" type="date" value="<%= pre_enrollment.end_date.to_date %>">
+                  <input id="date_end_pre_enrollment" type="date" value="<%= pre_enrollment.end_date.to_date %>">
                 <% else %>
-                <input id="date_end_pre_enrollment" type="date">
+                  <input id="date_end_pre_enrollment" type="date">
                 <% end %>
               </label>
             </div>
         </div>
-        <div class="row">
-          <%= link_to "Voltar", pre_enrollments_path, :class=>"button export-button float-left" %>
-          <div class="columns small-4 large-4 float-left">
-            <div id="button_fill_require" class="button export-button float-left">Marcar Obrigatórias</div>
-            <div id="button_dont_fill_require" class="button export-button float-right">Desmarcar Obrigatórias</div>
-          </div>
-          <div id="button_complete_record" class="button export-button float-right">Concluir</div>
-        </div>
+        
       </div>
     </div>
   </div>
@@ -67,6 +65,11 @@
 
   <div class="row block tabs-content" data-tabs-content="blockTabs">
     <div id="mandatory" class="tabs-panel no-padding is-active">
+      <div class="row">
+        <input id ="check_fill_require" type="checkbox">
+        <label for="check_fill_require">Marcar todas.</label>
+      </div>
+      
       <div class="row show-for-large">
         <div class="medium-1 columns text-center no-padding column-title">
           Semestre
@@ -102,6 +105,11 @@
     </div>
 
     <div id="elective" class="tabs-panel no-padding">
+      <div class="row">
+        <input id ="check_fill_elective" type="checkbox">
+        <label for="check_fill_elective">Marcar todas.</label>
+      </div>
+      
       <div class="search">
         <i class="icon-search"></i>
         <input id="electiveFilterInput" class="search-bar small-12 large-offset-1 large-10 columns" type="text" placeholder="Nome ou código da disciplina" />
@@ -130,6 +138,7 @@
   var pre_requisites       = <%= raw @pre  %>;
   var post_requisites      = <%= raw @post %>;
   var required             = <%= raw @obs %>;
+  var elective             = <%= raw @ops.map{ |x| x.code } %>;
   var pre_enrollment       = <%= raw @pre_enrollment.to_json %>;
   var disciplines          = <%= raw @pre_enrollment_discipline.to_json %>;
   
@@ -143,23 +152,61 @@
     });
   }
   
-  $("#button_fill_require").click(function() {
+  $("#check_fill_elective").click(function() {
+    if ($('#check_fill_elective').is(":checked"))
+    {
+      fill_elective();
+    }
+    else{
+      dont_fill_elective();
+    }
+  });
+  
+  fill_elective = function() {
+     elective.forEach(function(disc) {
+       if(!selected_disciplines.includes(disc)){
+          selected_disciplines.push(disc);
+          fill_selected(disc);
+       }
+     });
+   }
+   
+   dont_fill_elective = function() {
+     elective.forEach(function(disc) {
+          if (selected_disciplines.includes(disc)) {
+            delete_discipline_selected(disc);
+            fill_selected(disc);
+          }
+     });
+   }
+  
+  $("#check_fill_require").click(function() {
+    if ($('#check_fill_require').is(":checked"))
+    {
+      fill_require();
+    }
+    else{
+      dont_fill_require();
+    }
+  });
+  
+  fill_require = function() {
      required.forEach(function(disc) {
        if(!selected_disciplines.includes(disc)){
           selected_disciplines.push(disc);
           fill_selected(disc);
        }
      });
-   });
+   }
    
-   $("#button_dont_fill_require").click(function() {
+   dont_fill_require = function() {
      required.forEach(function(disc) {
           if (selected_disciplines.includes(disc)) {
             delete_discipline_selected(disc);
             fill_selected(disc);
           }
      });
-   });
+   }
   
   $("#goToTop").click(function() {
       $('html,body').animate({
