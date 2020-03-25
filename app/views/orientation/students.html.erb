@@ -8,13 +8,22 @@
       </div>
     </div>
     
+    <div class="row">
+      <div class="columns small-6 large-6 float-right">
+        <div data-turbolinks="false">
+          <%= link_to "Adicionar via planilha", table_orientations_path, :class=>"button export-button float-right" %>    
+          <%= link_to "Adicionar Aluno", new_orientation_path, :class=>"button export-button float-left" %>  
+        </div>
+      </div>
+    </div>
+    
     <table id="largeTable" class="schedule-table large-table unstriped">
       <thead>
         <tr>
           <th width="60">Matrícula</th>
           <th width="180">Nome</th>
           <th width="80">E-mail</th>
-          <th width="60"> Cadastro</th>
+          <th width="60">Cadastro</th>
           <th width="60"></th>
           <th width="60"></th>
           <th width="30"></th>
@@ -29,7 +38,7 @@
               <td><%= orientation.email %></td>
               <td><%= orientation.record %></td>
               <% if orientation.planning.present? %>
-                <td><%= link_to 'Planejamento', planning_orientation_path(:professor_id => params[:professor_id], :orientation_id => orientation.planning) %></td>
+                  <td><%= link_to 'Planejamento', planning_orientation_path(:professor_id => params[:professor_id], :orientation_id => orientation.planning), data: { turbolinks: false } %></td>
               <%else%>
                 <td></td>
               <% end %>
@@ -45,15 +54,10 @@
       </tbody>
     </table>
     
-    <div class="row">
+     <div class="row">
       <span id="goToTop" class="go-to-top float-left">▲ Topo</span>
-      <div class="columns small-4 large-4 float-right">
-        <div data-turbolinks="false">
-          <%= link_to "Adicionar via planilha", table_orientations_path, :class=>"button export-button float-right" %>    
-        </div>
-        <%= link_to "Adicionar Aluno", new_orientation_path, :class=>"button export-button float-left" %>  
-      </div>
     </div>
+    
   </div>
 </div>   
 

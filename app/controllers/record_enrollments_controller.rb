@@ -16,6 +16,13 @@ class RecordEnrollmentsController < ApplicationController
   def load_record
     @user = current_user
     @student = @user.student
+    
+    @user = current_user
+    if !@student.historics.any?
+      flash.now[:warning] = "Cadastre seu histórico para uma melhor utilização da pré-matrícula."
+    end
+    
+   
     @course = Course.includes(
       course_disciplines: [
         { pre_requisites: [

@@ -7,7 +7,15 @@
             <div class="subtext"> <%= @course %> </div>
         </div>
     </div>
-<div data-turbolinks="false">
+    
+    <div class="row">
+      <div data-turbolinks="false">
+        <%= link_to 'Nova Pré-Matrícula', new_pre_enrollment_path, :class=>"button export-button float-right"  %>
+      </div>
+    </div>
+    
+    
+  <div data-turbolinks="false">
     <table id="largeTable" class="schedule-table large-table unstriped">
       <thead>
         <tr>
@@ -37,9 +45,7 @@
 
     <div class="row">
       <span id="goToTop" class="go-to-top float-left">▲ Topo</span>
-      <div data-turbolinks="false">
-        <%= link_to 'Nova Pré-Matrícula', new_pre_enrollment_path, :class=>"button export-button float-right"  %>
-      </div>
+      
     </div>
     
   </div>

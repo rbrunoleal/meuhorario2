@@ -1,6 +1,7 @@
 <div class="wrapper">
     <%= render 'shared/header' %>
-    <div class="row area-grid text-center">
+    
+    
     <div class="row">
       <div class="small-12 columns text-center info-text">
           Histórico
@@ -13,13 +14,44 @@
             <li id="historic" class="tabs-title is-active" aria-selected="true"><a href="#historic">Histórico</a></li>
         </ul>
     </div>
-
+    
     <div class="row block tabs-content" data-tabs-content="blockTabs">
         <div id="historic" class="tabs-panel no-padding is-active">
-            <div id="historic_show">
+            <div class="row">
+                    <div class="small-12 columns">
+                        <div class="small-6 columns float-left">
+                            <div class="subtext float-left">NOME: <%= @student.name.upcase %></div>
+                        </div> 
+                        <div class="small-6 columns float-right">
+                            <div id="workload" class="subtext float-right">CARGA HORÁRIA OBRIGATÓRIA: <%= @ch_ob %></div>
+                        </div>
+                    </div>
+                </div>
+                 <div class="row">
+                    <div class="small-12 columns">
+                        <div class="small-6 columns float-left">
+                            <div class="subtext float-left">MATRÍCULA: <%= @student.matricula %></div>
+                        </div> 
+                        <div class="small-6 columns float-right">
+                            <div id="workload" class="subtext float-right">CARGA HORÁRIA OPTATIVA: <%= @ch_op %></div>
+                        </div>
+                    </div>
+                </div>
                 <div class="row">
                     <div class="small-12 columns">
-                        <%= render partial: 'historic_table', locals: { table_id: 'large_table_historic', table_class: 'historic-table unstriped large-table'} %>
+                        <div class="small-6 columns float-left">
+                            <div class="subtext float-left">CURSO: <%= @course.name %></div>
+                        </div>    
+                        <div class="small-6 columns float-right">
+                            <div id="workload" class="subtext float-right">CARGA HORÁRIA TOTAL: <%= @ch %></div>
+                        </div>
+                    </div>
+                </div>
+                <div id="historic_show">
+                    <div class="row">
+                        <div class="small-12 columns">
+                            <%= render partial: 'historic_table', locals: { table_id: 'large_table_historic', table_class: 'historic-table unstriped large-table'} %>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -30,7 +62,7 @@
               </div>
             </div>
         </div>
-    </div>
+    
     </div>
 </div>
 <%= render 'shared/footer' %>
