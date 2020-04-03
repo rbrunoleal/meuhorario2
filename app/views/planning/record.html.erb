@@ -40,6 +40,44 @@
       </div>
     </div>
   </div>
+
+  <div id="info_historic" class="row">
+        <div class="callout secondary" data-closable>
+            <div class="row">
+                <div class="small-12 columns">
+                    <div class="small-6 columns float-left">
+                        <div class="subtext float-left">NOME: <%= @student.name.upcase %></div>
+                    </div> 
+                    <div class="small-6 columns float-right">
+                        <div id="workload_ob" class="subtext float-right">CARGA HORÁRIA OBRIGATÓRIA: <%= @ch_ob %></div>
+                    </div>
+                </div>
+            </div>
+             <div class="row">
+                <div class="small-12 columns">
+                    <div class="small-6 columns float-left">
+                        <div class="subtext float-left">MATRÍCULA: <%= @student.matricula %></div>
+                    </div> 
+                    <div class="small-6 columns float-right">
+                        <div id="workload_op" class="subtext float-right">CARGA HORÁRIA OPTATIVA: <%= @ch_op %></div>
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="small-12 columns">
+                    <div class="small-6 columns float-left">
+                        <div class="subtext float-left">CURSO: <%= @course.name %></div>
+                    </div>    
+                    <div class="small-6 columns float-right">
+                        <div id="workload" class="subtext float-right">CARGA HORÁRIA TOTAL: <%= @ch %></div>
+                    </div>
+                </div>
+            </div>
+          <button class="close-button" aria-label="Dismiss alert" type="button" data-close>
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+    </div>
   
   <div id="alert_pre_requisites" class="row">
     <div class="alert callout" data-closable>
@@ -156,8 +194,11 @@
   var pre_requisites       = <%= raw @pre  %>;
   var post_requisites      = <%= raw @post %>;
   var all_disciplines      = <%= raw @all_disciplines %>;
-  var student_plannings    = <%= raw @plannings %>
-  var student_historic     = <%= raw @disciplines_historic %>
+  var student_plannings    = <%= raw @plannings %>;
+  var student_historic     = <%= raw @disciplines_historic %>;
+  
+  var student_historic_ch_op     = <%= raw @ch_op_historic %>;
+  var student_historic_ch_ob     = <%= raw @ch_ob_historic %>; 
   
   var selected_disciplines = [];
   var selected_unavailable_disciplines = [];
@@ -315,7 +356,8 @@
     var objDiscipline = {
       code: disciplineSemester[0],
       name: disciplineSemester[1],
-      nature: disciplineSemester[2]
+      nature: disciplineSemester[2],
+      load: disciplineSemester[4]
     }
     return objDiscipline;
   }
@@ -336,10 +378,39 @@
     });
     var tbody = "<tbody>" + list_trs + "</tbody>";
     $("#table_semester").append(tbody);
-  }
-  
+  }  
+
+    function workload_result() {
+        return workload_ob_result() + workload_op_result();
+    }
+    
+    function workload_ob_result() {
+      var result = 0;
+      selected_disciplines.forEach(function(x){
+          val = info_additional_discipline(x);
+          if(val.nature == 'OB'){
+              result += parseInt(val.load, 10);
+          }
+      });
+      return result + parseInt(student_historic_ch_ob, 10);
+    }
+        
+    function workload_op_result() {
+      var result = 0;
+      selected_disciplines.forEach(function(x){
+          val = info_additional_discipline(x);
+          if(val.nature == 'OP'){
+              result += parseInt(val.load, 10);
+          }
+      });
+      return result + parseInt(student_historic_ch_op, 10);
+    }
+
   fill_info_disciplines_selected = function() {
-    $('#info_disciplines_selected').text(selected_disciplines.length > 0  ? "Selecionadas: " + selected_disciplines.sort().join() : "Nenhuma disciplina selecionada");  
+    $('#info_disciplines_selected').text(selected_disciplines.length > 0  ? "Selecionadas: " + selected_disciplines.sort().join() : "Nenhuma disciplina selecionada");
+    $("#workload_ob").text("CARGA HORÁRIA OBRIGATÓRIA: " + workload_ob_result());
+    $("#workload_op").text("CARGA HORÁRIA OPTATIVA: " + workload_op_result());
+    $("#workload").text("CARGA HORÁRIA TOTAL: " + workload_result());
     table_disciplines();
   }
   

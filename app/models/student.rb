@@ -59,39 +59,29 @@ class Student < ApplicationRecord
     return result
   end
   
-  def ch_planning_op
-    result = 0
+  def ch_planning
+    result_ob = 0
+    result_op = 0
     disciplines = self.disciplines_plannings.map { |x| x.code }
     disciplines.each do |c|
       @discipline = Discipline.find_by(code: c)
       if @discipline
-        @course_discipline = CourseDiscipline.find_by(course: self.course.id, discipline: @discipline.id)
-        if @course_discipline
-          if(@course_discipline.nature = 'OP')
-            result += @course_discipline.load
+        @course_discipline = CourseDiscipline.find_by(course: self.course.id, discipline: @discipline.id)       
+        if @course_discipline          
+          if(@course_discipline.nature == 'OP')            
+            result_op  += @course_discipline.discipline.load
+          else
+            result_ob  += @course_discipline.discipline.load
           end
         end
       end
     end
+    result = {
+      op: result_op,
+      ob: result_ob          
+    }    
     return result
-  end
-  
-  def ch_planning_ob
-    result = 0
-    disciplines = self.disciplines_plannings.map { |x| x.code }
-    disciplines.each do |c|
-      @discipline = Discipline.find_by(code: c)
-      if @discipline
-        @course_discipline = CourseDiscipline.find_by(course: self.course.id, discipline: @discipline.id)
-        if @course_discipline
-          if(@course_discipline.nature = 'OB')
-            result += @course_discipline.load
-          end
-        end
-      end
-    end
-    return result
-  end
+  end 
   
 end
 

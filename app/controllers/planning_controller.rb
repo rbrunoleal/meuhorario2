@@ -29,7 +29,7 @@ class PlanningController < ApplicationController
     @disciplines_historic = @user.student.approved_disciplines.to_json
     
     cds = @course.course_disciplines 
-    @all_disciplines = cds.map {|d| [d.discipline.code, d.discipline.name, d.nature, d.semester.blank? ? 0 : d.semester] }
+    @all_disciplines = cds.map {|d| [d.discipline.code, d.discipline.name, d.nature, d.semester.blank? ? 0 : d.semester, d.discipline.load.blank? ? 0 : d.discipline.load] }
 
     unless @course.nil?
       @semesters = []
@@ -62,6 +62,13 @@ class PlanningController < ApplicationController
 
     @ops = cds.reject{ |cd| cd.nature == 'OB' }.map{ |cd| cd.discipline }
     @student = @user.student
+
+    @ch_ob_historic = @student.ch_historic_ob
+    @ch_op_historic = @student.ch_historic_op
+
+    @ch_ob =  @ch_ob_historic + @student.ch_planning_ob
+    @ch_op = @ch_op_historic + @student.ch_planning_op
+    @ch = @ch_ob + @ch_op
   end
   
   def complete
@@ -128,6 +135,14 @@ class PlanningController < ApplicationController
       planning_student << current_planning
     end
     @planning = planning_student
+
+    @ch_ob_historic = @student.ch_historic_ob
+    @ch_op_historic = @student.ch_historic_op
+    result = @student.ch_planning    
+    @ch_ob =  @ch_ob_historic + result[:ob]
+    @ch_op = @ch_op_historic + result[:op]
+    @ch = @ch_ob + @ch_op
+    @course = @student.course
   end
   
   private

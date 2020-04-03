@@ -39,6 +39,44 @@
           </div>
         </div>
     </div>
+
+  <div id="info_historic" class="row">
+        <div class="callout secondary" data-closable>
+            <div class="row">
+                <div class="small-12 columns">
+                    <div class="small-6 columns float-left">
+                        <div class="subtext float-left">NOME: <%= @student.name.upcase %></div>
+                    </div> 
+                    <div class="small-6 columns float-right">
+                        <div id="workload_ob" class="subtext float-right">CARGA HORÁRIA OBRIGATÓRIA: <%= @ch_ob %></div>
+                    </div>
+                </div>
+            </div>
+             <div class="row">
+                <div class="small-12 columns">
+                    <div class="small-6 columns float-left">
+                        <div class="subtext float-left">MATRÍCULA: <%= @student.matricula %></div>
+                    </div> 
+                    <div class="small-6 columns float-right">
+                        <div id="workload_op" class="subtext float-right">CARGA HORÁRIA OPTATIVA: <%= @ch_op %></div>
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="small-12 columns">
+                    <div class="small-6 columns float-left">
+                        <div class="subtext float-left">CURSO: <%= @course.name %></div>
+                    </div>    
+                    <div class="small-6 columns float-right">
+                        <div id="workload" class="subtext float-right">CARGA HORÁRIA TOTAL: <%= @ch %></div>
+                    </div>
+                </div>
+            </div>
+          <button class="close-button" aria-label="Dismiss alert" type="button" data-close>
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+    </div>
     
   <div id="alert_pre_requisites" class="row">
     <div class="alert callout" data-closable>

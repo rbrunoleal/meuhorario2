@@ -162,13 +162,19 @@ class OrientationController < ApplicationController
     end
 
     @ops = cds.reject{ |cd| cd.nature == 'OB' }.map{ |cd| cd.discipline }
+
+    @ch_ob_historic = @student.ch_historic_ob
+    @ch_op_historic = @student.ch_historic_op
+    @ch_ob =  @ch_ob_historic + @student.ch_planning_ob
+    @ch_op = @ch_op_historic + @student.ch_planning_op
+    @ch = @ch_ob + @ch_op
   end
   
   def historic_student
-    @historic = load_historic
-    @ch = @student.ch
-    @ch_ob = @student.ch_ob
-    @ch_op = @student.ch_op
+    @historic = load_historic    
+    @ch_ob = @student.ch_historic_ob
+    @ch_op = @student.ch_historic_op
+    @ch = @ch_ob + @ch_op
     @course = @student.course
   end
   
