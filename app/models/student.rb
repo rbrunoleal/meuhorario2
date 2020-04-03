@@ -39,32 +39,56 @@ class Student < ApplicationRecord
     return disciplines
   end
   
-  def ch
+  def ch_historic_op
     result = 0
-    workloads = self.disciplines_historics.select {|x| x.workload != '--' } 
-    workloads = workloads.map { |x| x.workload } 
+    disciplines = self.disciplines_historics.select {|x| x.workload != '--' && x.nt == 'OP' } 
+    workloads = disciplines.map { |x| x.workload } 
     workloads.each do |h|
       result += h.to_i
     end
     return result
   end
   
-  def ch_op
+  def ch_historic_ob
     result = 0
-    workloads = self.disciplines_historics.select {|x| x.workload != '--' && x.nt == 'OP' } 
-    workloads = workloads.map { |x| x.workload } 
+    disciplines = self.disciplines_historics.select {|x| x.workload != '--' && x.nt == 'OB' } 
+    workloads = disciplines.map { |x| x.workload } 
     workloads.each do |h|
       result += h.to_i
     end
     return result
   end
   
-  def ch_ob
+  def ch_planning_op
     result = 0
-    workloads = self.disciplines_historics.select {|x| x.workload != '--' && x.nt == 'OB' } 
-    workloads = workloads.map { |x| x.workload } 
-    workloads.each do |h|
-      result += h.to_i
+    disciplines = self.disciplines_plannings.map { |x| x.code }
+    disciplines.each do |c|
+      @discipline = Discipline.find_by(code: c)
+      if @discipline
+        @course_discipline = CourseDiscipline.find_by(course: self.course.id, discipline: @discipline.id)
+        if @course_discipline
+          if(@course_discipline.nature = 'OP')
+            result += @course_discipline.load
+          end
+        end
+      end
+    end
+    return result
+  end
+  
+  def ch_planning_ob
+    result = 0
+    disciplines = self.disciplines_plannings.map { |x| x.code }
+    disciplines.each do |c|
+      @discipline = Discipline.find_by(code: c)
+      if @discipline
+        @course_discipline = CourseDiscipline.find_by(course: self.course.id, discipline: @discipline.id)
+        if @course_discipline
+          if(@course_discipline.nature = 'OB')
+            result += @course_discipline.load
+          end
+        end
+      end
     end
     return result
   end

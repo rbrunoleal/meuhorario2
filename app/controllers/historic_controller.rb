@@ -8,9 +8,9 @@ class HistoricController < ApplicationController
       flash.now[:info] = "Atualize seu histórico."
     end
     @historic = load_historic
-    @ch = @student.ch
-    @ch_ob = @student.ch_ob
-    @ch_op = @student.ch_op
+    @ch_ob = @student.ch_historic_ob
+    @ch_op = @student.ch_historic_op
+    @ch = @ch_ob + @ch_op
     @course = @student.course
   end
 
@@ -63,6 +63,11 @@ class HistoricController < ApplicationController
   
   def show
     @historic = load_historic
+    @historic = load_historic
+    @ch_ob = @student.ch_historic_ob
+    @ch_op = @student.ch_historic_op
+    @ch = @ch_ob + @ch_op
+    @course = @student.course
   end
   
   def load_historic

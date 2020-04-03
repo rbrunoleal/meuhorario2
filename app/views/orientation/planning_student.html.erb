@@ -39,6 +39,18 @@
           </div>
         </div>
     </div>
+    
+  <div id="alert_pre_requisites" class="row">
+    <div class="alert callout" data-closable>
+      <h5>Restrição de Pré-Requisito</h5>
+      <p id="subtittle_alert"></p>
+      <ul id="list_disciplines_alert"></ul>
+      <p>As disciplinas acima foram removidas do seu planejamento.</p>
+      <button class="close-button" aria-label="Dismiss alert" type="button" data-close>
+        <span aria-hidden="true">&times;</span>
+      </button>
+    </div>
+  </div>
   
   
   <div id="row_tabs" class="row staticsss">
@@ -321,36 +333,10 @@
     var $discipline = $("#" + code);
     if ($discipline) {
       if($discipline.is("li")) {
-        if(!selected_disciplines.includes(code)){
-          $discipline.removeClass("highlight_discipline_op")
-          if (!selected_unavailable_disciplines.includes(code)){
-            $discipline.removeClass("highlight_unavailable_discipline_op")
-          }
-          else{
-            $discipline.removeClass("highlight_discipline_op");
-            $discipline.addClass("highlight_unavailable_discipline_op");
-          }
-        }
-        else{
-          $discipline.removeClass("highlight_unavailable_discipline_op")
-          $discipline.addClass("highlight_discipline_op");
-        }
+        !selected_disciplines.includes(code) ? $discipline.removeClass("highlight_discipline_op") : $discipline.addClass("highlight_discipline_op");  
       }
       else {
-        if(!selected_disciplines.includes(code)){
-          $discipline.removeClass("highlight_discipline_ob")
-          if (!selected_unavailable_disciplines.includes(code)){
-            $discipline.removeClass("highlight_unavailable_discipline_ob")
-          }
-          else{
-            $discipline.removeClass("highlight_discipline_ob");
-            $discipline.addClass("highlight_unavailable_discipline_ob");
-          }
-        }
-        else{
-          $discipline.removeClass("highlight_unavailable_discipline_ob")
-          $discipline.addClass("highlight_discipline_ob");
-        }
+        !selected_disciplines.includes(code) ? $discipline.removeClass("highlight_discipline_ob") : $discipline.addClass("highlight_discipline_ob");
       }
     }
     fill_info_disciplines_selected();
@@ -509,8 +495,15 @@
       $('#info_semester').text(semester_current.year + "." + semester_current.period);
       if(selected_unavailable_disciplines.length > 0){
         message = 'Planejamento para o semestre ' + semester_current.year + '.' + semester_current.period + ' possui restrição de pré-requisitos baseado no histórico.';
-        $toastContent = $('<span>' + message + '</span>');
-        toastr.error($toastContent)
+        $('#subtittle_alert').text(message);
+        selected_unavailable_disciplines.forEach(function(disc) {
+          var obj = info_additional_discipline(disc);
+          $("#list_disciplines_alert").append('<li>'+ obj.code + ' - ' + obj.name + '</li>');
+        });
+        $('#alert_pre_requisites').show();
+      }
+      else{
+        $('#alert_pre_requisites').hide();
       }
       fill_info_semester(semester);
   }
