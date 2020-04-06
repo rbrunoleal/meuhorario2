@@ -66,8 +66,9 @@ class PlanningController < ApplicationController
     @ch_ob_historic = @student.ch_historic_ob
     @ch_op_historic = @student.ch_historic_op
 
-    @ch_ob =  @ch_ob_historic + @student.ch_planning_ob
-    @ch_op = @ch_op_historic + @student.ch_planning_op
+    @ch_planning = @student.ch_planning
+    @ch_ob =  @ch_ob_historic + @ch_planning[:ob]
+    @ch_op = @ch_op_historic + @ch_planning[:op]
     @ch = @ch_ob + @ch_op
   end
   

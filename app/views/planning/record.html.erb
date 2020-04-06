@@ -124,6 +124,7 @@
                     <div class="text">
                       <div class="code"><%= discipline.code %></div>
                       <div class="name"><%= discipline.name %></div>
+                      <div class="load"><%= '(' + discipline.load.to_s + 'h)'%></div>
                     </div>
                   </div>
                 <% end %>
@@ -143,7 +144,7 @@
       <div class="small-12 columns no-padding">
         <ul class="block-list">
           <% @ops.each do |op| %>
-            <li id="<%= op.code %>" code="<%= op.code %>" click-source="optativa" class="block-list-item list-item-discipline elective-discipline discipline"><%= "#{op.code} - #{op.name}" %></li>
+            <li id="<%= op.code %>" code="<%= op.code %>" click-source="optativa" class="block-list-item list-item-discipline elective-discipline discipline"><%= "#{op.code} - #{op.name} #{op.load.blank? ? '' : '- (' + op.load.to_s + 'h)'}" %></li>
           <% end %>
         </ul>
       </div>
@@ -183,6 +184,20 @@
     <span aria-hidden="true">&times;</span>
   </button>
   </div>
+
+
+<!-- At the bottom of your page but inside of the body tag --> 
+    <ol class="joyride-list" data-joyride>
+      <li data-id="firstStop" data-text="Next">
+        <p>Test</p>
+      </li>
+      <li data-id="secondStop" data-text="Next">
+        <p>Test</p>
+      </li>
+      <li data-button="End">
+        <p>Test</p>
+      </li>  
+    </ol>
 
 <%= render 'shared/footer' %>
 
@@ -762,8 +777,7 @@
       
       valid_previous(semester_current);
       
-      select_discipline("discipline");
-  });
-  
+      select_discipline("discipline");    
+  });  
 </script>
 <% end %>
