@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20200115204159) do
+ActiveRecord::Schema.define(version: 20200607190612) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -152,6 +152,21 @@ ActiveRecord::Schema.define(version: 20200115204159) do
     t.index ["student_id"], name: "index_historics_on_student_id", using: :btree
   end
 
+  create_table "institute_departments", force: :cascade do |t|
+    t.integer  "institute_id"
+    t.integer  "department_id"
+    t.datetime "created_at",    null: false
+    t.datetime "updated_at",    null: false
+    t.index ["department_id"], name: "index_institute_departments_on_department_id", using: :btree
+    t.index ["institute_id"], name: "index_institute_departments_on_institute_id", using: :btree
+  end
+
+  create_table "institutes", force: :cascade do |t|
+    t.string   "name"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+  end
+
   create_table "orientations", force: :cascade do |t|
     t.string   "name"
     t.string   "matricula"
@@ -288,6 +303,8 @@ ActiveRecord::Schema.define(version: 20200115204159) do
   add_foreign_key "disciplines_historics", "historics"
   add_foreign_key "disciplines_plannings", "plannings"
   add_foreign_key "historics", "students"
+  add_foreign_key "institute_departments", "departments"
+  add_foreign_key "institute_departments", "institutes"
   add_foreign_key "orientations", "courses"
   add_foreign_key "orientations", "professor_users"
   add_foreign_key "plannings", "students"

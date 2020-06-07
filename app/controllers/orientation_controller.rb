@@ -8,14 +8,16 @@ class OrientationController < ApplicationController
   
   def coordinator
     @user = current_user
-    @professor_users = ProfessorUser.order(:name).select { |professor| professor.department.courses.include?(@user.coordinator.course) }
-    @department = @user.coordinator.course.department_course.department.name
+    @professor_users = ProfessorUser.order(:name).select { |professor| 
+      professor.department.institute_department.institute.courses.include?(@user.coordinator.course) 
+    }
+    @institute = @user.coordinator.course.department_course.department.institute_department.institute.name
   end
   
   def department
     @user = current_user 
     @professor = @user.professor_user
-    @courses = @professor.department.courses
+    @courses = @professor.department.institute_department.institute.courses.uniq
     @department = @professor.department
   end
   

@@ -23,6 +23,12 @@ Rails.application.routes.draw do
   
   #Coordinator
   resources :coordinators, only: [:index, :new, :edit, :create, :update, :destroy]
+
+  #Department
+  resources :departments, only: [:index, :new, :edit, :create, :update, :destroy]
+
+  #Institute
+  resources :institutes, only: [:index, :new, :edit, :create, :update, :destroy]
   
   #ProfessorUser
   resources :professor_users, only: [:index, :new, :edit, :create, :update, :destroy]

@@ -22,9 +22,6 @@ class CoordinatorsController < ApplicationController
     
   end
 
-  def show
-  end
-
   def new
     @coordinator = Coordinator.new
   end

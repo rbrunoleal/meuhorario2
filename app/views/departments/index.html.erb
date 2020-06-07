@@ -1,0 +1,71 @@
+<div class="wrapper">
+  <%= render 'shared/header' %>
+  <div class="row area-grid text-center">
+    <div class="row">
+        <div class="small-12 columns text-center info-text">
+            Departamentos
+            <div class="subtext">Lista de Departamentos</div>
+        </div>
+    </div>   
+
+     <div class="row">
+      <%= form_tag '', :method => :get do  %>
+        <div class="columns medium-3 float-left">
+          <label>Nome
+            <%= text_field_tag :derpartment_name, @search[:name] %>
+          </label>
+        </div>  
+        <div class="columns medium-2 float-left">
+          <div class='medium-2 columns'>
+            <%=submit_tag("Pesquisar", name: 'search', class: 'button')%>
+          </div>
+        </div>
+      <% end %>
+        <div class="columns large-3 float-right">
+          <div class='medium-12 columns'>
+            <%= link_to "Novo Departamento", new_department_path, :class=>"button export-button" %>
+          </div>
+        </div>
+    </div>
+   
+    
+    <table id="largeTable" class="schedule-table large-table unstriped">
+      <thead> 
+        <tr>
+          <th width="100">Nome</th>          
+          <th width="30"></th>
+          <th width="30"></th>
+        </tr>
+      </thead>
+      <tbody>
+          <% @departments.each do |department| %>
+            <tr>
+              <td><%= department.name %></td>             
+              <td><%= link_to 'Editar', edit_department_path(department) %></td>
+              <td><%= link_to 'Apagar', department, method: :delete, data: { confirm: 'Você tem certeza?' } %></td>
+            </tr>
+          <% end %>
+      </tbody>
+    </table>
+    
+    <div class="row">
+      <span id="goToTop" class="go-to-top float-left">▲ Topo</span>
+    </div>
+  </div>
+</div>
+
+
+<%= render 'shared/footer' %>
+<% content_for :script do %>
+<script>
+  mixpanel.track("Acessou o cadastro de Departamentos");
+
+   $("#goToTop").click(function() {
+        $('html,body').animate({
+            scrollTop: $("#header").offset().top
+        }, 500);
+    });
+</script>
+<% end %>
+
+

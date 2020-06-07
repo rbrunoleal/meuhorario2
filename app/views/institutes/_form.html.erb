@@ -1,0 +1,31 @@
+<%= form_for(institute) do |f| %>
+  <% if institute.errors.any? %>
+    <% institute.errors.values.each do |msg| %>
+      <% msg.each do |ex| %>
+        <% flash.now[:danger] = ex %>
+      <% end %>
+    <% end %>
+  <% end %>
+
+  <div class="row">
+    <div class='large-4 columns'>
+      <%= f.label :name, 'Nome' %>
+      <%= f.text_field :name %>
+    </div>
+  </div>
+
+   <div>
+    <% @departments.each do |department| %>    
+      <%= check_box_tag :department_ids, department.id, f.object.departments.include?(department), :name => 'institute[department_ids][]' -%>
+      <%= label_tag :department_ids, department.name -%>    
+      </br>
+    <% end %>
+  </div>
+
+  <div class="row">
+    <div class="small-12 columns">
+      <%= f.submit 'Salvar', class: 'button export-button float-right' %> 
+      <%= link_to "Voltar", institutes_path, :class=>"button export-button float-left" %>
+    </div>  
+  </div>
+<% end %>

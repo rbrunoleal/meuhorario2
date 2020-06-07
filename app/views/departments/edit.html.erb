@@ -1,0 +1,19 @@
+<div class="wrapper">
+  <%= render 'shared/header' %>
+  <div class="row area-grid">
+    <div class="row">
+        <div class="small-12 columns text-center info-text">
+            Departamento
+        </div>
+    </div>
+    
+    <%= render 'form', department: @department %>
+   
+  </div>
+</div>
+<%= render 'shared/footer' %>
+<% content_for :script do %>
+<script>
+  mixpanel.track("Acessou pagina para editar Departamento", { "nome_departamento": "<%= @department.name %>" });
+</script>
+<% end %>
