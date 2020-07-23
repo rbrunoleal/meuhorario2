@@ -102,7 +102,7 @@
 
 <% content_for :script do %>
 <script>
-    mixpanel.track("Acessou pagina de registro de histórico", { "matricula_aluno": "<%= @student.matricula %>" });
+    mixpanel.track("Acessou página cadastro histórico", { "matricula_aluno": "<%= @student.matricula %>" });
 
     var historic_student = <%= raw @historic  %>;
     var step = 1;

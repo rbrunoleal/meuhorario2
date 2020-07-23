@@ -38,7 +38,7 @@
 
 <% content_for :script do %>
 <script>
-    mixpanel.track("Acessou pagina alunos pordisciplina pré-matrícula", { "semester_pre_enrollment": "<%= @pre_enrollment.semester %>", "disciplina": "<%=@discipline%>" });
+    mixpanel.track("Acessou página alunos/pré-matrícula", { "semester_pre_enrollment": "<%= @pre_enrollment.semester %>", "disciplina": "<%=@discipline%>" });
     $("#goToTop").click(function() {
           $('html,body').animate({
               scrollTop: $("#header").offset().top

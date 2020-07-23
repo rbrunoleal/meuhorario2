@@ -191,7 +191,7 @@
 
 <% content_for :script do %>
 <script>
-  mixpanel.track("Acessou pagina planejamento aluno", { "matricula_aluno": "<%= @student.matricula %>" });
+  mixpanel.track("Acessou página cadastro planejamento", { "matricula_aluno": "<%= @student.matricula %>" });
 
 
   var pre_requisites       = <%= raw @pre  %>;

@@ -5,6 +5,6 @@
 <%= render 'shared/footer' %>
 <% content_for :script do %>
 <script>
-  mixpanel.track("Acessou pagina para editar pre-matricula", { "matricula_aluno": "<%= @student.matricula %>" });
+  mixpanel.track("Acessou página editar pré-matrícula/registro", { "matricula_aluno": "<%= @student.matricula %>" });
 </script>
 <% end %>

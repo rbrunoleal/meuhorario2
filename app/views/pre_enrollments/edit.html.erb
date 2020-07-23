@@ -5,7 +5,7 @@
 <%= render 'shared/footer' %>
 <% content_for :script do %>
 <script>
-    mixpanel.track("Acessou pagina editar pré-matrícula", { "semester_pre_enrollment": "<%= @pre_enrollment.semester %>" });
+    mixpanel.track("Acessou página editar pré-matrícula", { "semester_pre_enrollment": "<%= @pre_enrollment.semester %>" });
   
     $("#goToTop").click(function() {
           $('html,body').animate({

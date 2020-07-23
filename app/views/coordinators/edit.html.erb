@@ -14,6 +14,6 @@
 <%= render 'shared/footer' %>
 <% content_for :script do %>
 <script>
-  mixpanel.track("Acessou pagina para editar coordenador", { "nome_coordenador": "<%= @coordinator.name %>" });
+  mixpanel.track("Acessou página editar coordenador", { "nome_coordenador": "<%= @coordinator.name %>" });
 </script>
 <% end %>

@@ -464,15 +464,15 @@ namespace :crawler do
   end
   
   
-  desc 'Crawl the disciplines of SI course'
-  task :disciplines_cc => :environment do
+  desc 'Crawl the disciplines Test'
+  task :disciplines_test => :environment do
     puts '-----------------------------------------------------------------------'
     puts '-> Starting disciplines crawling...'
 
     require 'rubygems'
     require 'mechanize'
 
-    codes = ["195140", "196120"];
+    codes = ["281143","204143","112140","195140","196120","310120","386120","102140","186140","188140","103140","185140","104140","106140","107140","480120","402200","481120","403200","401200"];
     @courses = Course.all.select { |c| codes.include?(c.code) }
     @courses.each do |course|
       puts "    Crawling #{course.name}"
@@ -526,6 +526,74 @@ namespace :crawler do
       end
     end
     puts '-> Finished disciplines crawling'
+    puts '-----------------------------------------------------------------------'
+  end
+
+
+  desc 'Crawl the disciplines Test'
+  task :pre_requisites_test => :environment do
+    puts '-----------------------------------------------------------------------'
+    puts '-> Starting pre-requisites crawling...'
+
+    require 'rubygems'
+    require 'mechanize'
+    codes = ["281143","204143","112140","195140","196120","310120","386120","102140","186140","188140","103140","185140","104140","106140","107140","480120","402200","481120","403200","401200"];
+    @courses = Course.all.select { |c| codes.include?(c.code) }
+    @courses.each do |course|    
+      puts "    Crawling #{course.name}"
+
+      agent = Mechanize.new
+      hub = agent.get "https://alunoweb.ufba.br/SiacWWW/CurriculoCursoGradePublico.do?cdCurso=#{course.code}&nuPerCursoInicial=#{course.curriculum}"
+
+      disciplines = []
+
+      for i in 0..1
+        page = hub.links[i].click
+
+        table = page.search('table')[0]
+        rows = table.css('tr')[2..-1]
+
+        next if rows.blank?
+        rows.each do |row|
+          columns = row.css('td')
+
+          code = columns[2].text
+          disciplines << code
+          discipline = Discipline.find_by_code code
+          course_discipline = CourseDiscipline.where(course_id: course.id, discipline_id: discipline.id).first
+
+          full_requisites = columns[4].text
+
+          unless full_requisites == '--'
+            if full_requisites.include? 'Todas'
+              requisites = disciplines - [code]
+
+              if full_requisites.include? 'exceto'
+                non_requisites = full_requisites.split(': ').last.split(', ')
+                requisites -= non_requisites
+              end
+            else
+              requisites = full_requisites.split(', ')
+            end
+
+            requisites.each do |requisite|
+              pre_discipline = Discipline.find_by_code requisite
+              pre_cd = CourseDiscipline.where(course: course, discipline: pre_discipline).first
+
+              if pre_cd.blank?
+                puts "      Código não encontrado: #{requisite} | Disciplina: #{discipline.name} | Curso: #{course.name}"
+              elsif pre_cd.semester.nil? or pre_cd.semester != course_discipline.semester
+                pr = PreRequisite.new
+                pr.pre_discipline = pre_cd
+                pr.post_discipline = course_discipline
+                pr.save
+              end
+            end
+          end
+        end
+      end
+    end
+    puts '-> Finished pre-requisites crawling'
     puts '-----------------------------------------------------------------------'
   end
   

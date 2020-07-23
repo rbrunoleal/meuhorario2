@@ -68,7 +68,7 @@
 
 <% content_for :script do %>
 <script>
-   mixpanel.track("Acessou o cadastro de Pre-matrícula", { "matricula_aluno": "<%= @student.matricula %>" });
+   mixpanel.track("Acessou página index pré-matrícula/registro", { "matricula_aluno": "<%= @student.matricula %>" });
     $("#goToTop").click(function() {
           $('html,body').animate({
               scrollTop: $("#header").offset().top

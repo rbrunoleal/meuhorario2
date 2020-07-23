@@ -3,7 +3,7 @@ namespace :parameter_load do
     task :semester => :environment do
         puts '-----------------------------------------------------------------------'
         puts '-> Starting load semester'
-        Semester.create(year: 2020, period: 1)
+        Semester.create(year: 2020, period: 2)
         puts '-> Finished load semester'
         puts '-----------------------------------------------------------------------'
     end
