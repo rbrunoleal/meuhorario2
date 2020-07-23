@@ -6,7 +6,10 @@ class ProfessorUsersController < ApplicationController
   def index
     @user = current_user
     @professor_users = ProfessorUser.order(:name).select { |professor| professor.department.courses.include?(@user.coordinator.course) }
-    @department = @user.coordinator.course.department_course.department.name
+    @department = ''    
+    if(@user.coordinator.course.department_course.present?)
+      @department = @user.coordinator.course.department_course.department.name
+    end    
   end
 
   def edit
@@ -15,12 +18,18 @@ class ProfessorUsersController < ApplicationController
   def new
     @professor_user = ProfessorUser.new
     @user = current_user
-    @department = @user.coordinator.course.department_course.department.name
+    @department = ''
+    if(@user.coordinator.course.department_course.present?)
+      @department = @user.coordinator.course.department_course.department.name
+    end 
   end
   
   def table_professors
     @user = current_user
-    @department = @user.coordinator.course.department_course.department.name
+    @department = ''
+    if(@user.coordinator.course.department_course.present?)
+      @department = @user.coordinator.course.department_course.department.name
+    end 
   end
   
   def complete_professors

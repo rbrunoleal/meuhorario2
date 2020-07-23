@@ -17,10 +17,12 @@ class DepartmentsController < ApplicationController
   def new
     @department = Department.new
     @courses = Course.order(:name)
+    @institutes = Institute.order(:name)
   end
 
   def edit
     @courses = Course.order(:name)
+    @institutes = Institute.order(:name)
   end
 
   def create
@@ -59,7 +61,7 @@ class DepartmentsController < ApplicationController
     end
 
     def department_params
-      params.require(:department).permit(:name, course_ids: [])
+      params.require(:department).permit(:name, :institute_id, course_ids: [])
     end
     
   protected

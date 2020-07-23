@@ -1,6 +1,4 @@
-class Institute < ApplicationRecord
-	has_many :institute_departments, dependent: :destroy
-  	has_many :departments, :through => :institute_departments
-
+class Institute < ApplicationRecord	
+  	has_many :departments, dependent: :destroy
   	has_many :courses, :through => :departments
 end

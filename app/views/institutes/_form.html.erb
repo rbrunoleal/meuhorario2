@@ -15,8 +15,7 @@
   </div>
 
    <div>
-    <% @departments.each do |department| %>    
-      <%= check_box_tag :department_ids, department.id, f.object.departments.include?(department), :name => 'institute[department_ids][]' -%>
+    <% @departments.each do |department| %>          
       <%= label_tag :department_ids, department.name -%>    
       </br>
     <% end %>

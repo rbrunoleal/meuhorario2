@@ -8,14 +8,21 @@ namespace :parameter_load do
         puts '-----------------------------------------------------------------------'
     end
     
-    task :departments => :environment do
+    task :departments_im => :environment do
         puts '-----------------------------------------------------------------------'
+        puts '-> Starting load institutes'
+        #Instituto de Matématica
+        @institute_im = Institute.find_by(name: 'Instituto de Matématica') 
+        if(!@department)
+            @institute_im = Institute.create(name: 'Instituto de Matématica')  
+        end        
+        puts '-> Finished load institutes'
         puts '-> Starting load department'
         #Departamento de Ciência da Computação
         @department = Department.find_by(name: 'Departamento de Ciência da Computação') 
         @courses = []
         if(!@department)
-            @department = Department.create(name: 'Departamento de Ciência da Computação')    
+            @department = Department.create(name: 'Departamento de Ciência da Computação', institute: @institute_im)    
             @courses << Course.find_by(code: '112140') #CC
             @courses << Course.find_by(code: '195140') #SI
             @courses << Course.find_by(code: '196120') #COMP
