@@ -15,13 +15,11 @@ namespace :parameter_load do
         codes << item.to_s
       end
       @courses = Course.all.select { |c| codes.include?(c.code) }
-      @courses.each do |course|    
+      @courses.each do |course|
         puts "    Crawling #{course.name}"
   
         agent = Mechanize.new
         hub = agent.get "https://alunoweb.ufba.br/SiacWWW/CurriculoCursoGradePublico.do?cdCurso=#{course.code}&nuPerCursoInicial=#{course.curriculum}"
-  
-        disciplines = []
   
         for i in 0..1
           page = hub.links[i].click
@@ -29,42 +27,41 @@ namespace :parameter_load do
           table = page.search('table')[0]
           rows = table.css('tr')[2..-1]
   
+          semester = nil
           next if rows.blank?
           rows.each do |row|
             columns = row.css('td')
   
+            semester = columns[0].text.to_i unless columns[0].text.blank?
+            nature = columns[1].text
             code = columns[2].text
-            disciplines << code
+            name = columns[3].css('a').text.strip
+            name = columns[3].text.strip if name == ""
+  
+            curriculum = nil
+            discipline_link = columns[3].css('a')
+            if discipline_link.size == 1 && discipline_link.first.attr('href') =~ /nuPerInicial=(\d+)/
+              curriculum = $1
+            end
+  
             discipline = Discipline.find_by_code code
-            course_discipline = CourseDiscipline.where(course_id: course.id, discipline_id: discipline.id).first
   
-            full_requisites = columns[4].text
+            unless discipline
+              discipline = Discipline.new
+              discipline.code = code
+              discipline.name = name
+              discipline.curriculum = curriculum
+              discipline.save
+            end
   
-            unless full_requisites == '--'
-              if full_requisites.include? 'Todas'
-                requisites = disciplines - [code]
-  
-                if full_requisites.include? 'exceto'
-                  non_requisites = full_requisites.split(': ').last.split(', ')
-                  requisites -= non_requisites
-                end
-              else
-                requisites = full_requisites.split(', ')
-              end
-  
-              requisites.each do |requisite|
-                pre_discipline = Discipline.find_by_code requisite
-                pre_cd = CourseDiscipline.where(course: course, discipline: pre_discipline).first
-  
-                if pre_cd.blank?
-                  puts "      Código não encontrado: #{requisite} | Disciplina: #{discipline.name} | Curso: #{course.name}"
-                elsif pre_cd.semester.nil? or pre_cd.semester != course_discipline.semester
-                  pr = PreRequisite.new
-                  pr.pre_discipline = pre_cd
-                  pr.post_discipline = course_discipline
-                  pr.save
-                end
-              end
+            course_discipline = CourseDiscipline.where(course_id: course.id, discipline_id: discipline.id)
+            if course_discipline.blank?
+              course_discipline = CourseDiscipline.new
+              course_discipline.semester = semester
+              course_discipline.nature = nature
+              course_discipline.discipline = discipline
+              course_discipline.course = course
+              course_discipline.save
             end
           end
         end
@@ -88,8 +85,8 @@ namespace :parameter_load do
       ARGV.each do |item|
         codes << item.to_s
       end
-      @courses = Course.all.select { |c| codes.include?(c.code) }
-      @courses.each do |course|    
+      @courses = Course.all.select { |c| codes.include?(c.code) }      
+      @courses.each do |course|
         puts "    Crawling #{course.name}"
   
         agent = Mechanize.new
