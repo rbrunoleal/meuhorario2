@@ -296,7 +296,7 @@ ActiveRecord::Schema.define(version: 20200723143444) do
   add_foreign_key "disciplines_enrollments", "pre_enrollments"
   add_foreign_key "disciplines_historics", "historics"
   add_foreign_key "disciplines_plannings", "plannings"
-  add_foreign_key "historics", "students"  
+  add_foreign_key "historics", "students"
   add_foreign_key "orientations", "courses"
   add_foreign_key "orientations", "professor_users"
   add_foreign_key "plannings", "students"
