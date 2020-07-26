@@ -19,16 +19,24 @@
               <% if pre_enrollment.year.present? %>
                 <input id="semester_pre_enrollment" type="number" value="<%= pre_enrollment.year %>">
               <% else %>
-                <input id="semester_pre_enrollment" type="number" value="<%= Semester.first.year %>">
+                <% if Semester.first.present? %>
+                  <input id="semester_pre_enrollment" type="number" value="<%= Semester.first.year %>">
+                <% else %>
+                  <input id="semester_pre_enrollment" type="number">
+                <% end %>
               <% end %>
               </label>
             </div>
             <div class="columns small-2 large-2">
               <label>Período
                 <% if pre_enrollment.period? %>
-                <input id="period_pre_enrollment" type="number" value="<%= pre_enrollment.period %>" min="1" max="2">
+                  <input id="period_pre_enrollment" type="number" value="<%= pre_enrollment.period %>" min="1" max="2">
                 <% else %>
-                <input id="period_pre_enrollment" type="number" value="<%= Semester.first.period %>" min="1" max="2">
+                  <% if Semester.first.present? %>
+                    <input id="period_pre_enrollment" type="number" value="<%= Semester.first.period %>" min="1" max="2">
+                  <% else %>
+                    <input id="period_pre_enrollment" type="number" min="1" max="2">
+                  <% end %>
                 <% end %>
               </label>
             </div>

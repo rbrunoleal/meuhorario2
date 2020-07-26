@@ -90,10 +90,12 @@ class RecordEnrollmentsController < ApplicationController
       end
       @planning_disciplines = @planning.disciplines_plannings.map {|c| c.code }
       @planning_disciplines.each do |disc|
-        avaible = true
-        pre[disc].each do |pre_d|
-          if !@historics_disciplines.include?(pre_d)
-            avaible = false
+        avaible = true        
+        if(pre[disc].present?)
+          pre[disc].each do |pre_d|
+            if !@historics_disciplines.include?(pre_d)
+              avaible = false
+            end
           end
         end
         if(avaible == true &&  @pre_disc.include?(disc))
