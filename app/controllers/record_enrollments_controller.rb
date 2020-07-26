@@ -20,8 +20,7 @@ class RecordEnrollmentsController < ApplicationController
     @user = current_user
     if !@student.historics.any?
       flash.now[:warning] = "Cadastre seu histórico para uma melhor utilização da pré-matrícula."
-    end
-    
+    end    
    
     @course = Course.includes(
       course_disciplines: [
@@ -44,12 +43,6 @@ class RecordEnrollmentsController < ApplicationController
     @disciplines_historic = @student.approved_disciplines.to_json
     
     cds = @course.course_disciplines 
-    cds.each do |x|
-      discipline = DisciplineCode.find_by(from_code: x.discipline.code)
-      if(discipline)
-        x.discipline.code = discipline.to_code
-      end
-    end
     @all_disciplines = cds.map {|d| [d.discipline.code, d.discipline.name, d.nature, d.semester.blank? ? 0 : d.semester] }
 
     unless @course.nil?
@@ -104,8 +97,8 @@ class RecordEnrollmentsController < ApplicationController
       end
     end
     
-    @ops = cds.reject{ |cd| cd.nature == 'OB' }.map{ |cd| cd.discipline }
-    
+    @ops = cds.reject{ |cd| cd.nature == 'OB' }.map{ |cd| cd.discipline }   
+
     @disciplines_pre = []
     @pre_enrollment.disciplines_enrollments.each do |disc|
       discipline = Hash.new

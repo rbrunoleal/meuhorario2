@@ -184,7 +184,7 @@ namespace :parameter_load do
             if(!@discipline)
                 DisciplineCode.create(from_code: "MATE12", to_code: "MATA56")
             end
-            @discipline = DisciplineCode.find_by(from_code: 'MATE12') 
+            @discipline = DisciplineCode.find_by(from_code: 'MATE11') 
             if(!@discipline)
                 DisciplineCode.create(from_code: "MATE11", to_code: "MATA63")
             end
