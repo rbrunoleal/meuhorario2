@@ -14,6 +14,6 @@
 <%= render 'shared/footer' %>
 <% content_for :script do %>
 <script>
-  mixpanel.track("Acessou pagina para editar código disciplina", { "codigo_disciplina": "<%= @discipline_code.from_to %>" });
+  mixpanel.track("Acessou página editar código disciplina", { "codigo_disciplina": "<%= @discipline_code.to_code %>" });
 </script>
 <% end %>
