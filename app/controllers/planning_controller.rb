@@ -4,9 +4,9 @@ class PlanningController < ApplicationController
   
   def record
     @user = current_user
-    if !@user.student.historics.any?
-      flash.now[:warning] = "Cadastre seu histórico para uma melhor utilização do planejamento."
-    end
+    #if !@user.student.historics.any?
+    #  flash.now[:warning] = "Cadastre seu histórico para uma melhor utilização do planejamento."
+    #end
     
     @course = Course.includes(
       course_disciplines: [

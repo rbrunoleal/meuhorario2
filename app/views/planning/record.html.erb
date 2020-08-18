@@ -39,7 +39,7 @@
     </div>
   </div>
 
-  <div id="info_historic" class="row">
+  <div id="info_historic" class="row" style="display:none;">
         <div class="callout secondary" data-closable>
             <div class="row">
                 <div class="small-12 columns">
@@ -459,7 +459,7 @@
                       var disciplinesUsed = disciplines_done(semester_current);
                       pre_requisites[code].forEach(function(discipline) {
                           if (!disciplinesUsed.includes(discipline) && !selected_disciplines.includes(discipline)) {
-                              pre_requisitesStudent.push(discipline);
+                              //pre_requisitesStudent.push(discipline);
                           }
                       });
                   }
@@ -613,7 +613,7 @@
           }
         });
         selected_disciplines = selected_disciplines_temp;
-        selected_unavailable_disciplines = selected_unavailable_disciplines_temp;
+        //selected_unavailable_disciplines = selected_unavailable_disciplines_temp;
       } 
       else {
           selected_disciplines = [];
