@@ -72,7 +72,7 @@ namespace :parameter_load do
     end
     
     desc 'Crawl the disciplines of every known course'
-    task :pre_requisites => :environment do
+    task :pre_requisites_test => :environment do
       puts '-----------------------------------------------------------------------'
       puts '-> Starting pre-requisites crawling...'
 
