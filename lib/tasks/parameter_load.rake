@@ -69,15 +69,16 @@ namespace :parameter_load do
       
       puts '-> Finished disciplines crawling'
       puts '-----------------------------------------------------------------------'
-    end 
-  
+    end
     
-    task :pre_requisites_test => :environment do
+    desc 'Crawl the disciplines of every known course'
+    task :pre_requisites => :environment do
       puts '-----------------------------------------------------------------------'
       puts '-> Starting pre-requisites crawling...'
-  
+
       require 'rubygems'
       require 'mechanize'
+
       ARGV.each { |a| task a.to_sym do ; end }
       ARGV.shift
 
@@ -85,36 +86,37 @@ namespace :parameter_load do
       ARGV.each do |item|
         codes << item.to_s
       end
-      @courses = Course.all.select { |c| codes.include?(c.code) }      
+      @courses = Course.all.select { |c| codes.include?(c.code) }
+
       @courses.each do |course|
         puts "    Crawling #{course.name}"
-  
+
         agent = Mechanize.new
         hub = agent.get "https://alunoweb.ufba.br/SiacWWW/CurriculoCursoGradePublico.do?cdCurso=#{course.code}&nuPerCursoInicial=#{course.curriculum}"
-  
+
         disciplines = []
-  
+
         for i in 0..1
           page = hub.links[i].click
-  
+
           table = page.search('table')[0]
           rows = table.css('tr')[2..-1]
-  
+
           next if rows.blank?
           rows.each do |row|
             columns = row.css('td')
-  
+
             code = columns[2].text
             disciplines << code
             discipline = Discipline.find_by_code code
             course_discipline = CourseDiscipline.where(course_id: course.id, discipline_id: discipline.id).first
-  
+
             full_requisites = columns[4].text
-  
+
             unless full_requisites == '--'
               if full_requisites.include? 'Todas'
                 requisites = disciplines - [code]
-  
+
                 if full_requisites.include? 'exceto'
                   non_requisites = full_requisites.split(': ').last.split(', ')
                   requisites -= non_requisites
@@ -122,11 +124,11 @@ namespace :parameter_load do
               else
                 requisites = full_requisites.split(', ')
               end
-  
+
               requisites.each do |requisite|
                 pre_discipline = Discipline.find_by_code requisite
                 pre_cd = CourseDiscipline.where(course: course, discipline: pre_discipline).first
-  
+
                 if pre_cd.blank?
                   puts "      Código não encontrado: #{requisite} | Disciplina: #{discipline.name} | Curso: #{course.name}"
                 elsif pre_cd.semester.nil? or pre_cd.semester != course_discipline.semester
@@ -143,6 +145,7 @@ namespace :parameter_load do
       puts '-> Finished pre-requisites crawling'
       puts '-----------------------------------------------------------------------'
     end
+
     
     task :semester => :environment do
         puts '-----------------------------------------------------------------------'
@@ -152,7 +155,7 @@ namespace :parameter_load do
         puts '-----------------------------------------------------------------------'
     end
     
-    task :departments_im => :environment do
+    task :struct_im => :environment do
         puts '-----------------------------------------------------------------------'
         puts '-> Starting load institutes'
         #Instituto de Matématica
